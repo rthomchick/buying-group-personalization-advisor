@@ -1,0 +1,53 @@
+{
+  "_table": "FALLBACK_CASCADE",
+  "_source": "knowledge/data-model/kalder_data_model.py",
+  "_data_model_version": "0.2.0",
+  "data": [
+    {
+      "level": 1,
+      "name": "Role-specific experience",
+      "trigger": "Role confidence = HIGH",
+      "description": "Content, CTAs, and framing fully tailored to the classified role for the relevant solution category. Three-axis personalization activates if buying job confidence is KNOWN or INFERRED."
+    },
+    {
+      "level": 2,
+      "name": "Role-influenced experience",
+      "trigger": "Role confidence = MEDIUM",
+      "description": "Content leans toward the classified role but retains safe fallback elements. No highly role-specific CTAs. Three-axis activates only if buying job confidence is KNOWN (not INFERRED)."
+    },
+    {
+      "level": 3,
+      "name": "Solution-interest experience",
+      "trigger": "Role confidence = LOW or UNKNOWN with identified solution interest",
+      "description": "Content organised by solution category without role-specific framing. No role assumptions made. Serving the most probable content for the solution area based on account-level signals."
+    },
+    {
+      "level": 4,
+      "name": "Account-level experience",
+      "trigger": "TAL account identified \u2014 no solution interest or role signal",
+      "description": "Personalised by industry, company size, or account attributes only. No solution or role assumptions."
+    },
+    {
+      "pending_solution_fallback": {
+        "behavior": "category_level_anchor_titles",
+        "description": "When a visitor's solution interest maps to a TITLE_ROLE_MAP entry with coverage_status: 'pending', fall back to the champion_typical_title and economic_buyer_typical_title anchor titles defined in \u00a71c SOLUTIONS for firmographic matching. Confidence ceiling remains MEDIUM. Do not apply firmographic_confirmation_bonus.",
+        "confidence_ceiling": "medium",
+        "apply_firmographic_bonus": false,
+        "logging_requirement": "Flag all pending-solution fallback events with solution_key and visitor_id for coverage gap tracking.",
+        "escalation_threshold": {
+          "fallback_event_count": 50,
+          "window_days": 7,
+          "alert_channel": "slack_data_team_channel",
+          "description": "High fallback volume for a pending solution signals it should be prioritized for coverage completion.",
+          "calibration_note": "This threshold (50 events / 7 days) is a starting hypothesis \u2014 it was set without baseline data and must be tuned in the first sprint cycle after deployment. For high-volume solutions (agent_platform, security_operations), this may fire in week 1 and produce alert fatigue. For low-volume solutions, it may never fire. The build session must capture fallback event volume per solution_key from day one to enable calibration."
+        }
+      }
+    },
+    {
+      "level": 5,
+      "name": "Default brand experience",
+      "trigger": "Non-TAL or unidentified visitor",
+      "description": "Standard kalder.com experience with no personalisation. Exploratory CTAs only."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "build1-advisor",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@kalder/shared": "*",
+    "next": "^15",
+    "react": "^19",
+    "react-dom": "^19",
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@pinecone-database/pinecone": "^4",
+    "openai": "^4"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19"
+  }
+}

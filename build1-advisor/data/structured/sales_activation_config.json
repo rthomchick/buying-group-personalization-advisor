@@ -1,0 +1,120 @@
+{
+  "_table": "SALES_ACTIVATION_CONFIG",
+  "_source": "knowledge/data-model/kalder_data_model.py",
+  "_data_model_version": "0.2.0",
+  "data": {
+    "convergence_point_alerts": {
+      "problem_validation": {
+        "trigger_condition": "Champion reaches MEDIUM+ role confidence AND buying_job inferred as 'problem_identification' AND Economic Buyer has at least one signal in the last 30 days. Convergence point is approaching \u2014 group is consuming problem-framing content but has not yet shifted to solution_exploration buying job signals.",
+        "alert_payload": {
+          "bg_stage": "<current stage>",
+          "convergence_point": "problem_validation",
+          "roles_active": [
+            "<list of MEDIUM+ roles in the buying group>"
+          ],
+          "blocker_risk": "misalignment_on_problem or buying_group_turnover",
+          "recommended_action": "Champion and EB are approaching problem alignment. Engage now with external validation content (benchmark report, peer references, analyst data) to reinforce urgency. Do not introduce solution content yet \u2014 the group is still in diverge phase. A sales touch at this point should share a relevant benchmark or named-account story, not pitch features."
+        },
+        "crm_field": "<Salesforce field \u2014 configured at onboarding>",
+        "sdr_sequence": "<sequence name or ID \u2014 configured at onboarding>",
+        "alert_channel": [
+          "crm_task",
+          "slack_sdr_channel"
+        ]
+      },
+      "requirements_framing": {
+        "trigger_condition": "Champion and Influencer both reach MEDIUM+ role confidence AND buying_job inference shifts from 'problem_identification' to 'requirements_building' OR use_case_exploration signal appears in the current session. User-role signal has appeared at least once in the last 14 days \u2014 end-user input is active.",
+        "alert_payload": {
+          "bg_stage": "<current stage>",
+          "convergence_point": "requirements_framing",
+          "roles_active": [
+            "<list of MEDIUM+ roles in the buying group>"
+          ],
+          "blocker_risk": "group_disagreement_on_requirements or buying_consultant_discussion",
+          "recommended_action": "Champion and Influencer are defining evaluation criteria. This is the highest-leverage sales intervention point before a formal RFP or evaluation framework is locked. Offer an RFP template or requirements workshop. If a buying consultant has appeared (buying_consultant_discussion blocker is active), engage with technical credibility content \u2014 not pitch material."
+        },
+        "crm_field": "<Salesforce field \u2014 configured at onboarding>",
+        "sdr_sequence": "<sequence name or ID \u2014 configured at onboarding>",
+        "alert_channel": [
+          "crm_task",
+          "slack_sdr_channel"
+        ]
+      },
+      "solution_validation": {
+        "trigger_condition": "Champion and Influencer both reach MEDIUM+ role confidence AND technical_docs_deep, integration_catalog_view, or product_tour_engagement signals appear in the last 7 days. Buying job inference is 'requirements_building' or 'supplier_selection'. Group is evaluating functional and technical fit.",
+        "alert_payload": {
+          "bg_stage": "<current stage>",
+          "convergence_point": "solution_validation",
+          "roles_active": [
+            "<list of MEDIUM+ roles in the buying group>"
+          ],
+          "blocker_risk": "feasibility_review or exploration_of_integration_with_existing_systems",
+          "recommended_action": "Group is in active technical evaluation. This is a Influencer-led convergence point \u2014 the Champion needs technical proof to carry internally. Provide integration documentation, a technical architecture brief, and a named customer reference for a similar stack. If feasibility_review blocker is active, proactively offer a solutions engineer engagement before the group reaches an impasse."
+        },
+        "crm_field": "<Salesforce field \u2014 configured at onboarding>",
+        "sdr_sequence": "<sequence name or ID \u2014 configured at onboarding>",
+        "alert_channel": [
+          "crm_task",
+          "slack_sdr_channel"
+        ]
+      },
+      "business_value_alignment": {
+        "trigger_condition": "Economic Buyer reaches MEDIUM+ role confidence AND roi_calculator_usage or pricing_page_view signal appears in the last 14 days. Champion is at MEDIUM+ and has consumed executive_brief or case_study content. Group is in active ROI and TCO evaluation.",
+        "alert_payload": {
+          "bg_stage": "<current stage>",
+          "convergence_point": "business_value_alignment",
+          "roles_active": [
+            "<list of MEDIUM+ roles in the buying group>"
+          ],
+          "blocker_risk": "business_case_data_unavailable or budget_cut",
+          "recommended_action": "EB is building or stress-testing the business case. This is the highest-stakes EB engagement in the buying journey. Provide a pre-built ROI model with inputs populated for their industry and company size. If business_case_data_unavailable blocker is active, offer a value assessment workshop. If budget_cut is active, shift framing from ROI to cost-of-inaction \u2014 the EB needs ammunition to defend the spend, not a new justification to build from scratch."
+        },
+        "crm_field": "<Salesforce field \u2014 configured at onboarding>",
+        "sdr_sequence": "<sequence name or ID \u2014 configured at onboarding>",
+        "alert_channel": [
+          "crm_task",
+          "slack_sdr_channel"
+        ]
+      },
+      "risk_compliance_validation": {
+        "trigger_condition": "Ratifier reaches LOW+ role confidence OR security_trust_center_visit signal appears for any group member AND Champion and EB are both at MEDIUM+. Buying job inference is 'supplier_selection'. Late-stage procurement or legal review is active or approaching.",
+        "alert_payload": {
+          "bg_stage": "<current stage>",
+          "convergence_point": "risk_compliance_validation",
+          "roles_active": [
+            "<list of MEDIUM+ roles in the buying group>"
+          ],
+          "blocker_risk": "purchasing_rules_overrule_group_decision or legal_flag or capital_review_board",
+          "recommended_action": "Ratifier is entering the process. This is the most common source of late-stage deal slippage \u2014 engage proactively rather than reactively. Provide a security and compliance package: SOC 2 report, data residency documentation, DPA template, and a one-page executive summary of Kalder Trust capabilities. If legal_flag or capital_review_board blockers are active, escalate to AE immediately \u2014 these require direct engagement, not content delivery."
+        },
+        "crm_field": "<Salesforce field \u2014 configured at onboarding>",
+        "sdr_sequence": "<sequence name or ID \u2014 configured at onboarding>",
+        "alert_channel": [
+          "crm_task",
+          "slack_sdr_channel"
+        ]
+      },
+      "final_commitment": {
+        "trigger_condition": "Champion, Economic Buyer, and Ratifier all have at least LOW+ role confidence AND Champion buying job inference is 'supplier_selection' AND group bg_stage is 'Qualified'. All three required roles are active \u2014 full buying group convergence is in progress.",
+        "alert_payload": {
+          "bg_stage": "Qualified",
+          "convergence_point": "final_commitment",
+          "roles_active": [
+            "champion",
+            "economic_buyer",
+            "ratifier"
+          ],
+          "blocker_risk": "buying_group_turnover or contract_updates_required or purchasing_rules_overrule_group_decision",
+          "recommended_action": "Full buying group is aligned and approaching commitment. Remove remaining friction \u2014 proactively provide procurement guide, contract redline support, and implementation timeline. If buying_group_turnover is active at this stage, treat it as partial_reset: re-brief the new member on the full business case before re-engaging on commitment. If purchasing_rules_overrule_group_decision fires at this stage, escalate immediately \u2014 it is a full_reset blocker and requires executive-level engagement to resolve."
+        },
+        "crm_field": "<Salesforce field \u2014 configured at onboarding>",
+        "sdr_sequence": "<sequence name or ID \u2014 configured at onboarding>",
+        "alert_channel": [
+          "crm_task",
+          "slack_sdr_channel"
+        ]
+      }
+    },
+    "onboarding_note": "crm_field, sdr_sequence, and alert_channel are populated during AI Advisor client onboarding. trigger_condition and alert_payload (including recommended_action) are canonical \u2014 they encode the buying intelligence and must not be modified at onboarding."
+  }
+}

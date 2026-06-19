@@ -1,0 +1,9 @@
+{
+  "name": "kalder",
+  "private": true,
+  "workspaces": [
+    "packages/shared",
+    "build1-advisor",
+    "build2-simulator"
+  ]
+}

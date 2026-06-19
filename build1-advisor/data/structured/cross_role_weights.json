@@ -1,0 +1,167 @@
+{
+  "_table": "CROSS_ROLE_WEIGHTS",
+  "_source": "knowledge/data-model/kalder_data_model.py",
+  "_data_model_version": "0.2.0",
+  "data": {
+    "case_study_download": {
+      "label": "Case study / success story download",
+      "champion": 20,
+      "economic_buyer": 3,
+      "influencer": 5,
+      "user": 2,
+      "ratifier": 2
+    },
+    "competitive_comparison_view": {
+      "label": "Competitive comparison page view",
+      "champion": 18,
+      "economic_buyer": 5,
+      "influencer": 3,
+      "user": 0,
+      "ratifier": 2
+    },
+    "demo_request": {
+      "label": "Demo request submission",
+      "champion": 20,
+      "economic_buyer": 8,
+      "influencer": 5,
+      "user": 3,
+      "ratifier": 0
+    },
+    "multi_solution_exploration": {
+      "label": "3+ solution areas explored (90-day window)",
+      "champion": 15,
+      "economic_buyer": 3,
+      "influencer": -5,
+      "user": -8,
+      "ratifier": -10
+    },
+    "roi_calculator_usage": {
+      "label": "ROI calculator / TCO tool interaction",
+      "champion": 8,
+      "economic_buyer": 22,
+      "influencer": 3,
+      "user": 0,
+      "ratifier": 3
+    },
+    "pricing_page_view": {
+      "label": "Pricing page view",
+      "champion": 5,
+      "economic_buyer": 15,
+      "influencer": 3,
+      "user": 0,
+      "ratifier": 5
+    },
+    "executive_brief_download": {
+      "label": "Executive brief or consensus brief download",
+      "champion": 10,
+      "economic_buyer": 12,
+      "influencer": 3,
+      "user": -10,
+      "ratifier": 3
+    },
+    "use_case_exploration": {
+      "label": "Use case page exploration (> 3 min)",
+      "champion": 8,
+      "economic_buyer": 3,
+      "influencer": 15,
+      "user": 8,
+      "ratifier": 2
+    },
+    "product_tour_engagement": {
+      "label": "Product tour / interactive demo engagement",
+      "champion": 8,
+      "economic_buyer": 3,
+      "influencer": 12,
+      "user": 8,
+      "ratifier": 2
+    },
+    "webinar_registration": {
+      "label": "Webinar registration or attendance",
+      "champion": 8,
+      "economic_buyer": 3,
+      "influencer": 15,
+      "user": 3,
+      "ratifier": 3
+    },
+    "howto_training_content": {
+      "label": "How-to / training content view",
+      "champion": 2,
+      "economic_buyer": -10,
+      "influencer": 5,
+      "user": 18,
+      "ratifier": 2
+    },
+    "community_forum_engagement": {
+      "label": "Community / forum engagement",
+      "champion": 5,
+      "economic_buyer": -12,
+      "influencer": 5,
+      "user": 15,
+      "ratifier": 2
+    },
+    "security_whitepaper_download": {
+      "label": "Security whitepaper download",
+      "champion": 5,
+      "economic_buyer": 3,
+      "influencer": 3,
+      "user": 0,
+      "ratifier": 20
+    },
+    "compliance_governance_content": {
+      "label": "Compliance / governance content view",
+      "champion": 3,
+      "economic_buyer": 5,
+      "influencer": 3,
+      "user": 0,
+      "ratifier": 18
+    },
+    "technical_docs_deep": {
+      "label": "Technical documentation (10+ min dwell)",
+      "champion": 3,
+      "economic_buyer": -10,
+      "influencer": 8,
+      "user": 5,
+      "ratifier": 12
+    },
+    "faq_support_docs": {
+      "label": "FAQ / support documentation view",
+      "champion": 2,
+      "economic_buyer": 0,
+      "influencer": 3,
+      "user": 12,
+      "ratifier": 2
+    },
+    "diagnostic_assessment": {
+      "label": "Diagnostic assessment / interactive quiz completion",
+      "champion": 15,
+      "economic_buyer": 8,
+      "influencer": 5,
+      "user": 3,
+      "ratifier": 0
+    },
+    "integration_catalog_view": {
+      "label": "Integration catalog or API reference view",
+      "champion": 3,
+      "economic_buyer": 0,
+      "influencer": 15,
+      "user": 5,
+      "ratifier": 3
+    },
+    "security_trust_center_visit": {
+      "label": "Security and Trust Center page visit",
+      "champion": 5,
+      "economic_buyer": 5,
+      "influencer": 5,
+      "user": 0,
+      "ratifier": 22
+    },
+    "category_explainer_view": {
+      "label": "Category explainer page view (60s+ dwell)",
+      "champion": 6,
+      "economic_buyer": 4,
+      "influencer": 2,
+      "user": 0,
+      "ratifier": 0
+    }
+  }
+}

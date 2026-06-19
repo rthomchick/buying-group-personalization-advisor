@@ -1,0 +1,62 @@
+{
+  "_comment": "Synthetic contact: LOW confidence, differential_insufficient true (Champion/Influencer ambiguous — Champion 45, Influencer 38, differential 7 < minimum 10). Source: knowledge/specs/kalder_layer2_decisions_log_L2E_builds.md § Synthetic Data Set, Contact B. This is the demo's most important record.",
+  "contact_id": "contact_b",
+  "contact_label": "Contact B",
+  "demo_purpose": "Priority 0 differential_insufficient override demonstration; Level 3 routing; progressive disclosure upgrade path is the demo's central before/after sequence.",
+  "solution_category": "it_operations",
+  "signal_observations": [
+    { "signal_name": "competitive_comparison_view", "timestamp_days_ago": 10, "solution_category": "it_operations" },
+    { "signal_name": "pricing_page_view", "timestamp_days_ago": 14, "solution_category": "it_operations" },
+    { "signal_name": "use_case_exploration", "timestamp_days_ago": 20, "solution_category": "it_operations" },
+    { "signal_name": "webinar_registration", "timestamp_days_ago": 25, "solution_category": "it_operations" },
+    { "signal_name": "category_explainer_view", "timestamp_days_ago": 30, "solution_category": "it_operations" }
+  ],
+  "ca_attributes": {
+    "tal_domain": "synthco.com",
+    "tal_member": true,
+    "tal_program_status": "active_prospect",
+    "tal_marquee": false,
+    "tal_account_type_source": "enterprise",
+    "tal_region": "north_america",
+    "tal_upsell_override_active": false,
+    "tal_channel": "direct",
+    "holdback_group": false
+  },
+  "expected_classification": {
+    "_note": "Verified against services/scoring-engine/classifier.py classify_visitor() with signal_observations timestamps resolved to timestamp_days_ago before now (UTC), all within the last_90_days decay window (1.0x multiplier). Re-verify if classifier.py or kalder_data_model.py changes.",
+    "role_scores": { "champion": 45.0, "economic_buyer": 30.0, "influencer": 38.0, "user": 11.0, "ratifier": 12.0 },
+    "top_score": 45.0,
+    "second_score": 38.0,
+    "differential": 7.0,
+    "role_classification": "champion",
+    "confidence_tier": "LOW",
+    "differential_insufficient": true,
+    "fallback_level": 3,
+    "data_model_version": "0.2.0"
+  },
+  "visitor_state": {
+    "role_classification": "champion",
+    "confidence_tier": "LOW",
+    "differential_insufficient": true,
+    "buying_job_confidence": "UNKNOWN",
+    "buying_job_confirmed": null,
+    "solution_category": "it_operations",
+    "buying_stage": "targeted",
+    "tal_member": true,
+    "solution_category_coverage_status": "partial",
+    "holdback_group": false,
+    "visitor_consent_state": "full",
+    "upsell_override_active": false
+  },
+  "upgrade_path": {
+    "_comment": "Same contact, subsequent session. Contact B responds to progressive disclosure and self-identifies as Champion. This is the demo's central before/after moment — not a separate contact record.",
+    "trigger": "zero_party_self_identification_champion",
+    "tier_2_pathway_activates": true,
+    "resulting_state": {
+      "differential_insufficient": false,
+      "confidence_tier": "MEDIUM",
+      "fallback_level": 2,
+      "role_classification": "champion"
+    }
+  }
+}

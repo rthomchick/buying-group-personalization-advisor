@@ -1,0 +1,2205 @@
+{
+  "_table": "JTBD_CODES",
+  "_source": "knowledge/data-model/kalder_data_model.py",
+  "_data_model_version": "0.2.0",
+  "data": {
+    "ACQ-CH-PI-1": {
+      "label": "Socialize a service-first narrative",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "thought_leadership",
+        "benchmark_report",
+        "diagnostic_assessment"
+      ],
+      "phase": "diverge"
+    },
+    "ACQ-CH-PI-2": {
+      "label": "Collect early proof and peer references",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "case_study",
+        "analyst_report",
+        "customer_reference"
+      ],
+      "phase": "diverge"
+    },
+    "ACQ-CH-PI-3": {
+      "label": "Recruit allies within the organization",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 3,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "consensus_brief",
+        "executive_brief"
+      ],
+      "phase": "converge"
+    },
+    "PRG-CH-SS-1": {
+      "label": "Secure executive sponsorship",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "executive_brief",
+        "roi_calculator",
+        "consensus_brief"
+      ],
+      "phase": "converge"
+    },
+    "PRG-CH-SS-2": {
+      "label": "Stand up use cases",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "use_case_page",
+        "case_study",
+        "product_tour"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-CH-SS-3": {
+      "label": "Orchestrate consensus across organization",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "consensus_brief",
+        "executive_brief",
+        "risk_mitigation_plan"
+      ],
+      "phase": "converge"
+    },
+    "ACQ-EB-PI-1": {
+      "label": "Size the problem",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "diagnostic_assessment",
+        "benchmark_report",
+        "business_value"
+      ],
+      "phase": "diverge"
+    },
+    "ACQ-EB-PI-2": {
+      "label": "Translate pains into target outcomes",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "business_value",
+        "thought_leadership",
+        "analyst_report"
+      ],
+      "phase": "diverge"
+    },
+    "ACQ-EB-PI-3": {
+      "label": "Shortlist viable approaches and vendors",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 3,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "competitive_comparison",
+        "analyst_report",
+        "category_explainer"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-EB-SS-1": {
+      "label": "Validate ROI and TCO scenarios",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "roi_calculator",
+        "executive_brief",
+        "case_study"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-EB-SS-2": {
+      "label": "Confirm solution meets defined KPI goals",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "business_value",
+        "case_study",
+        "benchmark_report"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-EB-SS-3": {
+      "label": "Understand rollout and adoption plans",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "adoption_rollout",
+        "risk_mitigation_plan"
+      ],
+      "phase": "diverge"
+    },
+    "ACQ-INF-RB-1": {
+      "label": "Help shape requirements",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 1,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "use_case_page",
+        "rfp_template",
+        "technical_documentation"
+      ],
+      "phase": "diverge"
+    },
+    "ACQ-INF-RB-2": {
+      "label": "Stress test how work will flow for their team",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 2,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "product_tour",
+        "demo_trial_request",
+        "use_case_page"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-INF-SS-1": {
+      "label": "Validate how it works for us \u2014 use cases",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "use_case_page",
+        "product_tour",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-INF-SS-2": {
+      "label": "Run or interpret proof of concept",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "technical_documentation",
+        "integration_map"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-INF-SS-3": {
+      "label": "Issue recommendations to buying group",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "consensus_brief"
+      ],
+      "phase": "converge"
+    },
+    "ACQ-RAT-PI-1": {
+      "label": "Clarify procurement need and path",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "legal_procurement",
+        "governance_policy"
+      ],
+      "phase": "diverge"
+    },
+    "ACQ-RAT-PI-2": {
+      "label": "Identify risk flags early",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "security_compliance",
+        "governance_policy"
+      ],
+      "phase": "diverge"
+    },
+    "ACQ-RAT-PI-3": {
+      "label": "Understand governance, privacy and security requirements",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 3,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "security_compliance",
+        "governance_policy",
+        "legal_procurement"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-RAT-SS-1": {
+      "label": "Ensure standards alignment",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "security_compliance",
+        "governance_policy"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-RAT-SS-2": {
+      "label": "Finalize terms, SLAs and liability",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "legal_procurement",
+        "risk_mitigation_plan"
+      ],
+      "phase": "diverge"
+    },
+    "ACQ-USR-SE-1": {
+      "label": "Surface frontline friction and must-have workflows",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "product_tour",
+        "use_case_page",
+        "howto_training"
+      ],
+      "phase": "diverge"
+    },
+    "ACQ-USR-SE-2": {
+      "label": "Participate in concept workflows and demos",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 2,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "product_tour",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-USR-SS-1": {
+      "label": "Validate use-based demos",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "product_tour",
+        "demo_trial_request",
+        "use_case_page"
+      ],
+      "phase": "diverge"
+    },
+    "PRG-USR-SS-2": {
+      "label": "Recommend adoption and training milestones",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "customer_engagement"
+      ],
+      "coverage_status": "complete",
+      "content_types": [
+        "adoption_rollout",
+        "howto_training"
+      ],
+      "phase": "diverge"
+    },
+    "IT-ACQ-CH-PI-1": {
+      "label": "Build problem awareness \u2014 IT as AI builders vision",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "partial",
+      "content_types": [
+        "thought_leadership",
+        "diagnostic_assessment"
+      ],
+      "phase": "diverge",
+      "notes": "Upgraded from partial; source: IT deck slide 38 Champion Acquisition messaging"
+    },
+    "IT-ACQ-CH-PI-2": {
+      "label": "Collect proof that AI-native ITSM outperforms legacy",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "case_study",
+        "benchmark_report",
+        "analyst_report"
+      ],
+      "phase": "diverge"
+    },
+    "IT-ACQ-CH-PI-3": {
+      "label": "Recruit allies \u2014 align IT leadership on transformation urgency",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 3,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief",
+        "executive_brief"
+      ],
+      "phase": "converge"
+    },
+    "IT-ACQ-CH-SE-1": {
+      "label": "Evaluate AI-native ITSM versus legacy modernization path",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "partial",
+      "content_types": [
+        "product_solution_overview",
+        "competitive_comparison"
+      ],
+      "phase": "diverge",
+      "notes": "Upgraded from partial; source: IT deck slide 38 Champion Acquisition messaging"
+    },
+    "IT-ACQ-CH-SE-2": {
+      "label": "Map platform architecture to enterprise integration requirements",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "integration_map",
+        "use_case_page"
+      ],
+      "phase": "diverge"
+    },
+    "IT-PRG-CH-SS-1": {
+      "label": "Align team on prioritization trade-offs",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "partial",
+      "content_types": [
+        "consensus_brief",
+        "executive_brief"
+      ],
+      "phase": "converge",
+      "notes": "Upgraded from partial; source: IT deck slide 38 Champion Progression messaging"
+    },
+    "IT-PRG-CH-SS-2": {
+      "label": "Evangelize the IT-as-builders vision to the C-suite",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "executive_brief",
+        "case_study",
+        "roi_calculator"
+      ],
+      "phase": "converge",
+      "notes": "Derived from IT deck: 'How do you evangelize your vision of IT becoming builders?'"
+    },
+    "IT-PRG-CH-SS-3": {
+      "label": "Stand up ITSM use cases and adoption roadmap",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "use_case_page",
+        "adoption_rollout",
+        "product_tour"
+      ],
+      "phase": "diverge"
+    },
+    "IT-ACQ-EB-PI-1": {
+      "label": "Quantify the cost of IT fragmentation and legacy drag",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "benchmark_report",
+        "business_value",
+        "diagnostic_assessment"
+      ],
+      "phase": "diverge"
+    },
+    "IT-ACQ-EB-PI-2": {
+      "label": "Translate IT transformation into board-level outcomes",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "thought_leadership",
+        "analyst_report",
+        "business_value"
+      ],
+      "phase": "diverge"
+    },
+    "IT-ACQ-EB-SE-1": {
+      "label": "Assess strategic fit of AI-native platform versus point solutions",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "competitive_comparison",
+        "analyst_report",
+        "category_explainer"
+      ],
+      "phase": "diverge"
+    },
+    "IT-PRG-EB-SS-1": {
+      "label": "Ratify ROI for IT transformation investment",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "partial",
+      "content_types": [
+        "roi_calculator",
+        "executive_brief"
+      ],
+      "phase": "diverge",
+      "notes": "Upgraded from partial; source: IT deck slide 38 Decision-maker Progression messaging"
+    },
+    "IT-PRG-EB-SS-2": {
+      "label": "Confirm TCO advantage and consolidation savings",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "business_value",
+        "case_study",
+        "benchmark_report"
+      ],
+      "phase": "diverge"
+    },
+    "IT-PRG-EB-SS-3": {
+      "label": "Approve platform investment and multi-year roadmap",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "executive_brief",
+        "adoption_rollout",
+        "risk_mitigation_plan"
+      ],
+      "phase": "converge"
+    },
+    "IT-ACQ-INF-RB-1": {
+      "label": "Evaluate platform architecture against enterprise standards",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "integration_map",
+        "rfp_template"
+      ],
+      "phase": "diverge",
+      "notes": "Influencer for IT is typically Enterprise Architect or Head of Platform Engineering"
+    },
+    "IT-ACQ-INF-RB-2": {
+      "label": "Stress test integration compatibility and API surface",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "product_tour",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "IT-ACQ-INF-RB-3": {
+      "label": "Define non-functional requirements and scalability criteria",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 3,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "rfp_template"
+      ],
+      "phase": "diverge"
+    },
+    "IT-PRG-INF-SS-1": {
+      "label": "Validate platform fit through proof of concept",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "demo_trial_request",
+        "integration_map"
+      ],
+      "phase": "diverge"
+    },
+    "IT-PRG-INF-SS-2": {
+      "label": "Issue architecture recommendation to buying group",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief",
+        "technical_documentation"
+      ],
+      "phase": "converge"
+    },
+    "IT-ACQ-USR-SE-1": {
+      "label": "Surface daily service desk friction and workflow gaps",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "use_case_page",
+        "product_tour",
+        "howto_training"
+      ],
+      "phase": "diverge",
+      "notes": "User for ITSM is IT Support Analyst or Service Desk Agent"
+    },
+    "IT-ACQ-USR-SE-2": {
+      "label": "Participate in hands-on product demos and trials",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_tour",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "IT-PRG-USR-SS-1": {
+      "label": "Validate usability for real incident and request workflows",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_tour",
+        "use_case_page",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "IT-PRG-USR-SS-2": {
+      "label": "Recommend training and onboarding milestones",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "adoption_rollout",
+        "howto_training"
+      ],
+      "phase": "diverge"
+    },
+    "IT-ACQ-RAT-PI-1": {
+      "label": "Establish data governance and AI use policy boundaries",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "governance_policy",
+        "security_compliance"
+      ],
+      "phase": "diverge",
+      "notes": "IT Ratifier is often CTO, CISO, or Head of Data Privacy"
+    },
+    "IT-ACQ-RAT-PI-2": {
+      "label": "Identify security and compliance requirements for platform evaluation",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "security_compliance",
+        "legal_procurement",
+        "governance_policy"
+      ],
+      "phase": "diverge"
+    },
+    "IT-PRG-RAT-SS-1": {
+      "label": "Confirm security posture and compliance certifications",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "security_compliance",
+        "governance_policy"
+      ],
+      "phase": "diverge"
+    },
+    "IT-PRG-RAT-SS-2": {
+      "label": "Finalize data residency, SLAs, and contractual terms",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "it_operations"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "legal_procurement",
+        "risk_mitigation_plan"
+      ],
+      "phase": "diverge"
+    },
+    "EX-ACQ-CH-PI-1": {
+      "label": "Build the case that employee experience is a business performance lever",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "thought_leadership",
+        "benchmark_report",
+        "diagnostic_assessment"
+      ],
+      "phase": "diverge"
+    },
+    "EX-ACQ-CH-PI-2": {
+      "label": "Collect peer proof that AI-native HR/EX platforms outperform legacy",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "case_study",
+        "customer_reference",
+        "analyst_report"
+      ],
+      "phase": "diverge"
+    },
+    "EX-ACQ-CH-PI-3": {
+      "label": "Recruit CHRO and IT as co-sponsors before vendor evaluation",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 3,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief",
+        "executive_brief"
+      ],
+      "phase": "converge"
+    },
+    "EX-ACQ-CH-SE-1": {
+      "label": "Evaluate AI-native EX platform versus point solution patchwork",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_solution_overview",
+        "competitive_comparison",
+        "use_case_page"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-CH-SS-1": {
+      "label": "Secure CHRO sponsorship and budget commitment",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "executive_brief",
+        "roi_calculator",
+        "consensus_brief"
+      ],
+      "phase": "converge"
+    },
+    "EX-PRG-CH-SS-2": {
+      "label": "Stand up employee journey use cases for the buying group",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "use_case_page",
+        "case_study",
+        "product_tour"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-CH-SS-3": {
+      "label": "Orchestrate final consensus across HR, IT, and Finance",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief",
+        "executive_brief",
+        "risk_mitigation_plan"
+      ],
+      "phase": "converge"
+    },
+    "EX-ACQ-EB-PI-1": {
+      "label": "Size the cost of poor employee experience on retention and productivity",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "benchmark_report",
+        "business_value",
+        "diagnostic_assessment"
+      ],
+      "phase": "diverge"
+    },
+    "EX-ACQ-EB-PI-2": {
+      "label": "Translate employee experience outcomes into CFO-ready language",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "business_value",
+        "analyst_report",
+        "thought_leadership"
+      ],
+      "phase": "diverge"
+    },
+    "EX-ACQ-EB-SE-1": {
+      "label": "Assess build vs. buy vs. consolidate options for HR technology",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "competitive_comparison",
+        "analyst_report",
+        "category_explainer"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-EB-SS-1": {
+      "label": "Validate ROI on employee experience transformation investment",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "roi_calculator",
+        "executive_brief",
+        "case_study"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-EB-SS-2": {
+      "label": "Confirm people-outcomes metrics align with corporate strategy",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "business_value",
+        "benchmark_report",
+        "case_study"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-EB-SS-3": {
+      "label": "Understand change management and adoption plan",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "adoption_rollout",
+        "risk_mitigation_plan"
+      ],
+      "phase": "diverge"
+    },
+    "EX-ACQ-INF-RB-1": {
+      "label": "Map HR technology requirements against existing systems of record",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "integration_map",
+        "rfp_template"
+      ],
+      "phase": "diverge",
+      "notes": "Influencer for EX is typically Director of HR Technology or Business Analyst"
+    },
+    "EX-ACQ-INF-RB-2": {
+      "label": "Stress test workflow fit for target employee populations",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 2,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "use_case_page",
+        "product_tour",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-INF-SS-1": {
+      "label": "Validate integration with HRIS and payroll systems",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "integration_map"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-INF-SS-2": {
+      "label": "Issue technical and process fit recommendation to buying group",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief"
+      ],
+      "phase": "converge"
+    },
+    "EX-ACQ-USR-SE-1": {
+      "label": "Surface daily HR workflow friction and case management gaps",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "use_case_page",
+        "product_tour",
+        "howto_training"
+      ],
+      "phase": "diverge",
+      "notes": "User for EX is HR Coordinator, Recruiter, or L&D Specialist"
+    },
+    "EX-ACQ-USR-SE-2": {
+      "label": "Evaluate self-service and portal usability for employees",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 2,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_tour",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-USR-SS-1": {
+      "label": "Validate that day-to-day HR workflows are genuinely simplified",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_tour",
+        "use_case_page",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-USR-SS-2": {
+      "label": "Recommend employee onboarding and training milestones",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "adoption_rollout",
+        "howto_training"
+      ],
+      "phase": "diverge"
+    },
+    "EX-ACQ-RAT-PI-1": {
+      "label": "Establish data privacy boundaries for employee data handling",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "governance_policy",
+        "security_compliance"
+      ],
+      "phase": "diverge",
+      "notes": "EX Ratifier: CFO gates spend; Legal/CISO gates employee data use"
+    },
+    "EX-ACQ-RAT-PI-2": {
+      "label": "Identify labor law compliance and works council requirements",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "legal_procurement",
+        "governance_policy"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-RAT-SS-1": {
+      "label": "Confirm employee data governance and GDPR / regional compliance",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "security_compliance",
+        "governance_policy"
+      ],
+      "phase": "diverge"
+    },
+    "EX-PRG-RAT-SS-2": {
+      "label": "Finalize contract terms and data processing agreements",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "employee_experience"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "legal_procurement",
+        "risk_mitigation_plan"
+      ],
+      "phase": "diverge"
+    },
+    "RC-ACQ-CH-PI-1": {
+      "label": "Quantify regulatory exposure and compliance gap",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "diagnostic_assessment",
+        "benchmark_report",
+        "thought_leadership"
+      ],
+      "phase": "diverge"
+    },
+    "RC-ACQ-CH-PI-2": {
+      "label": "Build internal case for automating risk and compliance workflows",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "case_study",
+        "analyst_report",
+        "business_value"
+      ],
+      "phase": "diverge"
+    },
+    "RC-ACQ-CH-PI-3": {
+      "label": "Recruit Legal and Finance as co-sponsors early",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 3,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief",
+        "executive_brief"
+      ],
+      "phase": "converge",
+      "notes": "In RC, Ratifier co-sponsorship at PI stage is more common than in other categories"
+    },
+    "RC-ACQ-CH-SE-1": {
+      "label": "Evaluate GRC platform capabilities against regulatory framework",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_solution_overview",
+        "competitive_comparison",
+        "use_case_page"
+      ],
+      "phase": "diverge"
+    },
+    "RC-ACQ-CH-RB-1": {
+      "label": "Define compliance workflow and control framework requirements",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "rfp_template",
+        "use_case_page",
+        "technical_documentation"
+      ],
+      "phase": "diverge"
+    },
+    "RC-PRG-CH-SS-1": {
+      "label": "Secure CRO / General Counsel endorsement for platform selection",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "executive_brief",
+        "consensus_brief",
+        "risk_mitigation_plan"
+      ],
+      "phase": "converge"
+    },
+    "RC-PRG-CH-SS-2": {
+      "label": "Stand up risk control use cases and audit trail demonstrations",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "use_case_page",
+        "product_tour",
+        "case_study"
+      ],
+      "phase": "diverge"
+    },
+    "RC-PRG-CH-SS-3": {
+      "label": "Orchestrate final sign-off across Legal, Finance, and IT",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief",
+        "risk_mitigation_plan",
+        "executive_brief"
+      ],
+      "phase": "converge"
+    },
+    "RC-ACQ-EB-PI-1": {
+      "label": "Assess enterprise risk exposure and cost of non-compliance",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "benchmark_report",
+        "business_value",
+        "analyst_report"
+      ],
+      "phase": "diverge"
+    },
+    "RC-ACQ-EB-SE-1": {
+      "label": "Evaluate GRC platform versus manual controls and point solutions",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "competitive_comparison",
+        "analyst_report",
+        "category_explainer"
+      ],
+      "phase": "diverge"
+    },
+    "RC-PRG-EB-SS-1": {
+      "label": "Validate risk-reduction ROI and audit cost savings",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "roi_calculator",
+        "executive_brief",
+        "case_study"
+      ],
+      "phase": "diverge"
+    },
+    "RC-PRG-EB-SS-2": {
+      "label": "Confirm platform meets regulatory obligations for the business",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "governance_policy",
+        "security_compliance",
+        "business_value"
+      ],
+      "phase": "diverge"
+    },
+    "RC-ACQ-INF-RB-1": {
+      "label": "Map technical security requirements and integration constraints",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "security_compliance",
+        "rfp_template"
+      ],
+      "phase": "diverge",
+      "notes": "Influencer for RC is IT Security Manager or Data Privacy Officer"
+    },
+    "RC-ACQ-INF-RB-2": {
+      "label": "Validate data residency and privacy controls meet policy",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 2,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "governance_policy",
+        "security_compliance"
+      ],
+      "phase": "diverge"
+    },
+    "RC-PRG-INF-SS-1": {
+      "label": "Certify platform security posture and pen test findings",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "security_compliance",
+        "technical_documentation"
+      ],
+      "phase": "diverge"
+    },
+    "RC-PRG-INF-SS-2": {
+      "label": "Issue security and privacy recommendation to the buying group",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief",
+        "governance_policy"
+      ],
+      "phase": "converge"
+    },
+    "RC-ACQ-USR-SE-1": {
+      "label": "Surface manual control gaps and audit workflow friction",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "use_case_page",
+        "product_tour",
+        "howto_training"
+      ],
+      "phase": "diverge",
+      "notes": "User for RC is GRC Analyst, Security Analyst, or Vendor Manager"
+    },
+    "RC-ACQ-USR-SE-2": {
+      "label": "Evaluate platform usability for control testing and evidence collection",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 2,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_tour",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "RC-PRG-USR-SS-1": {
+      "label": "Validate that compliance workflows and reporting meet audit standards",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_tour",
+        "use_case_page",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "RC-PRG-USR-SS-2": {
+      "label": "Recommend analyst training and control library onboarding",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "adoption_rollout",
+        "howto_training"
+      ],
+      "phase": "diverge"
+    },
+    "RC-ACQ-RAT-PI-1": {
+      "label": "Establish regulatory and contractual boundaries for vendor evaluation",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "legal_procurement",
+        "governance_policy"
+      ],
+      "phase": "diverge",
+      "notes": "Ratifier enters at PI in RC \u2014 regulatory risk is the primary purchase driver"
+    },
+    "RC-ACQ-RAT-PI-2": {
+      "label": "Identify regulatory obligations that the platform must satisfy",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "governance_policy",
+        "security_compliance",
+        "legal_procurement"
+      ],
+      "phase": "diverge"
+    },
+    "RC-ACQ-RAT-RB-1": {
+      "label": "Define contractual and legal requirements for GRC platform",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "legal_procurement",
+        "rfp_template",
+        "governance_policy"
+      ],
+      "phase": "diverge",
+      "notes": "RC Ratifier participates at RB stage \u2014 unusual vs other categories"
+    },
+    "RC-PRG-RAT-SS-1": {
+      "label": "Confirm regulatory compliance certifications and audit rights",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "security_compliance",
+        "governance_policy"
+      ],
+      "phase": "diverge"
+    },
+    "RC-PRG-RAT-SS-2": {
+      "label": "Negotiate and execute DPA, MSA, and liability terms",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "legal_procurement",
+        "risk_mitigation_plan"
+      ],
+      "phase": "diverge"
+    },
+    "RC-PRG-RAT-SS-3": {
+      "label": "Final sign-off \u2014 risk posture acceptable to board / audit committee",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "risk_compliance"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "executive_brief",
+        "risk_mitigation_plan",
+        "governance_policy"
+      ],
+      "phase": "converge",
+      "notes": "RC Ratifier is the final convergence gatekeeper \u2014 board/audit committee may be involved"
+    },
+    "AI-ACQ-CH-PI-1": {
+      "label": "Build organizational awareness of the AI infrastructure gap",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "thought_leadership",
+        "diagnostic_assessment",
+        "benchmark_report"
+      ],
+      "phase": "diverge"
+    },
+    "AI-ACQ-CH-PI-2": {
+      "label": "Collect proof that unified AI platforms outperform point-tool proliferation",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "case_study",
+        "analyst_report",
+        "customer_reference"
+      ],
+      "phase": "diverge"
+    },
+    "AI-ACQ-CH-PI-3": {
+      "label": "Align CTO and business unit leaders on AI platform strategy",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 3,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief",
+        "executive_brief"
+      ],
+      "phase": "converge"
+    },
+    "AI-ACQ-CH-SE-1": {
+      "label": "Evaluate AI platform architectures \u2014 build vs. buy vs. compose",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_solution_overview",
+        "competitive_comparison",
+        "technical_documentation"
+      ],
+      "phase": "diverge"
+    },
+    "AI-ACQ-CH-SE-2": {
+      "label": "Prototype evaluation criteria with ML and data engineering peers",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "demo_trial_request",
+        "use_case_page"
+      ],
+      "phase": "diverge"
+    },
+    "AI-PRG-CH-SS-1": {
+      "label": "Secure CTO / CDO commitment to AI platform standardization",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "executive_brief",
+        "roi_calculator",
+        "consensus_brief"
+      ],
+      "phase": "converge"
+    },
+    "AI-PRG-CH-SS-2": {
+      "label": "Stand up platform use cases across agent, automation, and data domains",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "use_case_page",
+        "product_tour",
+        "case_study"
+      ],
+      "phase": "diverge"
+    },
+    "AI-PRG-CH-SS-3": {
+      "label": "Orchestrate AI governance and Ratifier alignment before commitment",
+      "role": "champion",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief",
+        "governance_policy",
+        "risk_mitigation_plan"
+      ],
+      "phase": "converge",
+      "notes": "AI governance sign-off is a distinct converge step in this category"
+    },
+    "AI-ACQ-EB-PI-1": {
+      "label": "Quantify cost of fragmented AI and automation point tools",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "benchmark_report",
+        "business_value",
+        "diagnostic_assessment"
+      ],
+      "phase": "diverge"
+    },
+    "AI-ACQ-EB-PI-2": {
+      "label": "Translate AI platform investment into strategic business outcomes",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "thought_leadership",
+        "analyst_report",
+        "business_value"
+      ],
+      "phase": "diverge"
+    },
+    "AI-ACQ-EB-SE-1": {
+      "label": "Assess platform vendor landscape against enterprise AI strategy",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "analyst_report",
+        "competitive_comparison",
+        "category_explainer"
+      ],
+      "phase": "diverge"
+    },
+    "AI-PRG-EB-SS-1": {
+      "label": "Validate AI platform ROI and engineering productivity gains",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "roi_calculator",
+        "executive_brief",
+        "case_study"
+      ],
+      "phase": "diverge"
+    },
+    "AI-PRG-EB-SS-2": {
+      "label": "Confirm platform roadmap aligns with multi-year AI strategy",
+      "role": "economic_buyer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "business_value",
+        "analyst_report",
+        "adoption_rollout"
+      ],
+      "phase": "diverge"
+    },
+    "AI-ACQ-INF-RB-1": {
+      "label": "Define technical requirements for model serving, orchestration, and data access",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "integration_map",
+        "rfp_template"
+      ],
+      "phase": "diverge",
+      "notes": "Influencer for AI Platform is Head of Data Engineering or ML Platform Lead \u2014 most technical Influencer in model"
+    },
+    "AI-ACQ-INF-RB-2": {
+      "label": "Stress test platform fit against existing data infrastructure",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "demo_trial_request",
+        "product_tour"
+      ],
+      "phase": "diverge"
+    },
+    "AI-ACQ-INF-RB-3": {
+      "label": "Evaluate MLOps, lineage, and observability capabilities",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "requirements_building",
+      "sequence": 3,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "technical_documentation",
+        "product_solution_overview"
+      ],
+      "phase": "diverge"
+    },
+    "AI-PRG-INF-SS-1": {
+      "label": "Run proof of concept on production data and real model workloads",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "demo_trial_request",
+        "technical_documentation"
+      ],
+      "phase": "diverge"
+    },
+    "AI-PRG-INF-SS-2": {
+      "label": "Issue technical platform recommendation to engineering leadership",
+      "role": "influencer",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "consensus_brief",
+        "technical_documentation"
+      ],
+      "phase": "converge"
+    },
+    "AI-ACQ-USR-SE-1": {
+      "label": "Surface friction in current data pipelines and model deployment workflows",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "use_case_page",
+        "product_tour",
+        "howto_training"
+      ],
+      "phase": "diverge",
+      "notes": "User for AI Platform is Data Analyst, BI Analyst, or Automation Analyst"
+    },
+    "AI-ACQ-USR-SE-2": {
+      "label": "Evaluate platform usability for day-to-day analytics and model work",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "solution_exploration",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_tour",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "AI-PRG-USR-SS-1": {
+      "label": "Validate that analyst workflows and self-service BI are genuinely improved",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "product_tour",
+        "use_case_page",
+        "demo_trial_request"
+      ],
+      "phase": "diverge"
+    },
+    "AI-PRG-USR-SS-2": {
+      "label": "Recommend developer onboarding and platform training milestones",
+      "role": "user",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "adoption_rollout",
+        "howto_training"
+      ],
+      "phase": "diverge"
+    },
+    "AI-ACQ-RAT-PI-1": {
+      "label": "Establish AI governance policy and model transparency requirements",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "governance_policy",
+        "security_compliance"
+      ],
+      "phase": "diverge",
+      "notes": "AI Ratifier scrutiny is heaviest around AI governance and data privacy \u2014 \u00a71d"
+    },
+    "AI-ACQ-RAT-PI-2": {
+      "label": "Identify data sovereignty, residency, and privacy requirements",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "problem_identification",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "governance_policy",
+        "legal_procurement",
+        "security_compliance"
+      ],
+      "phase": "diverge"
+    },
+    "AI-PRG-RAT-SS-1": {
+      "label": "Audit AI model explainability, bias controls, and responsible AI posture",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 1,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "governance_policy",
+        "security_compliance"
+      ],
+      "phase": "diverge",
+      "notes": "AI-specific ratifier check not present in other categories"
+    },
+    "AI-PRG-RAT-SS-2": {
+      "label": "Confirm data processing terms, SLAs, and vendor AI liability posture",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 2,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "legal_procurement",
+        "risk_mitigation_plan",
+        "governance_policy"
+      ],
+      "phase": "diverge"
+    },
+    "AI-PRG-RAT-SS-3": {
+      "label": "Final sign-off \u2014 AI platform meets enterprise AI ethics and compliance bar",
+      "role": "ratifier",
+      "opportunity_type": "acquisition",
+      "buying_job": "supplier_selection",
+      "sequence": 3,
+      "solution_categories": [
+        "ai_platform"
+      ],
+      "coverage_status": "constructed",
+      "content_types": [
+        "executive_brief",
+        "governance_policy",
+        "risk_mitigation_plan"
+      ],
+      "phase": "converge"
+    }
+  }
+}

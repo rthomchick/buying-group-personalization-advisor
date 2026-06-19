@@ -1,0 +1,19 @@
+{
+  "_table": "SCORING_RULES",
+  "_source": "knowledge/data-model/kalder_data_model.py",
+  "_data_model_version": "0.2.0",
+  "data": {
+    "minimum_cumulative_score": 25,
+    "minimum_role_differential": 10,
+    "firmographic_confirmation_bonus": 30,
+    "firmographic_bonus_requires_minimum_behavioral_score": 15,
+    "minimum_session_duration_seconds": 60,
+    "minimum_page_views_for_signals": 2,
+    "single_page_minimum_seconds": 30,
+    "minimum_signal_diversity_for_high": 2,
+    "behavioral_only_confidence_ceiling": "medium",
+    "score_clamp_floor": 0,
+    "score_clamp_ceiling": 100,
+    "re_scoring_note": "Section-isolated re-scoring: when re-evaluating after content updates, carry forward original scores for unchanged signal types to prevent drift."
+  }
+}

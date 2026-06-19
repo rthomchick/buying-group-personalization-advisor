@@ -1,0 +1,219 @@
+{
+  "_table": "MODULE_TYPES",
+  "_source": "knowledge/data-model/kalder_data_model.py",
+  "_data_model_version": "0.2.0",
+  "data": {
+    "hero": {
+      "label": "Hero",
+      "description": "Primary banner section at top of page. Headline, subhead, imagery, and primary CTA as a unified section.",
+      "granularity_pattern": "A",
+      "pattern_name": "Section-Level",
+      "personalisation_axes": [
+        "role",
+        "confidence_tier",
+        "solution_category"
+      ],
+      "intended_axes": [
+        "role",
+        "solution_category",
+        "confidence_tier"
+      ],
+      "omitted_axes_rationale": {
+        "buying_job": "Hero provides stage-generic orientation; buying job variation is handled by cta and gated_assets modules",
+        "bg_stage": "Hero does not vary by pipeline stage \u2014 stage-level personalization handled by campaign cohort targeting upstream"
+      }
+    },
+    "benefits": {
+      "label": "Benefits",
+      "description": "Key value proposition or benefits cards. Typically 3-4 cards authored and swapped as a complete set.",
+      "granularity_pattern": "A",
+      "pattern_name": "Section-Level",
+      "personalisation_axes": [
+        "role",
+        "solution_category"
+      ],
+      "intended_axes": [
+        "role",
+        "solution_category"
+      ],
+      "omitted_axes_rationale": {
+        "buying_job": "Benefits section is stage-stable; buying job variation handled by gated_assets",
+        "confidence_tier": "Benefits render regardless of confidence level \u2014 no confidence gate applied",
+        "bg_stage": "Benefits copy does not vary by pipeline stage"
+      }
+    },
+    "cta": {
+      "label": "CTA",
+      "description": "Call-to-action block. Conversion-oriented. Confidence-split: HIGH confidence receives direct CTA; MEDIUM receives educational CTA.",
+      "granularity_pattern": "A",
+      "pattern_name": "Section-Level",
+      "personalisation_axes": [
+        "role",
+        "confidence_tier",
+        "buying_job"
+      ],
+      "intended_axes": [
+        "role",
+        "confidence_tier",
+        "buying_job"
+      ],
+      "omitted_axes_rationale": {
+        "solution_category": "CTA varies by role and buying job, not solution category \u2014 solution context is set by the page, not the module",
+        "bg_stage": "bg_stage is an account-level signal; CTA operates at visitor/session level"
+      }
+    },
+    "featured_solutions": {
+      "label": "Featured Solutions",
+      "description": "Container heading plus solution spotlights (typically 3), personalised as a complete set per role.",
+      "granularity_pattern": "A",
+      "pattern_name": "Section-Level",
+      "personalisation_axes": [
+        "role",
+        "solution_category"
+      ],
+      "intended_axes": [
+        "role",
+        "solution_category"
+      ],
+      "omitted_axes_rationale": {
+        "buying_job": "Solution spotlight selection is role-driven, not job-driven \u2014 job-level filtering happens in gated_assets",
+        "confidence_tier": "Featured solutions display regardless of confidence tier"
+      }
+    },
+    "perspectives": {
+      "label": "Perspectives",
+      "description": "Expert and customer perspectives. Quotes, testimonials, toggle behaviour. Trust narrative section.",
+      "granularity_pattern": "A",
+      "pattern_name": "Section-Level",
+      "personalisation_axes": [
+        "role",
+        "solution_category",
+        "industry"
+      ],
+      "intended_axes": [
+        "role",
+        "solution_category",
+        "industry"
+      ],
+      "omitted_axes_rationale": {
+        "buying_job": "Proof and perspectives are stage-stable social proof; job-level variation handled by gated_assets",
+        "confidence_tier": "Perspectives render at all confidence tiers \u2014 trust-building is appropriate even at LOW"
+      }
+    },
+    "gated_assets": {
+      "label": "Gated Assets",
+      "description": "Gated asset recommendation cards. Dynamic assembly: layout shell with content graph query filtered by role, stage, and JTBD.",
+      "granularity_pattern": "C",
+      "pattern_name": "Dynamic Assembly",
+      "personalisation_axes": [
+        "role",
+        "confidence_tier",
+        "buying_job",
+        "campaign_cohort"
+      ],
+      "intended_axes": [
+        "role",
+        "confidence_tier",
+        "buying_job",
+        "campaign_cohort"
+      ],
+      "omitted_axes_rationale": {
+        "solution_category": "Solution context is set by the page surface; gated_assets queries content graph using page-level solution context, not as a separate axis"
+      }
+    },
+    "resource_crosslinks": {
+      "label": "Resource Crosslinks",
+      "description": "Resource mosaic cards. Related content filtered by role, cohort, and content format from content graph.",
+      "granularity_pattern": "C",
+      "pattern_name": "Dynamic Assembly",
+      "personalisation_axes": [
+        "role",
+        "campaign_cohort",
+        "content_type"
+      ],
+      "intended_axes": [
+        "role",
+        "campaign_cohort",
+        "content_type"
+      ],
+      "omitted_axes_rationale": {
+        "buying_job": "Resource crosslinks are role and stage cohort driven; buying job inference adds noise at the mosaic level",
+        "confidence_tier": "Crosslinks render at all confidence tiers \u2014 ungated resource discovery is appropriate before role is confirmed"
+      }
+    },
+    "product_card": {
+      "label": "Product Card",
+      "description": "Individual product highlight card within a product group. Emphasises role-relevant features.",
+      "granularity_pattern": "B",
+      "pattern_name": "Component-Level",
+      "personalisation_axes": [
+        "role"
+      ],
+      "intended_axes": [
+        "role"
+      ],
+      "omitted_axes_rationale": {
+        "solution_category": "Product card is scoped to a single product; solution_category is implicit in card context",
+        "buying_job": "Feature emphasis is role-driven; buying job variation would require card-level copy permutations not warranted at component level",
+        "confidence_tier": "Product card displays regardless of confidence \u2014 it is a product fact card, not a CTA"
+      }
+    },
+    "navigation": {
+      "label": "Navigation",
+      "description": "Contextual navigation links and related solution recommendations personalised per role.",
+      "granularity_pattern": "B",
+      "pattern_name": "Component-Level",
+      "personalisation_axes": [
+        "role",
+        "solution_category"
+      ],
+      "intended_axes": [
+        "role",
+        "solution_category"
+      ],
+      "omitted_axes_rationale": {
+        "buying_job": "Navigation structure is role-driven; adding buying_job axis would require session-level nav recomposition that risks disorientation",
+        "confidence_tier": "Navigation renders at all confidence tiers \u2014 wayfinding is always helpful"
+      }
+    },
+    "logo_farm": {
+      "label": "Logo Farm",
+      "description": "Customer logo grid. Dynamic assembly: layout shell with content graph pool filtered by industry and solution.",
+      "granularity_pattern": "C",
+      "pattern_name": "Dynamic Assembly",
+      "personalisation_axes": [
+        "industry",
+        "solution_category"
+      ],
+      "intended_axes": [
+        "industry",
+        "solution_category"
+      ],
+      "omitted_axes_rationale": {
+        "role": "Logo farm is proof by industry and solution, not role \u2014 the same proof set is relevant across roles",
+        "buying_job": "Customer proof selection is industry and solution driven; buying job filtering would over-narrow the pool",
+        "confidence_tier": "Logo farms render at all confidence tiers"
+      }
+    },
+    "testimonial": {
+      "label": "Testimonial",
+      "description": "Customer quote or case study card. Dynamic: card template with content graph pool filtered by role and industry.",
+      "granularity_pattern": "C",
+      "pattern_name": "Dynamic Assembly",
+      "personalisation_axes": [
+        "role",
+        "industry",
+        "solution_category"
+      ],
+      "intended_axes": [
+        "role",
+        "industry",
+        "solution_category"
+      ],
+      "omitted_axes_rationale": {
+        "buying_job": "Testimonial selection is role and industry driven; job-level testimonial permutations would require more content than is available at launch",
+        "confidence_tier": "Testimonials render at all confidence tiers \u2014 social proof is appropriate before role is confirmed"
+      }
+    }
+  }
+}

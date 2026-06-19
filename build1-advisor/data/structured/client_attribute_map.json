@@ -1,0 +1,295 @@
+{
+  "_table": "CLIENT_ATTRIBUTE_MAP",
+  "_source": "knowledge/data-model/kalder_data_model.py",
+  "_data_model_version": "0.2.0",
+  "data": {
+    "tal_member": {
+      "plane": "account",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "Salesforce CRM \u2192 AEP account profile via Kafka streaming pipeline",
+      "null_behavior": "If absent, visitor is treated as non-TAL; no personalization above Level 5 activates",
+      "onboarding_required": true
+    },
+    "tal_program_status": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "active_prospect / post_sale / out_of_program",
+      "source_pipeline": "AEP pipeline (derived from Salesforce account type via Kafka)",
+      "null_behavior": "If null, visitor is treated as out_of_program; no personalization above Level 5 activates",
+      "onboarding_required": true
+    },
+    "tal_upsell_override_active": {
+      "plane": "account",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "Salesforce via Kafka pipeline or manual override",
+      "null_behavior": "If null, treated as false; no upsell experience activates",
+      "onboarding_required": true
+    },
+    "tal_solution_interest_flags": {
+      "plane": "account",
+      "type": "list",
+      "allowed_values": "Array of solution category keys: it_operations / customer_engagement / employee_experience / risk_compliance / ai_platform",
+      "source_pipeline": "AEP pipeline (aggregated from behavioral signals across scoring window)",
+      "null_behavior": "If null or empty array, no solution-specific Level 4 personalization activates; visitor routes to brand-level Level 4 or Level 5",
+      "onboarding_required": false
+    },
+    "tal_region": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "Salesforce account region value (client-specific enumeration)",
+      "source_pipeline": "Salesforce account record via Kafka",
+      "null_behavior": "If null, regional campaign assignment is skipped; visitor receives non-regional content",
+      "onboarding_required": true
+    },
+    "tal_marquee": {
+      "plane": "account",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "Salesforce account record via Kafka",
+      "null_behavior": "If null, treated as false; standard content inventory allocation applies",
+      "onboarding_required": true
+    },
+    "tal_open_pipeline": {
+      "plane": "account",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "Salesforce account record via Kafka",
+      "null_behavior": "If null, treated as false; SDR activation eligibility not extended",
+      "onboarding_required": true
+    },
+    "tal_channel": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "direct / msp / partner",
+      "source_pipeline": "Salesforce account record via Kafka",
+      "null_behavior": "If null, channel routing falls back to direct; Outreach sequence selection uses direct-channel variant",
+      "onboarding_required": true
+    },
+    "tal_new_logo_eligible": {
+      "plane": "account",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "Salesforce CRM via Kafka streaming pipeline",
+      "null_behavior": "If null, treated as false; acquisition personalization is suppressed; visitor receives standard non-acquisition experience",
+      "onboarding_required": true
+    },
+    "tal_account_domain": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "Domain URL string (e.g. kalder.com)",
+      "source_pipeline": "Salesforce CRM via Kafka streaming pipeline",
+      "null_behavior": "If null, Demandbase reverse-IP matching cannot execute for this account; visitor routes to Level 5 until the domain is populated",
+      "onboarding_required": true
+    },
+    "tal_last_refreshed_at": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "ISO 8601 UTC timestamp string",
+      "source_pipeline": "Kafka pipeline (written on every successful Salesforce CRM sync event)",
+      "null_behavior": "If null, staleness check cannot execute; operational monitoring alert fires; treated as a data pipeline error",
+      "onboarding_required": false
+    },
+    "tal_account_type_source": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "suspect / prospect / customer / customer_via_partner / customer_subsidiary",
+      "source_pipeline": "Salesforce CRM via Kafka streaming pipeline",
+      "null_behavior": "If null, tal_program_status computation cannot execute; account remains unclassified; no personalization above Level 5",
+      "onboarding_required": true
+    },
+    "bg_cohort": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "education / acquisition / progression_early_to_mature / progression_win_now",
+      "source_pipeline": "AEP pipeline (computed from bg_stage, sfdc_opportunity_stage, and account-level signals per Document 3, Section 2)",
+      "null_behavior": "If null, cohort assignment is pending; account receives education treatment until pipeline assigns a cohort value",
+      "onboarding_required": false
+    },
+    "bg_stage": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "targeted / engaged / prioritized / qualified",
+      "source_pipeline": "AEP pipeline (computed from account-level engagement signals and Salesforce opportunity state per Document 3, Section 2)",
+      "null_behavior": "If null, visitor is treated as targeted; minimum personalization depth applies for TAL-identified accounts",
+      "onboarding_required": false
+    },
+    "sfdc_opportunity_created": {
+      "plane": "account",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "Salesforce CRM via Kafka streaming pipeline (opportunity creation event triggers write)",
+      "null_behavior": "If null, treated as false; qualified stage assignment is not triggered",
+      "onboarding_required": true
+    },
+    "sfdc_opportunity_stage": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "Salesforce opportunity stage value (client-specific enumeration; maps to progression_early_to_mature or progression_win_now cohort)",
+      "source_pipeline": "Salesforce CRM via Kafka streaming pipeline",
+      "null_behavior": "If null, all qualified accounts are treated as progression_early_to_mature until the Kafka sfdc_opportunity_stage pipeline is confirmed per Document 8 Section 7",
+      "onboarding_required": true
+    },
+    "sfdc_opportunity_stage_stale": {
+      "plane": "account",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "AEP pipeline (staleness flag; set when sfdc_opportunity_stage has not been updated within 24-hour SLA threshold)",
+      "null_behavior": "If null, treated as false; staleness is not assumed; pipeline continues to use available sfdc_opportunity_stage value",
+      "onboarding_required": false
+    },
+    "contact_engagement_event_count_180d": {
+      "plane": "account",
+      "type": "int",
+      "allowed_values": "0 to unbounded; qualifying threshold defined in Document 3, Section 2 stage transition rules",
+      "source_pipeline": "Segment event aggregation (rolling 180-day count of qualifying engagement events, keyed to account)",
+      "null_behavior": "If null or zero, account remains at targeted stage; targeted \u2192 engaged transition does not fire",
+      "onboarding_required": false
+    },
+    "hand_raiser_event": {
+      "plane": "account",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "Segment event pipeline (set on qualifying hand-raiser event per Document 3, Section 2 trigger conditions)",
+      "null_behavior": "If null, treated as false; engaged \u2192 prioritized transition does not fire",
+      "onboarding_required": false
+    },
+    "bg_health_single_eb_elevated": {
+      "plane": "account",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "AEP pipeline annotation (derived from inspection of contact-plane engagement scores; set when a single Economic Buyer is at HIGH_ENGAGEMENT with no other members at MEDIUM_ENGAGEMENT or above)",
+      "null_behavior": "If null, treated as false; no guard rail behavior activates; standard experience applies",
+      "onboarding_required": false
+    },
+    "primary_solution_interest": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "it_operations / customer_engagement / employee_experience / risk_compliance / ai_platform / null",
+      "source_pipeline": "AEP pipeline (computed from tal_solution_interest_flags; ranking logic selects solution category with highest aggregate signal weight across rolling 180-day window)",
+      "null_behavior": "If null: progressive_disclosure slot falls back to cross-category brand prompt at Level 4; Level 4 solution-category coverage evaluation falls back to tal_solution_interest_flags. Null means uncomputed, not empty.",
+      "onboarding_required": false
+    },
+    "solution_category_coverage_status": {
+      "plane": "account",
+      "type": "str",
+      "allowed_values": "below_level_1 / level_1 / level_2 / level_3 (per COVERAGE_STATUS_HIERARCHY, Document 4 Section 7.2)",
+      "source_pipeline": "Coverage tracking pipeline (writes computed value to AEP account profile per solution category on Sanity webhook trigger per Document 4, Section 8.5)",
+      "null_behavior": "If null for a given solution category, that category is treated as below_level_1; pending_solution_fallback behavior activates for visitors with interest in that category",
+      "onboarding_required": false
+    },
+    "visitor_consent_state": {
+      "plane": "contact",
+      "type": "str",
+      "allowed_values": "full / functional_only / declined",
+      "source_pipeline": "Consent management platform via AEP (consent events ingested by AEP and written to visitor profile)",
+      "null_behavior": "If null or absent, treat as declined \u2014 no signal collection, no scoring, Level 5 experience. Do not default to functional_only on null.",
+      "onboarding_required": true
+    },
+    "buying_job_confirmed": {
+      "plane": "contact",
+      "type": "str",
+      "allowed_values": "problem_identification / solution_exploration / requirements_building / supplier_selection / null",
+      "source_pipeline": "Zero-party declaration via progressive disclosure prompt response; written by Segment event pipeline via AEP Edge Network streaming ingestion",
+      "null_behavior": "If null, KNOWN state is not active; scoring falls back to Tier 3 behavioral inference; buying_job_inferred governs",
+      "onboarding_required": false
+    },
+    "buying_job_inferred": {
+      "plane": "contact",
+      "type": "str",
+      "allowed_values": "problem_identification / solution_exploration / requirements_building / supplier_selection / null",
+      "source_pipeline": "Tier 3 behavioral inference via AEP scoring pipeline (signal weight aggregation per Document 2, Section 7)",
+      "null_behavior": "If null, INFERRED state is not active; three-axis content selection falls back to two-axis; per-module-type deterministic fallback rules apply per Document 5, Section 2.5",
+      "onboarding_required": false
+    },
+    "role_confidence_score": {
+      "plane": "contact",
+      "type": "int",
+      "allowed_values": "0\u2013100; set to 100 when Tier 1 ML classifier governs",
+      "source_pipeline": "Tier 3 behavioral scoring engine (\u00a712 SCORING_RULES)",
+      "null_behavior": "If null, confidence_tier defaults to UNKNOWN; scoring pipeline has not yet run for this composite key",
+      "onboarding_required": false
+    },
+    "role_classification": {
+      "plane": "contact",
+      "type": "str",
+      "allowed_values": "champion / economic_buyer / influencer / user / ratifier / default",
+      "source_pipeline": "Composite: Tier 1 ML classifier, Tier 2 zero-party self-identification, or Tier 3 behavioral scoring per authority adjudication rules in Document 2, Section 9",
+      "null_behavior": "If null or default, Level 3 or below applies; role-specific content is not served; default is the valid pre-classification value, not an error state",
+      "onboarding_required": false
+    },
+    "confidence_tier": {
+      "plane": "contact",
+      "type": "str",
+      "allowed_values": "HIGH / MEDIUM / LOW / UNKNOWN",
+      "source_pipeline": "AEP scoring pipeline (\u00a73 CONFIDENCE_TIERS tier assignment after full scoring sequence per Document 2, Section 5)",
+      "null_behavior": "If null, treated as UNKNOWN; Level 3 or below applies; pre-pipeline gate has not yet evaluated this contact",
+      "onboarding_required": false
+    },
+    "differential_insufficient": {
+      "plane": "contact",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "AEP scoring pipeline (set when top-scoring role leads second-highest-scoring role by fewer than 10 points; score capped at 49 when set; see Document 2, Section 5)",
+      "null_behavior": "If null, treated as false; Priority 0 override is not active; standard fallback level routing applies",
+      "onboarding_required": false
+    },
+    "fallback_level": {
+      "plane": "contact",
+      "type": "int",
+      "allowed_values": "1 / 2 / 3 / 4 / 5",
+      "source_pipeline": "AEP scoring pipeline (derived from confidence_tier + solution interest signal per Document 2, Section 8.8 routing sequence; real-time recomputation triggered by role_classification_zero_party write events)",
+      "null_behavior": "If null, Target defaults to Level 5 brand experience; scoring pipeline has not yet assigned a fallback level for this composite key",
+      "onboarding_required": false
+    },
+    "classification_mismatch": {
+      "plane": "contact",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "AEP scoring pipeline (set when Tier 1 ML classifier role and Tier 3 behavioral top-scoring role disagree per Document 2, Section 9)",
+      "null_behavior": "If null, treated as false; no mismatch flag is active; data quality alert does not fire",
+      "onboarding_required": false
+    },
+    "solution_category": {
+      "plane": "contact",
+      "type": "str",
+      "allowed_values": "it_operations / customer_engagement / employee_experience / risk_compliance / ai_platform",
+      "source_pipeline": "Established at signal collection time by the AEP event pipeline; forms the second component of the (contact_id, solution_category) composite key",
+      "null_behavior": "If null, contact-plane classification cannot execute; composite key is not resolvable; visitor routes to account-plane experience (Level 4 or Level 5)",
+      "onboarding_required": false
+    },
+    "stitching_pending": {
+      "plane": "contact",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "AEP identity resolution pipeline (set during anonymous-to-known contact promotion; transitional state; 24-hour SLA before Data team alert fires)",
+      "null_behavior": "If null, treated as false; identity stitching is not in progress; contact-plane attributes are authoritative",
+      "onboarding_required": false
+    },
+    "holdback_group": {
+      "plane": "contact",
+      "type": "bool",
+      "allowed_values": "true / false",
+      "source_pipeline": "AEP identity resolution pipeline (set at first TAL identification using deterministic hash assignment; permanent for pre-sale lifecycle; carries forward from anonymous to identified contact on identity stitching)",
+      "null_behavior": "If null, treated as false (visitor is not in holdback; receives personalization). When true: visitor receives Level 5 default brand experience only; progressive_disclosure slot is architecturally suppressed regardless of offer catalog state.",
+      "onboarding_required": false
+    },
+    "role_classification_zero_party": {
+      "plane": "contact",
+      "type": "str",
+      "allowed_values": "champion / economic_buyer / influencer / user / ratifier / null",
+      "source_pipeline": "Segment event pipeline via AEP Edge Network streaming ingestion on progressive disclosure prompt response",
+      "null_behavior": "If null, no zero-party role declaration has been received; behavioral classification (role_classification) governs",
+      "onboarding_required": false
+    },
+    "confidence_tier_minimum": {
+      "plane": "content",
+      "type": "str",
+      "allowed_values": "HIGH / MEDIUM / LOW / UNKNOWN",
+      "source_pipeline": "Set by human reviewer at Stage R3 of the Document 4 commissioning workflow; stored as a field on the Sanity Content Module node and Asset node",
+      "null_behavior": "If null on an Asset or Content Module node, the content node is ineligible for serving until confidence_tier_minimum is set by a human reviewer. A null value is a commissioning-incomplete state, not a default-to-all-levels state.",
+      "onboarding_required": true
+    }
+  }
+}

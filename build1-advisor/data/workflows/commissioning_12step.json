@@ -1,0 +1,141 @@
+{
+  "_comment": "PLACEHOLDER CONTENT — schema shape only. This workflow is available in the POC but is not the primary demo path (knowledge/specs/kalder_layer2_developer_brief.md: 'Content node commissioning (12 steps): available; not primary demo path'). Step titles below are grounded in the real Document 8 Section 3 phase/gate structure (Diverge Content Commissioning Workflow) so the corpus_authority references are not fabricated, but input_required/validation_rule/flag_trigger/hold_trigger/deferral_consequence/why_this_matters fields are placeholders pending full step-level specification. Do not treat as locked content.",
+  "workflow_id": "content_commissioning_12step",
+  "workflow_title": "Content Node Commissioning",
+  "total_steps": 12,
+  "data_model_version": "0.2.0",
+  "steps": [
+    {
+      "step_id": 1,
+      "step_title": "Sprint Planning — Coverage Gap Query",
+      "corpus_authority": "Document 8 §3.2",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 2,
+      "step_title": "Sprint Planning — Node List Lock",
+      "corpus_authority": "Document 8 §3.2",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 3,
+      "step_title": "Phase 1 Prerequisite — Gate 1 Narrative Node Check",
+      "corpus_authority": "Document 8 §3.3 Gate 1",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 4,
+      "step_title": "Phase 1 Prerequisite — Gate 2 Audience Node Check",
+      "corpus_authority": "Document 8 §3.3 Gate 2",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 5,
+      "step_title": "Phase 1 Prerequisite — Gate 3 JTBD Node Check",
+      "corpus_authority": "Document 8 §3.3 Gate 3",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 6,
+      "step_title": "Phase 1 Prerequisite — Gate 4 Supporting Claims Seeding",
+      "corpus_authority": "Document 8 §3.3 Gate 4",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 7,
+      "step_title": "Phase 1: Generate — Kalder Compose Invocation",
+      "corpus_authority": "Document 8 §3.4",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 8,
+      "step_title": "Phase 2: Review — Editorial Pass",
+      "corpus_authority": "Document 8 §3.5",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 9,
+      "step_title": "Phase 2: Review — confidence_tier_minimum Assignment",
+      "corpus_authority": "Document 8 §3.5",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 10,
+      "step_title": "Phase 3: Approve — Status Transition",
+      "corpus_authority": "Document 8 §3.6",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 11,
+      "step_title": "Phase 4: Publish/Sync — Sanity-to-Target Sync Confirmation",
+      "corpus_authority": "Document 8 §3.7",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    },
+    {
+      "step_id": 12,
+      "step_title": "Sprint Closure",
+      "corpus_authority": "Document 8 §3.10",
+      "input_required": "PLACEHOLDER",
+      "validation_rule": "PLACEHOLDER",
+      "flag_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "hold_trigger": { "code": "PLACEHOLDER", "condition": "PLACEHOLDER" },
+      "deferral_consequence": "PLACEHOLDER",
+      "why_this_matters": "PLACEHOLDER"
+    }
+  ]
+}

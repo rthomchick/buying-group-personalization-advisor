@@ -1,0 +1,40 @@
+{
+  "_table": "DECAY_MULTIPLIERS",
+  "_source": "knowledge/data-model/kalder_data_model.py",
+  "_data_model_version": "0.2.0",
+  "data": {
+    "current_session": {
+      "multiplier": 1.5,
+      "window": "Current session",
+      "description": "Strongest indicator of current intent. Real-time personalisation decisions."
+    },
+    "last_90_days": {
+      "multiplier": 1.0,
+      "window": "Last 90 days",
+      "description": "Current and reliable role behavior indicators (baseline).",
+      "bg_stage_alignment": "Prioritized stage: 2+ members engaged in last 90 days"
+    },
+    "91_to_180_days": {
+      "multiplier": 0.7,
+      "window": "91-180 days",
+      "description": "Still contributes but discounted. Role and intent may have evolved.",
+      "bg_stage_alignment": "ML classifier engagement window boundary (180 days)"
+    },
+    "over_180_days": {
+      "multiplier": 0.0,
+      "window": "> 180 days",
+      "description": "Historical context only. Does not contribute to role scores.",
+      "bg_stage_alignment": "ML classifier excludes activity beyond 180 days"
+    },
+    "anonymous_visitor_long_decay": {
+      "multiplier": 0.2,
+      "window": "181\u2013365 days",
+      "applies_to": "anonymous_unidentified_only",
+      "description": "Preserves weak signal continuity for return anonymous visitors. Does not apply to CRM-confirmed contacts, where over_180_days: 0.0 stands.",
+      "identity_transition_behavior": {
+        "rule": "rescore_on_identification",
+        "description": "When an anonymous visitor with 181\u2013365 day signal history becomes identified (via progressive disclosure or CRM match), historical signals in this window are rescored using the identified-visitor rules \u2014 which apply over_180_days: 0.0. The anonymous_visitor_long_decay multiplier does not persist after identification. This prevents weak anonymous signal history from inflating the identified-visitor role score."
+      }
+    }
+  }
+}

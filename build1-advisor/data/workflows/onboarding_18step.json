@@ -1,0 +1,365 @@
+{
+  "_comment": "Canonical 18-step onboarding workflow. Source: knowledge/specs/kalder_onboarding_workflow_18step_spec.md. Every field below is transcribed directly from that spec — do not infer or alter without updating the source spec first.",
+  "workflow_id": "onboarding_18step",
+  "workflow_title": "New Solution Category Onboarding",
+  "total_steps": 18,
+  "data_model_version": "0.2.0",
+  "steps": [
+    {
+      "step_id": 1,
+      "phase": 1,
+      "step_title": "tal_domain",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → tal_domain; Document 3 Section 1.2",
+      "attribute": "tal_domain",
+      "input_required": "Client provides the account domain string (e.g., synthco.com)",
+      "validation_rule": "Must be a non-empty string; must match the domain used in Salesforce CRM account records; Demandbase reverse-IP matching depends on this value",
+      "why_this_matters": "If tal_domain is missing, Demandbase reverse-IP matching cannot execute for this account. Anonymous visitors browsing from this account's office will not be identified as TAL members and will route to Level 5 default experience until the domain is populated. Every Level 4 and above experience for anonymous visitors at this account depends on this field.",
+      "hold_triggers": [
+        { "code": "H-01", "condition": "Fires if tal_domain is null or empty at step submission. Resolution: practitioner enters the domain string and confirms. onboarding_required: True — cannot advance without this value." }
+      ],
+      "flag_triggers": [],
+      "deferral_consequence": "If deferred — anonymous visitor identification via Demandbase reverse-IP is suppressed for this account. No personalization above Level 5 activates for anonymous visitors.",
+      "category": "A"
+    },
+    {
+      "step_id": 2,
+      "phase": 1,
+      "step_title": "tal_member",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → tal_member; Document 3 Section 1.1",
+      "attribute": "tal_member",
+      "input_required": "Confirmation that the account is confirmed in the TAL (true)",
+      "validation_rule": "Must be true or false; only true accounts proceed through onboarding; false value triggers advisory prompt",
+      "why_this_matters": "If tal_member is false or absent, this account receives no personalization above Level 5. TAL membership is the primary gate for all program activity — every scoring, classification, and content selection decision downstream depends on this flag being true.",
+      "hold_triggers": [
+        { "code": "H-01", "condition": "Fires if value is null." },
+        { "code": "H-02", "condition": "Fires if value is outside [true, false]." }
+      ],
+      "flag_triggers": [
+        { "code": "F-01", "condition": "Fires if practitioner sets tal_member: false (deviates from the expected state for an account being onboarded; Advisor prompts confirmation that onboarding should proceed for a non-TAL account).", "consequence": "Advisor prompts confirmation that onboarding should proceed for a non-TAL account." }
+      ],
+      "deferral_consequence": "Cannot be deferred. tal_member is a Category A blocking input. If false, onboarding should not proceed.",
+      "category": "A"
+    },
+    {
+      "step_id": 3,
+      "phase": 1,
+      "step_title": "tal_account_type_source",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → tal_account_type_source; Document 8 Section 11.2 Item 4",
+      "attribute": "tal_account_type_source",
+      "input_required": "Client provides the Salesforce account type field value; practitioner selects the mapping to canonical enum",
+      "validation_rule": "Mapping-table validation required. Input must resolve to one of: suspect / prospect / customer / customer_via_partner / customer_subsidiary. Free-text entry not accepted — practitioner selects from mapping table.",
+      "why_this_matters": "If tal_account_type_source is null, tal_program_status computation cannot execute. The account remains unclassified and receives no personalization above Level 5. This field is the upstream Salesforce type that tells the program whether this account is a prospect, an existing customer, or a partner-referred account — which determines which personalization treatment applies.",
+      "hold_triggers": [
+        { "code": "H-01", "condition": "Fires if null." },
+        { "code": "H-02", "condition": "Fires if the entered value does not resolve through the mapping table to a valid canonical enum value." }
+      ],
+      "flag_triggers": [
+        { "code": "F-06", "condition": "Fires if practitioner overrides the Advisor-suggested mapping with a different canonical value (Advisor derives suggested mapping from Salesforce field; override is logged).", "consequence": "Override is logged." }
+      ],
+      "deferral_consequence": "If deferred — tal_program_status computation is blocked. Account receives no personalization above Level 5 until resolved.",
+      "category": "A",
+      "validation_type": "mapping_table"
+    },
+    {
+      "step_id": 4,
+      "phase": 2,
+      "step_title": "tal_program_status",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → tal_program_status; Document 3 Section 1.2",
+      "attribute": "tal_program_status",
+      "input_required": "Confirm the account's current program status; select from mapping table",
+      "validation_rule": "Mapping-table validation required. Must resolve to: active_prospect / post_sale / out_of_program. Only active_prospect accounts proceed to full personalization. post_sale accounts receive upsell treatment path. out_of_program accounts receive no personalization.",
+      "why_this_matters": "If tal_program_status is null, this account is treated as out-of-program. No personalization above Level 5 activates. The program status determines the entire treatment path — acquisition personalization, upsell personalization, or suppression.",
+      "hold_triggers": [
+        { "code": "H-01", "condition": "Fires if null." },
+        { "code": "H-02", "condition": "Fires if value does not resolve through mapping table to a valid canonical enum." }
+      ],
+      "flag_triggers": [
+        { "code": "F-01", "condition": "Fires if practitioner sets post_sale (program behavior shifts to upsell path; Advisor describes scope change).", "consequence": "Program behavior shifts to upsell path; Advisor describes scope change." },
+        { "code": "F-01", "condition": "Fires if practitioner sets out_of_program (personalization is fully suppressed; Advisor confirms intent).", "consequence": "Personalization is fully suppressed; Advisor confirms intent." }
+      ],
+      "deferral_consequence": "Cannot be meaningfully deferred — program status is required for all downstream routing.",
+      "category": "A",
+      "validation_type": "mapping_table"
+    },
+    {
+      "step_id": 5,
+      "phase": 2,
+      "step_title": "tal_region",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → tal_region; Document 3 Section 7; Document 8 Section 11.2 Item 4",
+      "attribute": "tal_region",
+      "input_required": "Client provides the complete region value enumeration from their Salesforce account schema; practitioner confirms at least one value is supplied",
+      "validation_rule": "Structural validation only — at least one value must be supplied. Content validation is not performed (client region names are client-specific). Value is stored as provided.",
+      "why_this_matters": "If tal_region is null, regional campaign assignment is skipped for this account. The visitor receives non-regional content — they may receive content campaigns designed for a different market. For accounts in EMEA or APAC, this may also affect consent behavior if regional consent rules differ.",
+      "hold_triggers": [
+        { "code": "H-01", "condition": "Fires if no region value is supplied (structural validation: at least one value required)." }
+      ],
+      "flag_triggers": [
+        { "code": "F-04", "condition": "Fires if tal_region value appears to be in a GDPR jurisdiction (EU/UK/EEA country names detected); Advisor notes that GDPR jurisdiction is determined by visitor IP address at runtime, not by tal_region — this is informational, not a blocking condition.", "consequence": "Informational only — not a blocking condition. GDPR jurisdiction is determined by visitor IP address at runtime, not by tal_region." }
+      ],
+      "deferral_consequence": "If deferred — regional campaign assignment is suppressed. Visitor receives non-regional content. Scope reduction is moderate.",
+      "category": "B"
+    },
+    {
+      "step_id": 6,
+      "phase": 2,
+      "step_title": "tal_marquee",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → tal_marquee",
+      "attribute": "tal_marquee",
+      "input_required": "Confirm whether this account is a marquee (priority tier) account (true / false)",
+      "validation_rule": "Must be true or false",
+      "why_this_matters": "If tal_marquee is null, it is treated as false and standard content inventory allocation applies. Marquee accounts receive priority content commissioning and elevated personalization investment. If this account qualifies for marquee status and the flag is missing, it will receive standard treatment until corrected.",
+      "hold_triggers": [
+        { "code": "H-02", "condition": "Fires if value is outside [true, false]." }
+      ],
+      "flag_triggers": [
+        { "code": "F-02", "condition": "Fires if practitioner sets false for an account that Advisor identifies as likely marquee-eligible based on account size or TAL tier indicators.", "consequence": "Standard content inventory allocation applies; marquee content investment is not triggered." }
+      ],
+      "deferral_consequence": "If deferred — treated as false. Standard allocation applies.",
+      "category": "B"
+    },
+    {
+      "step_id": 7,
+      "phase": 2,
+      "step_title": "tal_channel",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → tal_channel; Document 8 Section 6.9",
+      "attribute": "tal_channel",
+      "input_required": "Client confirms the channel designation for this account; practitioner selects from direct / msp / partner",
+      "validation_rule": "Must be one of direct / msp / partner. Client confirms which Salesforce field holds the channel designation.",
+      "why_this_matters": "If tal_channel is null, channel routing falls back to direct. An MSP or partner account with no channel value will receive the direct-channel Outreach sequence — which may be inappropriate for the channel relationship. Sales activation alerts will route to the wrong team.",
+      "hold_triggers": [
+        { "code": "H-01", "condition": "Fires if null." },
+        { "code": "H-02", "condition": "Fires if value is outside [direct, msp, partner]." }
+      ],
+      "flag_triggers": [
+        { "code": "F-05", "condition": "Fires if msp or partner is selected but no channel-variant Outreach sequence has been confirmed configured.", "consequence": "Sales activation will fall back to direct routing until channel-variant sequences are configured." }
+      ],
+      "deferral_consequence": "If deferred — direct routing applies to all sales activation alerts. MSP/partner channel routing is unavailable.",
+      "category": "A"
+    },
+    {
+      "step_id": 8,
+      "phase": 3,
+      "step_title": "tal_new_logo_eligible",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → tal_new_logo_eligible",
+      "attribute": "tal_new_logo_eligible",
+      "input_required": "Confirm whether this account is eligible for acquisition (new logo) personalization (true / false)",
+      "validation_rule": "Must be true or false",
+      "why_this_matters": "If tal_new_logo_eligible is null, it is treated as false. Acquisition personalization is suppressed — the account receives standard non-acquisition experience even if it is an active prospect. For accounts where acquisition is the program goal, this field must be true.",
+      "hold_triggers": [
+        { "code": "H-02", "condition": "Fires if value is outside [true, false]." }
+      ],
+      "flag_triggers": [
+        { "code": "F-02", "condition": "Fires if practitioner sets false for a tal_program_status: active_prospect account.", "consequence": "Acquisition personalization suppressed; account receives standard (non-acquisition) experience." }
+      ],
+      "deferral_consequence": "If deferred — treated as false. Acquisition personalization suppressed.",
+      "category": "B"
+    },
+    {
+      "step_id": 9,
+      "phase": 3,
+      "step_title": "tal_open_pipeline",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → tal_open_pipeline; Document 8 Section 6",
+      "attribute": "tal_open_pipeline",
+      "input_required": "Confirm whether this account has open pipeline (true / false)",
+      "validation_rule": "Must be true or false",
+      "why_this_matters": "If tal_open_pipeline is null, it is treated as false. SDR activation eligibility is not extended to this account. If there is an active pipeline opportunity, this flag must be true for SDR-activation convergence point alerts to fire.",
+      "hold_triggers": [
+        { "code": "H-02", "condition": "Fires if value is outside [true, false]." }
+      ],
+      "flag_triggers": [
+        { "code": "F-02", "condition": "Fires if practitioner sets false for an account with sfdc_opportunity_created: true.", "consequence": "SDR activation eligibility inconsistency flagged; Advisor recommends reconciliation with Salesforce CRM state." }
+      ],
+      "deferral_consequence": "If deferred — treated as false. SDR activation eligibility not extended.",
+      "category": "B"
+    },
+    {
+      "step_id": 10,
+      "phase": 3,
+      "step_title": "sfdc_opportunity_created and sfdc_opportunity_stage",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → sfdc_opportunity_created, sfdc_opportunity_stage; Document 8 Section 8",
+      "attribute": "sfdc_opportunity_created, sfdc_opportunity_stage",
+      "input_required": "(a) Confirm whether a Salesforce opportunity exists for this account. (b) If yes, confirm the Salesforce StageName-to-integer mapping table for opportunity stage routing.",
+      "validation_rule": "sfdc_opportunity_created must be true / false. If true, the StageName mapping table must be provided — maps client's Salesforce stage names to the integer encoding [5, 6, 7] that governs progression_win_now cohort assignment. Mapping table validation required — at least one stage name must resolve to the integer range.",
+      "why_this_matters": "If sfdc_opportunity_created is null, the qualified stage assignment does not trigger. If the StageName mapping is missing or incomplete, all qualified accounts are treated as progression_early_to_mature — they never enter the progression_win_now cohort and never receive elevated-priority convergence point alerts. Late-stage deals receive the same alert priority as early-stage accounts.",
+      "hold_triggers": [
+        { "code": "H-01", "condition": "Fires if sfdc_opportunity_created: true is set but the StageName mapping table is absent." },
+        { "code": "H-05", "condition": "Fires if practitioner indicates opportunity stage routing is required but cannot provide the mapping table." }
+      ],
+      "flag_triggers": [
+        { "code": "F-03", "condition": "Fires if practitioner defers the StageName mapping.", "consequence": "progression_win_now cohort activation is blocked; all qualified accounts remain in progression_early_to_mature until mapping is provided." }
+      ],
+      "deferral_consequence": "If deferred — progression_win_now cohort is inactive. Documented as S-07 in POC simplification register. Named gap written to Configuration Gap Record.",
+      "category": "B",
+      "validation_type": "mapping_table"
+    },
+    {
+      "step_id": 11,
+      "phase": 4,
+      "step_title": "visitor_consent_state default configuration",
+      "corpus_authority": "§CA CLIENT_ATTRIBUTE_MAP → visitor_consent_state; Document 9; §P SIGNAL_CONSENT_REQUIREMENTS",
+      "attribute": "visitor_consent_state",
+      "input_required": "(a) Confirm the CMP (consent management platform) in use. (b) Confirm that the CMP delivers visitor_consent_state values to AEP before the visitor's second page load. (c) Confirm the default state for visitors who have not yet responded to the consent prompt.",
+      "validation_rule": "Default state must be declined — null or absent is never treated as functional_only. CMP delivery timing must be confirmed. Any claim that null is treated as functional_only triggers H-03.",
+      "why_this_matters": "If visitor_consent_state is null or absent, it is treated as declined — no signal collection, no scoring, Level 5 experience. This is not configurable. If the CMP does not deliver the consent state before the second page load, visitors who have consented will receive Level 5 treatment on their first session. CMP timing must be confirmed before go-live.",
+      "hold_triggers": [
+        { "code": "H-03", "condition": "Fires if practitioner claims that null consent state is treated as functional_only (this is a consent architecture violation; non-advanceable until corrected)." },
+        { "code": "H-05", "condition": "Fires if CMP identity cannot be confirmed." }
+      ],
+      "flag_triggers": [
+        { "code": "F-04", "condition": "Fires if CMP delivery timing cannot be confirmed as pre-second-page-load.", "consequence": "First-session consent misclassification risk; persistent Configuration Gap Record created." }
+      ],
+      "deferral_consequence": "Cannot be deferred. Consent architecture is a Category A blocking input for the program to operate lawfully.",
+      "category": "A"
+    },
+    {
+      "step_id": 12,
+      "phase": 4,
+      "step_title": "Track 2 signal consent status",
+      "corpus_authority": "Document 9 §P SIGNAL_CONSENT_REQUIREMENTS; Track 2 definition (Demandbase firmographic enrichment signal)",
+      "attribute": null,
+      "input_required": "(a) Declare Track 2 status: complete (DPA review done) or pending (DPA review in progress). (b) If complete, confirm DPA documentation is available.",
+      "validation_rule": "If complete is declared, DPA confirmation must be provided or referenced. Claiming complete without DPA confirmation triggers H-03. If pending, step advances with F-04 FLAG and Configuration Gap Record.",
+      "why_this_matters": "If Track 2 DPA review is pending, the firmographic bonus pathway is suppressed. Demandbase firmographic_match signal cannot contribute to role confidence scoring. Contacts who would have reached MEDIUM confidence via firmographic confirmation will remain at their Tier 3 behavioral score. This is the correct behavior — it is documented as POC Simplification S-03.",
+      "hold_triggers": [
+        { "code": "H-03", "condition": "Fires if practitioner declares Track 2 complete but cannot confirm DPA documentation exists. Non-advanceable until DPA reference is provided or status is corrected to pending." }
+      ],
+      "flag_triggers": [
+        {
+          "code": "F-04",
+          "condition": "Fires if Track 2 status is pending. This is non-blocking.",
+          "consequence": "Persistent Configuration Gap Record created: \"Track 2 DPA review pending. Firmographic bonus pathway suppressed. Demandbase firmographic_match signal inactive.\" Firmographic bonus inactive until Track 2 complete.",
+          "_note": "This F-04 FLAG produces a persistent Configuration Gap Record that is NOT cleared by practitioner acknowledgment — it persists in the audit log as an unresolved gap until Track 2 DPA review completes. Acknowledging the FLAG does not resolve the underlying gap."
+        }
+      ],
+      "deferral_consequence": "If entire step is deferred — treated as pending. Same consequence as F-04 FLAG above.",
+      "category": "B"
+    },
+    {
+      "step_id": 13,
+      "phase": 4,
+      "step_title": "Signal activation scope confirmation",
+      "corpus_authority": "§P SIGNAL_CONSENT_REQUIREMENTS; Document 2 Section 10; Document 9",
+      "attribute": null,
+      "input_required": "Confirm that all 20 behavioral signals in CROSS_ROLE_WEIGHTS are classified in SIGNAL_CONSENT_REQUIREMENTS. Advisor reads the classification from §P and surfaces any unclassified signals.",
+      "validation_rule": "All signals must have an explicit consent classification (legitimate_interest or explicit_consent_required). Unclassified signals default to functional_only treatment per PENDING_CONSENT_CLASSIFICATION_DEFAULT — this is a structural safeguard, not the practitioner's intended state. Any signal intended to operate under legitimate_interest must be explicitly classified.",
+      "why_this_matters": "Unclassified behavioral signals default to functional_only treatment. If a signal you intend to use for classification falls back to functional_only, it will not contribute to scoring for visitors who have given only functional consent. Your confidence tier distribution will be lower than expected.",
+      "hold_triggers": [],
+      "flag_triggers": [
+        { "code": "F-04", "condition": "Fires for each signal that is unclassified or has classification status pending.", "consequence": "That signal defaults to functional_only; scoring contribution reduced for non-full-consent visitors. Persistent Configuration Gap Record created per unclassified signal." }
+      ],
+      "deferral_consequence": "If deferred — all signals default to functional_only. Scoring accuracy is reduced for visitors without full consent.",
+      "category": "B",
+      "_note": "HOLD trigger intentionally absent — unclassified signals produce a FLAG, not a HOLD. The PENDING_CONSENT_CLASSIFICATION_DEFAULT safeguard prevents an unclassified signal from being used without consent; the program continues safely."
+    },
+    {
+      "step_id": 14,
+      "phase": 5,
+      "step_title": "Salesforce custom field provisioning confirmation",
+      "corpus_authority": "Document 8 Section 6.1; §SA SALES_ACTIVATION_CONFIG",
+      "attribute": null,
+      "input_required": "Confirm that the three custom fields per convergence point have been provisioned in Salesforce: convergence_point, roles_active, recommended_action. Confirm character limit on recommended_action field accommodates full canonical text without truncation.",
+      "validation_rule": "All three fields must be confirmed provisioned for each active convergence point. Character limit on recommended_action must be confirmed (canonical text requires minimum 280 characters for the longest convergence point). Truncation is a hard failure — it removes the specificity that makes the alert useful.",
+      "why_this_matters": "If Salesforce custom fields are not provisioned, the AEP → Salesforce connector cannot write alert data. Convergence point alerts will fail silently — the AEP pipeline will attempt the write, receive an error, and not retry. BDRs and AEs will not receive alerts. If recommended_action is truncated, the alert loses the specific guidance that distinguishes it from a generic notification.",
+      "hold_triggers": [
+        { "code": "H-05", "condition": "Fires if practitioner cannot confirm that custom fields are provisioned. Non-advanceable until provisioning is confirmed or an explicit deferral is chosen." }
+      ],
+      "flag_triggers": [
+        { "code": "F-05", "condition": "Fires if character limit on recommended_action has not been verified.", "consequence": "Truncation risk; canonical alert text may be cut off in CRM display." }
+      ],
+      "deferral_consequence": "If deferred — sales activation alerts cannot fire. AEP → Salesforce write will fail. Entire convergence point alert pathway is blocked. Named gap: \"Salesforce custom field provisioning unconfirmed.\"",
+      "category": "B"
+    },
+    {
+      "step_id": 15,
+      "phase": 5,
+      "step_title": "Outreach sequence configuration",
+      "corpus_authority": "Document 8 Section 6.6; Document 3 Section 6.4",
+      "attribute": null,
+      "input_required": "(a) Confirm which Outreach sequence IDs are configured for each active convergence point. (b) Confirm channel-variant sequences are configured for msp and partner accounts if applicable. (c) Confirm two contact-level gates are implemented: Gate 1 (confidence_tier: MEDIUM or higher) and Gate 2 (differential_insufficient: false).",
+      "validation_rule": "At least one sequence ID must be confirmed per active convergence point. Gate 1 and Gate 2 must both be confirmed as configured in the Outreach/Salesforce integration before sales activation goes live.",
+      "why_this_matters": "If Outreach sequences are not configured, convergence point alerts will write to Salesforce but no sequence will activate. The BDR or AE receives no action prompt. If Gate 1 or Gate 2 is not implemented, LOW-confidence contacts or role-ambiguous contacts may receive sales outreach prematurely — which is a program quality failure and a trust risk with the prospect.",
+      "hold_triggers": [
+        { "code": "H-05", "condition": "Fires if no sequence IDs can be confirmed for any active convergence point." }
+      ],
+      "flag_triggers": [
+        { "code": "F-05", "condition": "Fires if channel-variant sequences for msp or partner accounts are not confirmed configured (when tal_channel is msp or partner).", "consequence": "Channel routing falls back to direct." },
+        { "code": "F-05", "condition": "Fires if Gate 1 or Gate 2 configuration cannot be confirmed.", "consequence": "Sequence activation gate may not enforce; over-activation risk." }
+      ],
+      "deferral_consequence": "If deferred — sequences are stubs. Documented as S-05 in POC simplification register.",
+      "category": "B"
+    },
+    {
+      "step_id": 16,
+      "phase": 5,
+      "step_title": "Alert delivery SLA confirmation",
+      "corpus_authority": "Document 8 Section 6.1",
+      "attribute": null,
+      "input_required": "Confirm the AEP → Salesforce connector is configured and the 60-minute SLA ceiling is understood. Confirm Salesforce → Outreach integration latency is within SLA.",
+      "validation_rule": "AEP → Salesforce connector must be confirmed active (or deferred with explicit consequence). 60-minute SLA ceiling must be acknowledged.",
+      "why_this_matters": "If the AEP → Salesforce connector is not confirmed active, alert delivery cannot be validated. The 60-minute SLA ceiling governs the entire path from AEP convergence point trigger to Outreach sequence activation. Alerts that arrive after 60 minutes may miss the buying moment they were designed to capture.",
+      "hold_triggers": [
+        { "code": "H-05", "condition": "Fires if AEP → Salesforce connector is not confirmed active and practitioner has not chosen explicit deferral." }
+      ],
+      "flag_triggers": [
+        { "code": "F-03", "condition": "Fires if practitioner defers connector confirmation.", "consequence": "Sales activation pathway unvalidated; entire alert delivery chain is a stub until confirmed." }
+      ],
+      "deferral_consequence": "If deferred — sales activation pathway is unconfirmed. Documented as S-04 in POC simplification register.",
+      "category": "B"
+    },
+    {
+      "step_id": 17,
+      "phase": 6,
+      "step_title": "AEP → Salesforce connector confirmation",
+      "corpus_authority": "Document 8 Section 2; §CA CLIENT_ATTRIBUTE_MAP source pipeline entries",
+      "attribute": null,
+      "input_required": "Confirm that the AEP Real-Time CDP native Salesforce CRM destination connector is active and writing to the correct Salesforce org. Confirm the connector has been tested with a sample account record.",
+      "validation_rule": "This is a structural check — confirmation is binary (confirmed / not confirmed). A confirmed connector with a test write record satisfies the check. An unconfirmed connector triggers H-01.",
+      "why_this_matters": "The AEP → Salesforce connector is the integration that makes every account-plane attribute visible to the sales team. Without it, tal_member, tal_program_status, bg_cohort, bg_stage, and all convergence point alert fields cannot reach Salesforce CRM. BDRs and AEs work in Salesforce — if the connector is not active, they are blind to buying group intelligence.",
+      "hold_triggers": [
+        { "code": "H-01", "condition": "Fires if connector cannot be confirmed active. This is a Category A blocking input from L2-D. Non-advanceable without confirmation or explicit deferral with named consequence." }
+      ],
+      "flag_triggers": [
+        { "code": "F-05", "condition": "Fires if connector is confirmed active but test write has not been performed.", "consequence": "Connector configuration may contain errors that are only visible at write time." }
+      ],
+      "deferral_consequence": "If deferred — entire sales activation pathway is unvalidated. No account-plane attributes reach Salesforce. Documented as Category A consequence.",
+      "category": "A",
+      "validation_type": "structural_binary"
+    },
+    {
+      "step_id": 18,
+      "phase": 6,
+      "step_title": "Data model version validation",
+      "corpus_authority": "Data model v0.2.0; L2-D version governance decisions",
+      "attribute": null,
+      "input_required": "Advisor reads the current data model version from the retrieval index and confirms it matches v0.2.0. Practitioner acknowledges the version stamp that will appear in all Advisor outputs and audit log records from this session.",
+      "validation_rule": "Retrieval index version must match v0.2.0. If a mismatch is detected (index references a different version), H-06 fires. If the version matches, practitioner acknowledges and the step completes.",
+      "why_this_matters": "Every Advisor output and audit log record is stamped with the data model version active at session time. If the retrieval index version does not match the expected version, any advisory output from this session may reference rules, attributes, or thresholds that differ from the client's production configuration. A version mismatch is a traceability failure — not a program error, but a record-keeping gap that makes audit log review unreliable.",
+      "hold_triggers": [
+        { "code": "H-06", "condition": "Fires if the retrieval index version does not match v0.2.0. Non-advanceable until the version mismatch is resolved (index rebuild required) or explicitly acknowledged with named consequence." }
+      ],
+      "flag_triggers": [
+        { "code": "F-01", "condition": "Fires if practitioner overrides the version acknowledgment without confirming the mismatch has been resolved (deviation from corpus default).", "consequence": "Deviation from corpus default is logged." }
+      ],
+      "deferral_consequence": "Cannot be deferred. Version validation is a structural check with no valid deferral path. If H-06 fires, the onboarding session must pause until the index is rebuilt or the version discrepancy is documented with explicit approval.",
+      "category": "C",
+      "render_deferral_control": false,
+      "_note": "Step 18 must not render a 'Defer this step' control. data_model_version on this step's card is read from the application's DATA_MODEL_VERSION constant (\"0.2.0\"), not from user input."
+    }
+  ],
+  "flag_code_reference": {
+    "F-01": "Advisory — Practitioner is deviating from a corpus default",
+    "F-02": "Advisory — Optional attribute is null and its absence degrades program scope",
+    "F-03": "Advisory — Practitioner has explicitly deferred a step",
+    "F-04": "Advisory — Consent classification gap — non-blocking; produces persistent Configuration Gap Record",
+    "F-05": "Advisory — Downstream dependency unconfirmed",
+    "F-06": "Advisory — Advisor-derivable value overridden by practitioner"
+  },
+  "hold_code_reference": {
+    "H-01": "Integrity — Blocking onboarding_required: True attribute missing or incompletely mapped",
+    "H-02": "Integrity — Value entered is outside allowed_values for the attribute",
+    "H-03": "Integrity — Consent gate blocking activation scope (Track 2 claimed complete without DPA confirmation)",
+    "H-04": "Integrity — Prerequisite step incomplete",
+    "H-05": "Integrity — Blocking client data input absent",
+    "H-06": "Integrity — Data model version mismatch detected"
+  }
+}

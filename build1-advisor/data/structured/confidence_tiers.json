@@ -1,0 +1,47 @@
+{
+  "_table": "CONFIDENCE_TIERS",
+  "_source": "knowledge/data-model/kalder_data_model.py",
+  "_data_model_version": "0.2.0",
+  "data": {
+    "high": {
+      "min": 80,
+      "max": 100,
+      "label": "HIGH",
+      "personalization_level": "Full role-specific experience",
+      "fallback_level": 1,
+      "cta_tone": "Direct, assumptive",
+      "trigger_conditions": "CRM-confirmed ML classifier prediction (Snowflake); OR zero-party form data + behavioral confirmation (+30 bonus applied)",
+      "buying_job_inference": "Attempt \u2014 KNOWN or INFERRED buying job activates three-axis personalization"
+    },
+    "medium": {
+      "min": 50,
+      "max": 79,
+      "label": "MEDIUM",
+      "personalization_level": "Role-influenced content with safe fallback elements",
+      "fallback_level": 2,
+      "cta_tone": "Suggestive, educational",
+      "trigger_conditions": "Zero-party form classification without behavioral confirmation; OR strong behavioral pattern (3+ signals, score 50+, top role leads by 10+)",
+      "buying_job_inference": "Attempt only if KNOWN (zero-party). Ignore INFERRED at MEDIUM \u2014 too noisy."
+    },
+    "low": {
+      "min": 25,
+      "max": 49,
+      "label": "LOW",
+      "personalization_level": "Solution-interest content only \u2014 no role framing",
+      "fallback_level": 3,
+      "cta_tone": "Broad, awareness-oriented",
+      "trigger_conditions": "Limited behavioral signals (1-2 signals); OR ambiguous pattern (top role does not lead by 10+)",
+      "buying_job_inference": "Do not attempt. Role is too uncertain to layer job inference on top."
+    },
+    "unknown": {
+      "min": 0,
+      "max": 24,
+      "label": "UNKNOWN",
+      "personalization_level": "Account-level or default brand experience",
+      "fallback_level": 4,
+      "cta_tone": "Exploratory",
+      "trigger_conditions": "Insufficient data (single page view, <30 sec, no prior history); OR all signals below minimum thresholds",
+      "buying_job_inference": "Do not attempt."
+    }
+  }
+}

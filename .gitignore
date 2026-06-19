@@ -1,0 +1,14 @@
+node_modules
+.next
+.env.local
+__pycache__
+.env
+*.pyc
+.vercel
+.env.local.*
+!.env.local.example
+services/scoring-engine/.venv/
+*.egg-info/
+dist/
+.DS_Store
+*.tsbuildinfo

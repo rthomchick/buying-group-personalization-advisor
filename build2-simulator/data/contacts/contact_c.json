@@ -1,0 +1,52 @@
+{
+  "_comment": "Synthetic contact: MEDIUM confidence Champion, holdback_group true. Source: knowledge/specs/kalder_layer2_decisions_log_L2E_builds.md § Synthetic Data Set, Contact C. Same behavioral signal profile as Contact A — isolates the holdback_group variable for measurement asymmetry demonstration.",
+  "contact_id": "contact_c",
+  "contact_label": "Contact C",
+  "demo_purpose": "Holdback measurement control (Kohavi requirement); progressive_disclosure suppressed; experience level routing proceeds normally; demonstrates measurement asymmetry — holdback contacts cannot benefit from the Tier 2 confidence upgrade.",
+  "solution_category": "it_operations",
+  "signal_observations": [
+    { "signal_name": "demo_request", "timestamp_days_ago": 3, "solution_category": "it_operations" },
+    { "signal_name": "case_study_download", "timestamp_days_ago": 8, "solution_category": "it_operations" },
+    { "signal_name": "competitive_comparison_view", "timestamp_days_ago": 15, "solution_category": "it_operations" },
+    { "signal_name": "pricing_page_view", "timestamp_days_ago": 20, "solution_category": "it_operations" },
+    { "signal_name": "webinar_registration", "timestamp_days_ago": 25, "solution_category": "it_operations" }
+  ],
+  "ca_attributes": {
+    "tal_domain": "synthco.com",
+    "tal_member": true,
+    "tal_program_status": "active_prospect",
+    "tal_marquee": false,
+    "tal_account_type_source": "enterprise",
+    "tal_region": "north_america",
+    "tal_upsell_override_active": false,
+    "tal_channel": "direct",
+    "holdback_group": true
+  },
+  "expected_classification": {
+    "_note": "Verified against services/scoring-engine/classifier.py classify_visitor() with signal_observations timestamps resolved to timestamp_days_ago before now (UTC), all within the last_90_days decay window (1.0x multiplier). Identical signal profile to Contact A — only holdback_group differs. Re-verify if classifier.py or kalder_data_model.py changes.",
+    "role_scores": { "champion": 71.0, "economic_buyer": 34.0, "influencer": 31.0, "user": 8.0, "ratifier": 12.0 },
+    "top_score": 71.0,
+    "second_score": 31.0,
+    "differential": 37.0,
+    "role_classification": "champion",
+    "confidence_tier": "MEDIUM",
+    "differential_insufficient": false,
+    "fallback_level": 2,
+    "holdback_group": true,
+    "data_model_version": "0.2.0"
+  },
+  "visitor_state": {
+    "role_classification": "champion",
+    "confidence_tier": "MEDIUM",
+    "differential_insufficient": false,
+    "buying_job_confidence": "UNKNOWN",
+    "buying_job_confirmed": null,
+    "solution_category": "it_operations",
+    "buying_stage": "targeted",
+    "tal_member": true,
+    "solution_category_coverage_status": "partial",
+    "holdback_group": true,
+    "visitor_consent_state": "full",
+    "upsell_override_active": false
+  }
+}
