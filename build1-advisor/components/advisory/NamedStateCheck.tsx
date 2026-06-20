@@ -58,8 +58,8 @@ export function NamedStateCheck({ differential_insufficient, pending_solution_fa
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-sm tracking-wide text-foreground">
           NAMED STATE CHECK
-          <Badge variant="outline" className="border-kalder-accent/40 text-[10px] text-kalder-accent">
-            non-collapsible
+          <Badge variant="outline" className="border-border text-[11px] text-kalder-text-muted">
+            always visible
           </Badge>
         </CardTitle>
       </CardHeader>

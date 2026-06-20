@@ -31,9 +31,14 @@ export function DisambiguationPrompt({ prompt, onSelect }: DisambiguationPromptP
       <CardContent className="flex flex-col gap-3">
         <p className="text-sm text-foreground">{prompt}</p>
         {options ? (
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2">
             {options.map((option) => (
-              <Button key={option} variant="secondary" className="flex-1 justify-start text-left" onClick={() => onSelect(option)}>
+              <Button
+                key={option}
+                variant="secondary"
+                className="w-full justify-start text-left"
+                onClick={() => onSelect(option)}
+              >
                 {option}
               </Button>
             ))}

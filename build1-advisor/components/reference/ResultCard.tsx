@@ -34,7 +34,26 @@ const ANSWER_MARKDOWN_COMPONENTS: Components = {
   ),
 };
 
+// Store 2 lookups return the raw record as a JSON string (see
+// app/api/reference/route.ts's answerFromStructuredMatches) rather than
+// corpus prose — rendered as a pretty-printed code block instead of running
+// it through markdown, which would just show it as a single inline blob.
+function isJsonAnswer(answer: string): boolean {
+  const trimmed = answer.trim();
+  return trimmed.startsWith("{") && trimmed.endsWith("}");
+}
+
+function formatJsonAnswer(answer: string): string | null {
+  try {
+    return JSON.stringify(JSON.parse(answer), null, 2);
+  } catch {
+    return null;
+  }
+}
+
 export function ResultCard({ result }: ResultCardProps) {
+  const formattedJson = isJsonAnswer(result.answer) ? formatJsonAnswer(result.answer) : null;
+
   return (
     <Card className="bg-surface">
       <CardContent className="flex flex-col gap-4">
@@ -47,9 +66,15 @@ export function ResultCard({ result }: ResultCardProps) {
 
         <section className="flex flex-col gap-1">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">[ANSWER]</h3>
-          <div className="text-sm leading-relaxed text-foreground">
-            <ReactMarkdown components={ANSWER_MARKDOWN_COMPONENTS}>{result.answer}</ReactMarkdown>
-          </div>
+          {formattedJson !== null ? (
+            <pre className="overflow-x-auto rounded-md bg-surface p-3 text-xs font-mono text-kalder-accent">
+              <code>{formattedJson}</code>
+            </pre>
+          ) : (
+            <div className="text-sm leading-relaxed text-foreground">
+              <ReactMarkdown components={ANSWER_MARKDOWN_COMPONENTS}>{result.answer}</ReactMarkdown>
+            </div>
+          )}
         </section>
 
         <section className="flex flex-col gap-1">
