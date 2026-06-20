@@ -18,13 +18,19 @@ export type NamedStateCheckProps = {
   pending_solution_fallback: string;
 };
 
+// Claude's actual phrasing varies run to run — observed forms include
+// "= `True`: PRESENT and ACTIVE", "NOT PRESENT as a causal factor",
+// "ACTIVE", "Not active", "= False", "NOT_DETERMINABLE", "not determinable".
+// Negative forms are checked first since they contain their positive
+// substrings ("NOT ACTIVE" contains "ACTIVE", "NOT PRESENT" implies false).
+const NEGATIVE_PATTERNS = ["NOT ACTIVE", "NOT PRESENT", "NOT TRIGGERED", "= `FALSE`", "= FALSE", ": FALSE", " FALSE", "INACTIVE"];
+const POSITIVE_PATTERNS = ["PRESENT AND ACTIVE", "= `TRUE`", "= TRUE", ": TRUE", "ACTIVE", "TRIGGERED", " TRUE"];
+
 function normalizeLabel(value: string): NamedStateLabel {
   const upper = value.trim().toUpperCase();
   if (upper.includes("NOT_DETERMINABLE") || upper.includes("NOT DETERMINABLE")) return "NOT_DETERMINABLE";
-  // Negative forms ("NOT ACTIVE", "FALSE") must be checked before their
-  // positive substrings ("ACTIVE", "TRUE") — "Not active" contains "ACTIVE".
-  if (upper.includes("NOT ACTIVE") || upper.includes("FALSE")) return "FALSE";
-  if (upper.includes("TRUE") || upper.includes("ACTIVE")) return "TRUE";
+  if (NEGATIVE_PATTERNS.some((p) => upper.includes(p))) return "FALSE";
+  if (POSITIVE_PATTERNS.some((p) => upper.includes(p))) return "TRUE";
   return "NOT_DETERMINABLE";
 }
 

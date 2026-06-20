@@ -6,6 +6,7 @@
 
 "use client";
 
+import ReactMarkdown, { type Components } from "react-markdown";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
@@ -26,13 +27,38 @@ const SECTION_LABELS: Record<SectionName, string> = {
   DIAGNOSTIC_CONFIDENCE: "DIAGNOSTIC CONFIDENCE",
 };
 
-// NAMED_STATE_CHECK's raw text names each state inline (e.g.
-// "differential_insufficient: True"). Extracted here rather than re-parsing
-// in the page layer, since this is the one place that text is rendered.
+// Same mono/kalder-accent code-span treatment as ResultCard.tsx — the one
+// visual language this UI uses for "this is a literal corpus/data model
+// token." `node` is react-markdown's internal AST node; destructured out so
+// it never leaks onto the DOM element as an invalid attribute.
+const SECTION_MARKDOWN_COMPONENTS: Components = {
+  code: ({ node, children, ...props }) => (
+    <code className="font-mono text-kalder-accent" {...props}>
+      {children}
+    </code>
+  ),
+  p: ({ node, children, ...props }) => (
+    <p className="text-sm leading-relaxed text-foreground" {...props}>
+      {children}
+    </p>
+  ),
+};
+
+// Claude's actual NAMED_STATE_CHECK phrasing wraps each key in backticks/bold
+// and often places the verdict after a second colon (e.g. "`key` = `True`:
+// PRESENT and ACTIVE") rather than immediately after a single ":"/"=" —
+// so this captures a window of text starting at the key, not just the
+// token immediately adjacent to it. normalizeLabel() in NamedStateCheck.tsx
+// then scans that window for the actual verdict.
 function extractNamedStateValue(namedStateText: string, key: string): string {
-  const pattern = new RegExp(`${key}\\s*[:=]\\s*([^\\n.]+)`, "i");
-  const match = namedStateText.match(pattern);
-  return match ? match[1].trim() : "NOT_DETERMINABLE — not named in output";
+  const keyPattern = new RegExp("`?" + key + "`?", "i");
+  const keyMatch = namedStateText.match(keyPattern);
+  if (!keyMatch || keyMatch.index === undefined) return "NOT_DETERMINABLE — not named in output";
+
+  const startIdx = keyMatch.index;
+  const windowEnd = namedStateText.indexOf("\n\n", startIdx);
+  const window = windowEnd === -1 ? namedStateText.slice(startIdx, startIdx + 300) : namedStateText.slice(startIdx, windowEnd);
+  return window.trim();
 }
 
 function CorpusCitationLine({ text }: { text: string }) {
@@ -55,7 +81,7 @@ function CollapsibleSection({ name, section }: { name: SectionName; section: Par
       </CollapsibleTrigger>
       <CollapsibleContent className="px-4 pb-4">
         {section.present ? (
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{section.text}</p>
+          <ReactMarkdown components={SECTION_MARKDOWN_COMPONENTS}>{section.text}</ReactMarkdown>
         ) : (
           <p className="text-sm text-muted-foreground">Claude's response did not include this section header.</p>
         )}
@@ -66,6 +92,10 @@ function CollapsibleSection({ name, section }: { name: SectionName; section: Par
 
 export function DiagnosticOutput({ output }: DiagnosticOutputProps) {
   const namedStateText = output.sections.NAMED_STATE_CHECK.text;
+
+  // eslint-disable-next-line no-console
+  console.log("[DiagnosticOutput] raw NAMED_STATE_CHECK text:", namedStateText);
+
   const differentialInsufficient = extractNamedStateValue(namedStateText, "differential_insufficient");
   const pendingSolutionFallback = extractNamedStateValue(namedStateText, "pending_solution_fallback");
 
