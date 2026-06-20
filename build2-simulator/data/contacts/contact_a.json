@@ -2,7 +2,7 @@
   "_comment": "Synthetic contact: MEDIUM confidence Champion, differential_insufficient false. Source: knowledge/specs/kalder_layer2_decisions_log_L2E_builds.md § Synthetic Data Set, Contact A.",
   "contact_id": "contact_a",
   "contact_label": "Contact A",
-  "demo_purpose": "Normal operating state; honest Tier 3 MEDIUM ceiling (no Tier 1/Tier 2 confirmation); Level 2 role-influenced experience.",
+  "demo_purpose": "Normal operating state; honest Tier 3 MEDIUM ceiling (no Tier 1/Tier 2 confirmation); Level 3 solution-interest experience (it_operations coverage is 'partial' at v1 launch per Document 5 §1.5 — role-variant nodes do not exist yet, so MEDIUM confidence routes to Level 3, not Level 2).",
   "solution_category": "it_operations",
   "signal_observations": [
     { "signal_name": "demo_request", "timestamp_days_ago": 3, "solution_category": "it_operations" },
@@ -24,6 +24,7 @@
   },
   "expected_classification": {
     "_note": "Verified against services/scoring-engine/classifier.py classify_visitor() with signal_observations timestamps resolved to timestamp_days_ago before now (UTC), all within the last_90_days decay window (1.0x multiplier). Re-verify if classifier.py or kalder_data_model.py changes.",
+    "_fallback_level_correction": "Corrected from 2 to 3. Document 5 §1.5's v1 launch coverage table sets it_operations to 'partial', and §1.3 is explicit that partial coverage caps routing at Level 3 regardless of confidence_tier (role-variant nodes do not exist yet at partial). The original value of 2 predates/ignored this coverage-aware rule.",
     "role_scores": { "champion": 71.0, "economic_buyer": 34.0, "influencer": 31.0, "user": 8.0, "ratifier": 12.0 },
     "top_score": 71.0,
     "second_score": 31.0,
@@ -31,7 +32,7 @@
     "role_classification": "champion",
     "confidence_tier": "MEDIUM",
     "differential_insufficient": false,
-    "fallback_level": 2,
+    "fallback_level": 3,
     "data_model_version": "0.2.0"
   },
   "visitor_state": {

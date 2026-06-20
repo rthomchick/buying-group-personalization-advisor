@@ -361,7 +361,7 @@ JavaScript implementation of Document 5 Section 1.6 routing sequence. Eight expl
 1. TAL membership check (`tal_member: false` → Level 5)
 2. Priority 0: `differential_insufficient` check (if `true` → Level 3 override; halt evaluation)
 3. Coverage check (`pending`/`constructed` → `pending_solution_fallback` active; Levels 1 and 2 unavailable)
-4. Holdback check (`holdback_group: true` → `progressive_disclosure` suppressed; experience level routing continues)
+4. Holdback check (`holdback_group: true` forces Level 5 for all module slots regardless of computed `fallback_level`. Experience level routing does NOT continue normally — Level 5 is the holdback experience. Corpus authority: Document 5 §7.1–7.7.)
 5. Level 1 check (not pending AND `confidence_tier: HIGH` → Level 1)
 6. Level 2 check (not pending AND `confidence_tier: MEDIUM` → Level 2)
 7. Level 3 check (solution interest present → Level 3)
@@ -413,9 +413,9 @@ Follows Document 4 Section 5.3 and Document 5 Sections 3 and 8 exactly.
 - Garcia's framing requirement: Must be labeled as a design choice, not a limitation.
 
 **Edge state 4: `holdback_group: True`**
-- Routing: Experience level routing proceeds normally (Level 2 for Contact C's MEDIUM score). `progressive_disclosure` slot suppressed.
+- Routing: `holdback_group: true` forces Level 5 (full default brand experience, all module slots) regardless of Contact C's computed `confidence_tier`/`fallback_level`. Experience level routing does NOT continue normally. Corpus authority: Document 5 §7.1–7.7 — holdback is implemented as Target activities at priority 5950–5954, which fire before the Level 4 account activity specifically to prevent any partial-personalization experience from reaching the control group. Contact C's classification scoring still runs normally and is stored in AEP (per §7.7); only experience delivery is withheld.
 - Right panel: Kohavi measurement asymmetry statement required. "This contact cannot produce a zero-party self-identification event, so they cannot benefit from the Tier 2 confidence upgrade. This asymmetry is documented in Document 7 and must be accounted for in lift calculations."
-- Left panel: `progressive_disclosure` slot labeled "SUPPRESSED — holdback control condition" (not absent).
+- Left panel: Full Level 5 default experience rendered. The `progressive_disclosure` slot does not render at Level 5 (per §7.7) — labeled "SUPPRESSED — holdback control condition" (not absent) so the VP can see the slot exists architecturally and is intentionally withheld, not missing from the composition.
 
 ---
 

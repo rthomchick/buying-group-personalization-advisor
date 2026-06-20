@@ -2,7 +2,7 @@
   "_comment": "Synthetic contact: MEDIUM confidence Champion, holdback_group true. Source: knowledge/specs/kalder_layer2_decisions_log_L2E_builds.md § Synthetic Data Set, Contact C. Same behavioral signal profile as Contact A — isolates the holdback_group variable for measurement asymmetry demonstration.",
   "contact_id": "contact_c",
   "contact_label": "Contact C",
-  "demo_purpose": "Holdback measurement control (Kohavi requirement); progressive_disclosure suppressed; experience level routing proceeds normally; demonstrates measurement asymmetry — holdback contacts cannot benefit from the Tier 2 confidence upgrade.",
+  "demo_purpose": "Holdback measurement control (Kohavi requirement). holdback_group: true forces the full Level 5 default experience for all module slots regardless of computed confidence_tier — experience level routing does NOT proceed normally (Document 5 §7.1–7.7). Classification scoring still runs and is stored in AEP; only experience delivery is withheld. Demonstrates measurement asymmetry — holdback contacts cannot benefit from the Tier 2 confidence upgrade.",
   "solution_category": "it_operations",
   "signal_observations": [
     { "signal_name": "demo_request", "timestamp_days_ago": 3, "solution_category": "it_operations" },
@@ -24,6 +24,7 @@
   },
   "expected_classification": {
     "_note": "Verified against services/scoring-engine/classifier.py classify_visitor() with signal_observations timestamps resolved to timestamp_days_ago before now (UTC), all within the last_90_days decay window (1.0x multiplier). Identical signal profile to Contact A — only holdback_group differs. Re-verify if classifier.py or kalder_data_model.py changes.",
+    "_fallback_level_correction": "Corrected from 2 to 3, same reason as contact_a.json: it_operations coverage is 'partial' at v1 (Document 5 §1.5), which caps routing at Level 3 regardless of confidence_tier (§1.3). This is the pre-holdback cascade value — Build 2's decisioning engine then applies the holdback override on top of this (Document 5 §7.1–7.7), forcing the actual served experience to Level 5 regardless of this value.",
     "role_scores": { "champion": 71.0, "economic_buyer": 34.0, "influencer": 31.0, "user": 8.0, "ratifier": 12.0 },
     "top_score": 71.0,
     "second_score": 31.0,
@@ -31,7 +32,7 @@
     "role_classification": "champion",
     "confidence_tier": "MEDIUM",
     "differential_insufficient": false,
-    "fallback_level": 2,
+    "fallback_level": 3,
     "holdback_group": true,
     "data_model_version": "0.2.0"
   },
