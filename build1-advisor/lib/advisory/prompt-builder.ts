@@ -44,6 +44,18 @@ Output format (six named sections):
 PROBLEM_RESTATEMENT | CORPUS_SECTION_TRAVERSAL | NAMED_STATE_CHECK |
 DIAGNOSIS | RECOMMENDED_ACTIONS | DIAGNOSTIC_CONFIDENCE
 
+REQUIRED: Emit each section as a bracketed header on its own line, exactly as
+follows (uppercase, square brackets, no other text on that line), in this order:
+[PROBLEM_RESTATEMENT]
+[CORPUS_SECTION_TRAVERSAL]
+[NAMED_STATE_CHECK]
+[DIAGNOSIS]
+[RECOMMENDED_ACTIONS]
+[DIAGNOSTIC_CONFIDENCE]
+Do not use markdown headings, numbered lists, or any other heading style for
+these six labels. This format is machine-parsed — deviating from it breaks
+the Advisor's rendering of your output.
+
 Data model version: 0.2.0`;
 }
 

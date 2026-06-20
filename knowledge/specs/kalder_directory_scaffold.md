@@ -79,22 +79,24 @@ kalder/
 │   │   │   └── page.tsx                  # Reference Mode view
 │   │   ├── advisory/
 │   │   │   └── page.tsx                  # Advisory Mode view
-│   │   └── guided/
-│   │       └── page.tsx                  # Guided Workflow view
-│   │
-│   ├── api/                              # Next.js API routes
-│   │   ├── reference/
-│   │   │   └── route.ts                  # Pre-retrieval pipeline → Store 1 / Store 2
-│   │   ├── advisory/
-│   │   │   └── route.ts                  # Context assembly → Claude API → output parser
 │   │   ├── guided/
-│   │   │   └── route.ts                  # Step validation → FLAG/HOLD evaluator
-│   │   ├── classify/
-│   │   │   └── route.ts                  # Proxy to scoring engine sidecar /classify
-│   │   └── audit/
-│   │       ├── route.ts                  # Audit log read/write
-│   │       └── export/
-│   │           └── route.ts              # JSON file download
+│   │   │   └── page.tsx                  # Guided Workflow view
+│   │   │
+│   │   └── api/                          # Next.js API routes — MUST live under app/
+│   │       │                              # (App Router only serves routes from app/api/.../route.ts;
+│   │       │                              # a sibling-of-app/ api/ directory is never registered)
+│   │       ├── reference/
+│   │       │   └── route.ts              # Pre-retrieval pipeline → Store 1 / Store 2
+│   │       ├── advisory/
+│   │       │   └── route.ts              # Context assembly → Claude API → output parser
+│   │       ├── guided/
+│   │       │   └── route.ts              # Step validation → FLAG/HOLD evaluator
+│   │       ├── classify/
+│   │       │   └── route.ts              # Proxy to scoring engine sidecar /classify
+│   │       └── audit/
+│   │           ├── route.ts              # Audit log read/write
+│   │           └── export/
+│   │               └── route.ts          # JSON file download
 │   │
 │   ├── components/
 │   │   ├── ModeShell.tsx                 # Session-persistent mode selector + sidebar

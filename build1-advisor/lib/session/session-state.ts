@@ -68,6 +68,15 @@ export type GuidedWorkflowState = {
   stepStatuses: Record<number, StepStatus>;
   activeHolds: HoldRecord[];
   activeFlags: FlagRecord[];
+  // Append-only history. resolveHold()/acknowledgeFlag() in state-machine.ts
+  // push into these before removing the record from activeHolds/activeFlags.
+  // Never cleared — this is the compliance record required by the audit log
+  // ("every FLAG acknowledgment timestamped, every HOLD resolution captured").
+  // activeHolds/activeFlags alone do NOT preserve history across step
+  // advancement: resolveHold() filters resolved holds out of activeHolds, and
+  // advanceToNextStep() resets activeFlags to [] on every advance.
+  resolvedHolds: HoldRecord[];
+  acknowledgedFlags: FlagRecord[];
   deferralLog: DeferralRecord[];
   configurationGapRecords: ConfigurationGapRecord[];
   dataModelVersion: typeof DATA_MODEL_VERSION;

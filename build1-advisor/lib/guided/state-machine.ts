@@ -49,6 +49,8 @@ export function initializeWorkflowState(workflowId: WorkflowId, practitionerId: 
     stepStatuses: { 1: "in_progress" },
     activeHolds: [],
     activeFlags: [],
+    resolvedHolds: [],
+    acknowledgedFlags: [],
     deferralLog: [],
     configurationGapRecords: [],
     dataModelVersion: DATA_MODEL_VERSION,
@@ -104,19 +106,16 @@ export function resolveHold(state: GuidedWorkflowState, holdCode: string, resolu
     throw new Error(`No active HOLD with code ${holdCode} on step ${state.currentStep}.`);
   }
 
-  const updatedHolds = state.activeHolds.map((h) =>
-    h.holdCode === holdCode && h.stepId === state.currentStep
-      ? { ...h, resolved: true, resolution, resolvedAtTimestamp: nowIso() }
-      : h,
-  );
+  const resolvedHold: HoldRecord = { ...targetHold, resolved: true, resolution, resolvedAtTimestamp: nowIso() };
 
-  const remainingActiveHolds = updatedHolds.filter((h) => !h.resolved);
+  const remainingActiveHolds = state.activeHolds.filter((h) => !(h.holdCode === holdCode && h.stepId === state.currentStep));
   const stepStatus: StepStatus =
     remainingActiveHolds.length > 0 ? "hold_active" : state.activeFlags.length > 0 ? "flag_pending" : "in_progress";
 
   return {
     ...state,
     activeHolds: remainingActiveHolds,
+    resolvedHolds: [...state.resolvedHolds, resolvedHold],
     stepStatuses: { ...state.stepStatuses, [state.currentStep]: stepStatus },
   };
 }
@@ -136,11 +135,15 @@ export function acknowledgeFlag(state: GuidedWorkflowState, flagCode: string): G
     throw new Error(`No active FLAG with code ${flagCode} on step ${state.currentStep}.`);
   }
 
-  const updatedFlags = state.activeFlags.map((f) =>
-    f.flagCode === flagCode && f.stepId === state.currentStep ? { ...f, acknowledged: true, acknowledgedAtTimestamp: nowIso() } : f,
-  );
+  const acknowledgedFlag: FlagRecord = { ...targetFlag, acknowledged: true, acknowledgedAtTimestamp: nowIso() };
 
-  return { ...state, activeFlags: updatedFlags };
+  const remainingActiveFlags = state.activeFlags.filter((f) => !(f.flagCode === flagCode && f.stepId === state.currentStep));
+
+  return {
+    ...state,
+    activeFlags: remainingActiveFlags,
+    acknowledgedFlags: [...state.acknowledgedFlags, acknowledgedFlag],
+  };
 }
 
 let gapIdCounter = 0;
