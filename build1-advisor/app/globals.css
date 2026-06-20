@@ -1,0 +1,111 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Kalder design tokens — dark professional palette for B2B practitioners
+ * (Marketing Ops Engineers, Demand Gen Managers) running configuration and
+ * diagnostic sessions. Function governs form: every value below maps
+ * directly to a value the user specified, not a default shadcn theme.
+ */
+:root {
+  --background: #0f1117;
+  --foreground: #f0f2f7;
+
+  --surface: #1a1d27;
+  --surface-raised: #22263a;
+
+  --card: #1a1d27;
+  --card-foreground: #f0f2f7;
+  --popover: #1a1d27;
+  --popover-foreground: #f0f2f7;
+
+  --primary: #4f7eff;
+  --primary-foreground: #f0f2f7;
+
+  --secondary: #22263a;
+  --secondary-foreground: #f0f2f7;
+
+  --muted: #22263a;
+  --muted-foreground: #8b92a8;
+
+  --accent: #22263a;
+  --accent-foreground: #f0f2f7;
+
+  --destructive: #e85555;
+  --destructive-foreground: #f0f2f7;
+
+  --border: #2e3347;
+  --input: #2e3347;
+  --ring: #4f7eff;
+
+  --radius: 0.5rem;
+
+  /* Kalder-specific semantic tokens — not part of the shadcn default set */
+  --kalder-text-muted: #555c75;
+  --kalder-accent: #4f7eff;
+  --kalder-hold: #e85555;
+  --kalder-flag: #f0a500;
+  --kalder-success: #3db87a;
+  --kalder-version-stamp: #555c75;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "Fira Code", ui-monospace, "SFMono-Regular", monospace;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-kalder-text-muted: var(--kalder-text-muted);
+  --color-kalder-accent: var(--kalder-accent);
+  --color-kalder-hold: var(--kalder-hold);
+  --color-kalder-flag: var(--kalder-flag);
+  --color-kalder-success: var(--kalder-success);
+  --color-kalder-version-stamp: var(--kalder-version-stamp);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

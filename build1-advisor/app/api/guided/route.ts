@@ -109,7 +109,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const practitionerId = body.practitionerId ?? "practitioner";
     const newState = initializeWorkflowState(body.workflowId, practitionerId);
-    return NextResponse.json({ guidedWorkflowState: newState, firedHolds: [], firedFlags: [] });
+    return NextResponse.json({
+      guidedWorkflowState: newState,
+      workflowSteps: loadResult.steps,
+      firedHolds: [],
+      firedFlags: [],
+    });
   }
 
   // --- All other actions require an existing GuidedWorkflowState ---

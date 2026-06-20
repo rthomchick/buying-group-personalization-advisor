@@ -12,30 +12,16 @@
 // them. A disambiguation halt returns the clarification prompt, not a fabricated answer.
 
 import { NextRequest, NextResponse } from "next/server";
-import { routeQuery, type RoutingResult, type QueryType } from "../../../lib/retrieval/router";
+import { routeQuery, type RoutingResult } from "../../../lib/retrieval/router";
 import { lookupTable, type StructuredLookupResult } from "../../../lib/retrieval/structured-store";
 import { queryVectorStore, SIMILARITY_THRESHOLD, type VectorQueryResult } from "../../../lib/retrieval/vector-store";
+import type { ReferenceModeResponse } from "@kalder/shared";
 
 const DATA_MODEL_VERSION = "0.2.0";
 
 type ReferenceRequestBody = {
   query: string;
 };
-
-type ReferenceModeResponse =
-  | {
-      outcome: "disambiguation_required";
-      term: string;
-      prompt: string;
-    }
-  | {
-      outcome: "answered";
-      queryType: QueryType;
-      answer: string;
-      source: string;
-      related: string[];
-      belowThreshold: boolean;
-    };
 
 function formatStructuredSource(sectionKey: string, result: StructuredLookupResult): string {
   if (result.status !== "ok") {

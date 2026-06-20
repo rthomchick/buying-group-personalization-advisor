@@ -9,3 +9,5 @@ export type {
   ConfigurationGapRecord,
   AuditLog,
 } from "./audit-log";
+
+export type { QueryType, ReferenceModeResponse, ReferenceResult } from "./api-responses";
