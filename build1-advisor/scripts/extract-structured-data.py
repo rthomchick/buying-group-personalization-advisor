@@ -19,6 +19,7 @@ model = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(model)
 
 EXTRACTIONS = {
+    "campaign_cohorts.json": ("CAMPAIGN_COHORTS", model.CAMPAIGN_COHORTS),
     "client_attribute_map.json": ("CLIENT_ATTRIBUTE_MAP", model.CLIENT_ATTRIBUTE_MAP),
     "confidence_tiers.json": ("CONFIDENCE_TIERS", model.CONFIDENCE_TIERS),
     "cross_role_weights.json": ("CROSS_ROLE_WEIGHTS", model.CROSS_ROLE_WEIGHTS),

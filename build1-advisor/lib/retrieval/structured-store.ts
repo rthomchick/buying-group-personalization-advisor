@@ -8,6 +8,7 @@
 // they are not hand-authored, so a lookup miss must never be papered over with a
 // guessed value. A miss returns a typed "not_found" result.
 
+import campaignCohortsFile from "@/data/structured/campaign_cohorts.json";
 import clientAttributeMapFile from "@/data/structured/client_attribute_map.json";
 import confidenceTiersFile from "@/data/structured/confidence_tiers.json";
 import crossRoleWeightsFile from "@/data/structured/cross_role_weights.json";
@@ -19,6 +20,7 @@ import salesActivationConfigFile from "@/data/structured/sales_activation_config
 import scoringRulesFile from "@/data/structured/scoring_rules.json";
 
 export type StructuredTableName =
+  | "CAMPAIGN_COHORTS"
   | "CLIENT_ATTRIBUTE_MAP"
   | "CONFIDENCE_TIERS"
   | "CROSS_ROLE_WEIGHTS"
@@ -37,6 +39,7 @@ type ExtractedFile = {
 };
 
 const TABLE_FILES: Record<StructuredTableName, ExtractedFile> = {
+  CAMPAIGN_COHORTS: campaignCohortsFile as ExtractedFile,
   CLIENT_ATTRIBUTE_MAP: clientAttributeMapFile as ExtractedFile,
   CONFIDENCE_TIERS: confidenceTiersFile as ExtractedFile,
   CROSS_ROLE_WEIGHTS: crossRoleWeightsFile as ExtractedFile,

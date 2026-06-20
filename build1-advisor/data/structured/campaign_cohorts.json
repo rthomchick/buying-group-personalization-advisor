@@ -1,0 +1,67 @@
+{
+  "_table": "CAMPAIGN_COHORTS",
+  "_source": "knowledge/data-model/kalder_data_model.py",
+  "_data_model_version": "0.2.0",
+  "data": {
+    "education": {
+      "label": "Education",
+      "priority": 4,
+      "entry_criteria": {
+        "bg_stage": "Targeted",
+        "engagement": "Low",
+        "opportunity": "None",
+        "bg_members": "< 2 identified"
+      },
+      "activation_intent": "Build problem awareness. Position Kalder as a trusted guide before the buying cycle begins. Serve content that helps potential Champions name and size the problem.",
+      "content_focus": "Thought leadership, industry trends, challenge framing, diagnostic tools",
+      "double_diamond_phase": "Pre-diverge \u2014 seeding problem identification",
+      "estimated_volume": "pending_baseline",
+      "content_gating": "Ungated \u2014 broad distribution, light personalisation"
+    },
+    "acquisition": {
+      "label": "Acquisition",
+      "priority": 3,
+      "entry_criteria": {
+        "bg_stage": "Engaged or Prioritized",
+        "engagement": "Low or Medium",
+        "opportunity": "None",
+        "bg_members": "2+ identified"
+      },
+      "activation_intent": "Activate and complete buying groups. Help each role complete their diverge-phase JTBDs. Convert interest into known, engaged buyers across all five roles.",
+      "content_focus": "Solution overviews, use cases, product tours, competitive differentiation, demos",
+      "double_diamond_phase": "Diverge \u2014 role-specific JTBD enablement",
+      "estimated_volume": "pending_baseline",
+      "content_gating": "Mix of gated and ungated"
+    },
+    "progression_early_to_mature": {
+      "label": "Progression Early-to-Mature",
+      "priority": 2,
+      "entry_criteria": {
+        "bg_stage": "Qualified",
+        "engagement": "Low or Medium",
+        "opportunity": "Stage 2-4",
+        "bg_members": "2+ identified"
+      },
+      "activation_intent": "Deepen engagement across all BG members in active deals. Enable convergence points. Serve content that helps the group align toward shared position.",
+      "content_focus": "Case studies, ROI models, consensus briefs, implementation guides, proof of concept support",
+      "double_diamond_phase": "Converge \u2014 group alignment and convergence point enablement",
+      "estimated_volume": "pending_baseline",
+      "content_gating": "Mix \u2014 converge content designed to travel internally"
+    },
+    "progression_win_now": {
+      "label": "Progression Win Now",
+      "priority": 1,
+      "entry_criteria": {
+        "bg_stage": "Qualified",
+        "engagement": "Low or Medium",
+        "opportunity": "Stage 5-7",
+        "bg_members": "2+ identified"
+      },
+      "activation_intent": "Final push for late-stage deals. Enable Final Commitment convergence point. Remove late-stage friction \u2014 especially Ratifier-triggered blockers.",
+      "content_focus": "Executive briefs, procurement guides, security docs, customer references, contract support",
+      "double_diamond_phase": "Converge \u2014 Final Commitment convergence point",
+      "estimated_volume": "pending_baseline",
+      "content_gating": "Mixed \u2014 late-stage content highly personalised by role"
+    }
+  }
+}
