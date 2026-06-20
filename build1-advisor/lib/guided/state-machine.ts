@@ -24,6 +24,9 @@ import {
 import { evaluateStep, nowIso, type WorkflowStepDefinition, type StepSubmission } from "./flag-hold-evaluator";
 
 export class HoldBlocksAdvancementError extends Error {
+  readonly stepId: number;
+  readonly activeHolds: HoldRecord[];
+
   constructor(stepId: number, activeHolds: HoldRecord[]) {
     super(
       `Step ${stepId} cannot advance: ${activeHolds.length} active HOLD(s) ` +
@@ -31,13 +34,20 @@ export class HoldBlocksAdvancementError extends Error {
         `Non-bypassable per L2-D Guided Workflow Mode rules.`,
     );
     this.name = "HoldBlocksAdvancementError";
+    this.stepId = stepId;
+    this.activeHolds = activeHolds;
   }
 }
 
 export class FlagAcknowledgmentBlockedByHoldError extends Error {
-  constructor(stepId: number) {
+  readonly stepId: number;
+  readonly activeHolds: HoldRecord[];
+
+  constructor(stepId: number, activeHolds: HoldRecord[]) {
     super(`Step ${stepId}: FLAG acknowledgment is unavailable while active HOLDs remain on this step.`);
     this.name = "FlagAcknowledgmentBlockedByHoldError";
+    this.stepId = stepId;
+    this.activeHolds = activeHolds;
   }
 }
 
@@ -127,7 +137,7 @@ export function resolveHold(state: GuidedWorkflowState, holdCode: string, resolu
  */
 export function acknowledgeFlag(state: GuidedWorkflowState, flagCode: string): GuidedWorkflowState {
   if (state.activeHolds.length > 0) {
-    throw new FlagAcknowledgmentBlockedByHoldError(state.currentStep);
+    throw new FlagAcknowledgmentBlockedByHoldError(state.currentStep, state.activeHolds);
   }
 
   const targetFlag = state.activeFlags.find((f) => f.flagCode === flagCode && f.stepId === state.currentStep);
