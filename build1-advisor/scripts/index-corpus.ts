@@ -6,8 +6,9 @@
 // section (##) and subsection (###) granularity, embeds each chunk with
 // text-embedding-3-small, and upserts to Pinecone namespace "kalder-v0-2-0".
 //
-// Run with: npx tsx scripts/index-corpus.ts (from build1-advisor/)
+// Run with: npx tsx --env-file=.env.local scripts/index-corpus.ts (from build1-advisor/)
 // Requires PINECONE_API_KEY, PINECONE_INDEX_NAME, OPENAI_API_KEY in .env.local.
+// --env-file is required — tsx does not auto-load .env.local on its own.
 
 import { readdirSync, readFileSync } from "fs";
 import path from "path";

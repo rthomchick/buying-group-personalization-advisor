@@ -209,7 +209,7 @@ If query contains a section key (`§CA`, `§12`, `§SA`, `§4`, etc.), route dir
 - Provider: Pinecone (serverless tier)
 - Embedding model: `text-embedding-3-small`
 - Namespace: `kalder-v0-2-0`
-- Minimum cosine similarity threshold: **0.75**
+- Minimum cosine similarity threshold: **0.45** (calibrated against text-embedding-3-small on Kalder corpus)
 - Below threshold: return low-confidence notice alongside results. Never silently return low-confidence results as authoritative.
 
 Chunk metadata shape:
