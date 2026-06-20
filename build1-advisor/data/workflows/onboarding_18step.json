@@ -58,7 +58,9 @@
       ],
       "deferral_consequence": "If deferred — tal_program_status computation is blocked. Account receives no personalization above Level 5 until resolved.",
       "category": "A",
-      "validation_type": "mapping_table"
+      "validation_type": "mapping_table",
+      "allowed_values": ["suspect", "prospect", "customer", "customer_via_partner", "customer_subsidiary"],
+      "allowed_values_note": "Must match validation_rule prose — keep in sync if either changes"
     },
     {
       "step_id": 4,
@@ -79,7 +81,9 @@
       ],
       "deferral_consequence": "Cannot be meaningfully deferred — program status is required for all downstream routing.",
       "category": "A",
-      "validation_type": "mapping_table"
+      "validation_type": "mapping_table",
+      "allowed_values": ["active_prospect", "post_sale", "out_of_program"],
+      "allowed_values_note": "Must match validation_rule prose — keep in sync if either changes"
     },
     {
       "step_id": 5,
@@ -134,7 +138,10 @@
         { "code": "F-05", "condition": "Fires if msp or partner is selected but no channel-variant Outreach sequence has been confirmed configured.", "consequence": "Sales activation will fall back to direct routing until channel-variant sequences are configured." }
       ],
       "deferral_consequence": "If deferred — direct routing applies to all sales activation alerts. MSP/partner channel routing is unavailable.",
-      "category": "A"
+      "category": "A",
+      "validation_type": "enum",
+      "allowed_values": ["direct", "msp", "partner"],
+      "allowed_values_note": "Must match validation_rule prose — keep in sync if either changes. Tagged \"enum\" (fixed value set) rather than \"mapping_table\" (steps 3/4/10) — tal_channel is not a client-provided mapping, per the original spec's own framing."
     },
     {
       "step_id": 8,
@@ -190,7 +197,9 @@
       ],
       "deferral_consequence": "If deferred — progression_win_now cohort is inactive. Documented as S-07 in POC simplification register. Named gap written to Configuration Gap Record.",
       "category": "B",
-      "validation_type": "mapping_table"
+      "validation_type": "mapping_table",
+      "allowed_values": [5, 6, 7],
+      "allowed_values_note": "Must match validation_rule prose — keep in sync if either changes. Integer opportunity-stage codes, not an enum-resolution check like steps 3/4 — H-01/H-05 fire on mapping-table ABSENCE when sfdc_opportunity_created is true, not on a submitted value failing to resolve to one of these integers."
     },
     {
       "step_id": 11,
