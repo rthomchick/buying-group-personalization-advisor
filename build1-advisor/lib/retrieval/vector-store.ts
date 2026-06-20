@@ -1,10 +1,10 @@
-// Pinecone client — Store 1, namespace kalder-v0-2-0, similarity threshold 0.45
+// Pinecone client — Store 1, namespace kalder-v0-2-0, similarity threshold 0.38
 //
 // Source of truth: knowledge/specs/kalder_layer2_developer_brief.md, "Store 1: Vector Index"
 // - Provider: Pinecone (serverless tier)
 // - Embedding model: text-embedding-3-small
 // - Namespace: kalder-v0-2-0
-// - Minimum cosine similarity threshold: 0.45
+// - Minimum cosine similarity threshold: 0.38
 // - Below threshold: return low-confidence notice alongside results. Never silently
 //   return below-threshold results as authoritative.
 
@@ -13,10 +13,13 @@ import OpenAI from "openai";
 
 export const VECTOR_NAMESPACE = "kalder-v0-2-0";
 export const EMBEDDING_MODEL = "text-embedding-3-small";
-// Calibrated against text-embedding-3-small on Kalder corpus — 0.45 reflects
-// observed score distribution for relevant matches. 0.75 design target was
-// pre-index and does not apply to this embedding model on technical prose.
-export const SIMILARITY_THRESHOLD = 0.45;
+// Calibrated against text-embedding-3-small on Kalder corpus. Lowered from
+// 0.45 to 0.38 after observing correct top-1 matches (e.g. "what is
+// differential_insufficient" -> doc5 §1.2, the governing section) scoring
+// 0.40 — below the original threshold despite being the right answer. 0.75
+// design target was pre-index and does not apply to this embedding model on
+// technical prose.
+export const SIMILARITY_THRESHOLD = 0.38;
 
 export type ChunkMetadata = {
   document_id: string;

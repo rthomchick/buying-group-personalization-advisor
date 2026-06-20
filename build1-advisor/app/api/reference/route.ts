@@ -100,13 +100,14 @@ async function answerFromVectorStore(
   }${topMatch.metadata.section_key ? ` | Data Model ${topMatch.metadata.section_key} v${DATA_MODEL_VERSION}` : ` | v${DATA_MODEL_VERSION}`}`;
 
   if (!topMatch.aboveThreshold) {
+    // belowThreshold: true is the signal — the client renders its own
+    // [LOW-CONFIDENCE] banner from that flag (ResultCard.tsx). The answer
+    // text itself must not also carry the label, or it renders twice.
     return NextResponse.json(
       {
         outcome: "answered",
         queryType: routing.queryType,
-        answer:
-          `[LOW-CONFIDENCE — best match scored ${topMatch.score.toFixed(4)}, below the ${SIMILARITY_THRESHOLD} ` +
-          `similarity threshold. Not presented as authoritative.]\n\n${topMatch.metadata.chunk_text}`,
+        answer: topMatch.metadata.chunk_text,
         source: sourceLabel,
         related,
         belowThreshold: true,
