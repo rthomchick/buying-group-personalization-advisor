@@ -112,7 +112,7 @@ export function StateInputPanel({ state, onChange }: StateInputPanelProps) {
           </select>
         </Field>
 
-        <Field label="differential_insufficient">
+        <Field label="diff_insufficient">
           <select
             className={selectClass()}
             value={String(state.differential_insufficient)}
