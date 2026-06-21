@@ -19,8 +19,18 @@
 // the Level 4 account activity (6001–6004), so a holdback visitor's actual
 // classified level is never served — this is what keeps the control group
 // clean (§7.1, §7.5, §7.7). The corpus governs over the brief's pseudocode.
+//
+// Three-axis evaluation (lib/three-axis.ts, Document 5 §2.2) is only called
+// at the Level 1 and Level 2 return points — three-axis personalization
+// requires HIGH or MEDIUM role confidence, which only those two levels carry.
+// Every other routing path (consent gate, non-TAL, differential override,
+// holdback, Level 3, Level 4) gets buildResult()'s inactive default
+// ({ active: false, mode: null, jtbd_code: null }) rather than calling
+// evalThreeAxis() — calling it there would be evaluating a question that
+// doesn't apply at those levels, not just returning a negative answer.
 
 import type { VisitorState, DecisioningResult, TraceStep } from "@kalder/shared";
+import { evalThreeAxis } from "./three-axis";
 
 function step(stepName: string, result: string, corpusAuthority: string, value?: string | boolean | number): TraceStep {
   return { step: stepName, result, corpus_authority: corpusAuthority, value };
@@ -162,7 +172,15 @@ export function runDecisioningEngine(state: VisitorState): DecisioningResult {
   const level1Eligible = !pendingCoverage && state.confidence_tier === "HIGH" && state.solution_category_coverage_status !== "partial";
   if (level1Eligible) {
     trace.push(step("level_1_check", "PASS — confidence_tier: HIGH, coverage sufficient → Level 1", "Document 5 §1.3 (Level 1)"));
-    return buildResult({ fallback_level: 1, pending_solution_fallback: pendingCoverage, routing_path: "level_1", trace });
+    const threeAxisResult = evalThreeAxis(state, 1);
+    return buildResult({
+      fallback_level: 1,
+      pending_solution_fallback: pendingCoverage,
+      three_axis_active: threeAxisResult.active,
+      three_axis_result: threeAxisResult,
+      routing_path: "level_1",
+      trace,
+    });
   }
   trace.push(
     step(
@@ -181,7 +199,15 @@ export function runDecisioningEngine(state: VisitorState): DecisioningResult {
   const level2Eligible = !pendingCoverage && state.confidence_tier === "MEDIUM" && state.solution_category_coverage_status !== "partial";
   if (level2Eligible) {
     trace.push(step("level_2_check", "PASS — confidence_tier: MEDIUM, coverage sufficient → Level 2", "Document 5 §1.3 (Level 2)"));
-    return buildResult({ fallback_level: 2, pending_solution_fallback: pendingCoverage, routing_path: "level_2", trace });
+    const threeAxisResult = evalThreeAxis(state, 2);
+    return buildResult({
+      fallback_level: 2,
+      pending_solution_fallback: pendingCoverage,
+      three_axis_active: threeAxisResult.active,
+      three_axis_result: threeAxisResult,
+      routing_path: "level_2",
+      trace,
+    });
   }
   trace.push(
     step(
