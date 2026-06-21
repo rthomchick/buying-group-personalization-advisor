@@ -49,32 +49,40 @@ export type ParseUrlParamsResult = { state: VisitorState; errors: null } | { sta
  * Parses and validates the full Build 1 -> Build 2 URL parameter schema into
  * a VisitorState. Returns errors (never a partial state) when any required
  * parameter is missing or fails enum/boolean validation.
+ *
+ * prefix is prepended to every param name before reading — this is how the
+ * comparison view (app/comparison/page.tsx) reads a second visitor state from
+ * the same URLSearchParams using "r_"-prefixed names (r_role, r_tier, etc.)
+ * without duplicating this entire parser. Defaults to "" for the main
+ * simulator's unprefixed schema.
  */
-export function parseUrlParamsDetailed(searchParams: URLSearchParams): ParseUrlParamsResult {
+export function parseUrlParamsDetailed(searchParams: URLSearchParams, prefix: string = ""): ParseUrlParamsResult {
   const errors: UrlParamValidationError[] = [];
 
   function requireEnum<T extends string>(param: string, allowed: readonly T[]): T | undefined {
-    const raw = searchParams.get(param);
+    const fullParam = `${prefix}${param}`;
+    const raw = searchParams.get(fullParam);
     if (raw === null) {
-      errors.push({ param, reason: "missing" });
+      errors.push({ param: fullParam, reason: "missing" });
       return undefined;
     }
     if (!isOneOf(raw, allowed)) {
-      errors.push({ param, reason: "invalid_enum", value: raw });
+      errors.push({ param: fullParam, reason: "invalid_enum", value: raw });
       return undefined;
     }
     return raw;
   }
 
   function requireBoolean(param: string): boolean | undefined {
-    const raw = searchParams.get(param);
+    const fullParam = `${prefix}${param}`;
+    const raw = searchParams.get(fullParam);
     if (raw === null) {
-      errors.push({ param, reason: "missing" });
+      errors.push({ param: fullParam, reason: "missing" });
       return undefined;
     }
     const parsed = parseBoolean(raw);
     if (parsed === null) {
-      errors.push({ param, reason: "invalid_boolean", value: raw });
+      errors.push({ param: fullParam, reason: "invalid_boolean", value: raw });
       return undefined;
     }
     return parsed;
@@ -95,21 +103,21 @@ export function parseUrlParamsDetailed(searchParams: URLSearchParams): ParseUrlP
   // brief example: "&bj_confirmed=" with no value). Present and non-empty ->
   // that string, used as a JTBD code by callers; this module does not
   // validate it against §17 JTBD_CODES.
-  const bjConfirmedRaw = searchParams.get("bj_confirmed");
+  const bjConfirmedRaw = searchParams.get(`${prefix}bj_confirmed`);
   const buying_job_confirmed = bjConfirmedRaw === null || bjConfirmedRaw === "" ? null : bjConfirmedRaw;
 
   // consent: optional per VisitorState's "full" | "functional_only" |
   // "declined" | null union. Absent -> null (never permissive — matches the
   // decisioning engine's consent_gate treatment of null as not full/functional_only).
   // Present but invalid -> a real validation error, never silently null'd.
-  const consentRaw = searchParams.get("consent");
+  const consentRaw = searchParams.get(`${prefix}consent`);
   let visitor_consent_state: VisitorState["visitor_consent_state"] | undefined;
   if (consentRaw === null || consentRaw === "") {
     visitor_consent_state = null;
   } else if (isOneOf(consentRaw, CONSENT_VALUES)) {
     visitor_consent_state = consentRaw;
   } else {
-    errors.push({ param: "consent", reason: "invalid_enum", value: consentRaw });
+    errors.push({ param: `${prefix}consent`, reason: "invalid_enum", value: consentRaw });
   }
 
   if (
