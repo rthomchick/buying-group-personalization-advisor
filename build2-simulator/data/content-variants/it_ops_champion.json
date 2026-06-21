@@ -1,2 +1,63 @@
-// Pre-authored content variant descriptions for it_operations / champion /
-// targeted and engaged buying stages (POC demo scenario)
+{
+  "_comment": "Pre-authored content variant descriptions for it_operations / champion / targeted buying stage (POC demo scenario — Contact A and Contact B). Source: knowledge/kalder_doc4_content_model_and_taxonomy.md Section 5 (module type intended_axes and fallback behavior); knowledge/kalder_doc5_personalization_decisioning_rules.md Section 3 (per-module selection logic). Solution-category-level (Level 3) and account/brand-level (Level 4/5) descriptions are role-agnostic by design — per the module spec's own fallback behavior, not a simplification.",
+  "solution_category": "it_operations",
+  "role": "champion",
+  "buying_stage": "targeted",
+  "modules": {
+    "hero": {
+      "level_1_2": "Stop firefighting incidents one Slack thread at a time — see every IT operations signal your team needs in one place, built for the people who own uptime.",
+      "level_3": "IT Operations teams use Kalder to cut incident response time and reduce tool sprawl across monitoring, alerting, and on-call workflows.",
+      "level_4": "Kalder helps technical teams operate with less noise and more signal.",
+      "level_5": "Kalder — the buying group personalization platform for B2B revenue teams."
+    },
+    "benefits": {
+      "level_1_2": "Built for Champions driving IT operations modernization: consolidate alert noise, cut mean time to resolution, and give your team one source of truth instead of five disconnected dashboards.",
+      "level_3": "IT Operations buyers choose Kalder to reduce tool sprawl and cut incident response time.",
+      "level_4": "Kalder reduces operational noise and gives technical teams a single source of truth.",
+      "level_5": "Kalder helps revenue and technical teams work from the same signal."
+    },
+    "cta": {
+      "level_1": "See your incident response time cut in half — book a 20-minute walkthrough for IT Operations Champions evaluating supplier fit.",
+      "level_2": "Curious what Kalder looks like for an IT operations team like yours? See a guided demo.",
+      "level_3": "Explore IT Operations",
+      "level_4": "Learn more about Kalder",
+      "level_5": "Get started with Kalder"
+    },
+    "gated_assets": {
+      "level_1_2": "IT Operations Champion's Evaluation Checklist — the five questions to ask before shortlisting an alerting and incident-response vendor (gated_email).",
+      "level_3": "IT Operations: Reducing Alert Fatigue — solution-category overview (ungated).",
+      "level_4": "Kalder Platform Overview — brand-level capability summary (ungated)."
+    },
+    "proof": {
+      "level_1_2": "\"We cut our mean time to resolution by 40% in the first quarter.\" — IT Operations Director, mid-market SaaS company (peer_case, supplier_selection-stage proof).",
+      "level_3": "IT Operations teams report measurable reductions in incident response time after adopting Kalder."
+    },
+    "narrative": {
+      "level_1_2": "Kalder unifies the operational signal IT teams already have — alerts, incidents, on-call load — into one buying-group-aware view, so Champions can make the case for consolidation without another swivel-chair tool.",
+      "level_3": "Kalder unifies operational signal across IT Operations tooling into a single view.",
+      "level_4": "Kalder brings together the operational data technical teams already generate."
+    },
+    "problem_framing": {
+      "level_1_2": "Your team is drowning in alerts from five different tools, and nobody can tell which ones actually matter until something breaks.",
+      "level_3": "IT Operations teams struggle with alert fatigue and fragmented incident visibility across tools."
+    },
+    "outcomes": {
+      "level_1_2": "Your on-call engineers stop context-switching between dashboards mid-incident, and your team starts measuring MTTR in minutes instead of hours.",
+      "level_3": "IT Operations teams using Kalder see faster incident resolution and less tool-switching overhead."
+    },
+    "use_cases": {
+      "level_1_2": "A Champion at the supplier-selection stage uses Kalder to build the internal business case: consolidating three monitoring tools into one signal source, with before/after MTTR data ready for the budget conversation.",
+      "level_3": "IT Operations teams use Kalder to consolidate monitoring and incident response tooling."
+    },
+    "trust_signals": {
+      "level_1_2": "SOC 2 Type II certified; integrates with your existing on-call and incident management stack without requiring a forklift migration.",
+      "level_3": "Kalder maintains SOC 2 Type II certification across all solution categories.",
+      "level_4": "Kalder is SOC 2 Type II certified and built for enterprise security requirements."
+    },
+    "progressive_disclosure": {
+      "level_2": "You seem to be evaluating as an IT Operations decision-maker. Is that right? Tell us more to see content built for your role.",
+      "level_3": "Tell us who you are so we can tailor what you see next.",
+      "level_4": "What brings you to Kalder today? A quick answer helps us show you the most relevant information."
+    }
+  }
+}
