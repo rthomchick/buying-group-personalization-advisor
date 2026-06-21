@@ -8,10 +8,13 @@
 
 "use client";
 
+import { useState } from "react";
 import contactA from "@/data/contacts/contact_a.json";
 import contactB from "@/data/contacts/contact_b.json";
 import contactC from "@/data/contacts/contact_c.json";
 import type { VisitorState } from "@kalder/shared";
+
+type ActiveContact = "A" | "B" | "C" | null;
 
 export type StateInputPanelProps = {
   state: VisitorState;
@@ -31,6 +34,12 @@ function selectClass(): string {
   return "rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground";
 }
 
+function contactButtonClass(isActive: boolean): string {
+  return isActive
+    ? "rounded-md border border-kalder-accent bg-kalder-accent px-2 py-1 text-xs text-white hover:bg-kalder-accent/90"
+    : "rounded-md border border-kalder-accent/40 bg-kalder-accent/10 px-2 py-1 text-xs text-kalder-accent hover:bg-kalder-accent/20";
+}
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
@@ -41,8 +50,16 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 export function StateInputPanel({ state, onChange }: StateInputPanelProps) {
+  const [activeContact, setActiveContact] = useState<ActiveContact>(null);
+
   function set<K extends keyof VisitorState>(key: K, value: VisitorState[K]) {
+    setActiveContact(null);
     onChange({ ...state, [key]: value });
+  }
+
+  function loadContact(contact: ActiveContact, visitorState: VisitorState) {
+    setActiveContact(contact);
+    onChange(visitorState);
   }
 
   return (
@@ -52,22 +69,22 @@ export function StateInputPanel({ state, onChange }: StateInputPanelProps) {
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => onChange(contactA.visitor_state as VisitorState)}
-            className="rounded-md border border-kalder-accent/40 bg-kalder-accent/10 px-2 py-1 text-xs text-kalder-accent hover:bg-kalder-accent/20"
+            onClick={() => loadContact("A", contactA.visitor_state as VisitorState)}
+            className={contactButtonClass(activeContact === "A")}
           >
             Load Contact A
           </button>
           <button
             type="button"
-            onClick={() => onChange(contactB.visitor_state as VisitorState)}
-            className="rounded-md border border-kalder-accent/40 bg-kalder-accent/10 px-2 py-1 text-xs text-kalder-accent hover:bg-kalder-accent/20"
+            onClick={() => loadContact("B", contactB.visitor_state as VisitorState)}
+            className={contactButtonClass(activeContact === "B")}
           >
             Load Contact B
           </button>
           <button
             type="button"
-            onClick={() => onChange(contactC.visitor_state as VisitorState)}
-            className="rounded-md border border-kalder-accent/40 bg-kalder-accent/10 px-2 py-1 text-xs text-kalder-accent hover:bg-kalder-accent/20"
+            onClick={() => loadContact("C", contactC.visitor_state as VisitorState)}
+            className={contactButtonClass(activeContact === "C")}
           >
             Load Contact C
           </button>
