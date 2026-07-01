@@ -219,11 +219,35 @@ function state(overrides: Partial<VisitorState>): VisitorState {
     state({ tal_member: true, confidence_tier: "UNKNOWN", solution_category: null as unknown as VisitorState["solution_category"] }),
   );
   ok(
-    "Level 4 trace includes 8 steps (consent, tal, p0, coverage, holdback, level1, level2, level4 — " +
-      "level_3_check pushes no trace entry when solution_category is absent, only on its PASS branch)",
-    rLevel4.trace.length === 8,
+    "Level 4 trace includes all 9 steps (consent, tal, p0, coverage, holdback, level1, level2, level3, level4) — " +
+      "CHANGED: level_3_check now pushes a FAIL trace entry on fall-through, previously silently omitted " +
+      "(this assertion was 8 before the Step 7 trace-completeness fix; updated here, not weakened — the prior " +
+      "8-count was itself the bug this fix closes, per the file's own documented contract that every step " +
+      "pushes a trace entry even when it does not terminate evaluation)",
+    rLevel4.trace.length === 9,
   );
   ok("last trace entry for Level 4 path is level_4_check", rLevel4.trace[rLevel4.trace.length - 1].step === "level_4_check");
+
+  // Dedicated coverage for the Step 7 (level_3_check) fall-through path itself,
+  // asserting the new FAIL entry's shape matches the PASS branch's schema
+  // exactly (same step name, same "PASS —"/"FAIL —" prefix convention, same
+  // corpus_authority citation, using the shared step() helper).
+  const level3FailEntry = rLevel4.trace.find((t) => t.step === "level_3_check");
+  ok("level_3_check FAIL entry is now present on fall-through (previously missing entirely)", level3FailEntry !== undefined);
+  ok("level_3_check FAIL entry uses the FAIL — prefix convention, matching every other non-terminating step", level3FailEntry?.result.startsWith("FAIL —") === true);
+  ok(
+    "level_3_check FAIL entry cites the same corpus_authority as its PASS branch (Document 5 §1.6 Step 4; §4 FALLBACK_CASCADE)",
+    level3FailEntry?.corpus_authority === "Document 5 §1.6 (Step 4); §4 FALLBACK_CASCADE",
+  );
+  ok(
+    "level_3_check FAIL entry sits between holdback_check/level_2_check and level_4_check in trace order",
+    rLevel4.trace.findIndex((t) => t.step === "level_3_check") === rLevel4.trace.findIndex((t) => t.step === "level_4_check") - 1,
+  );
+
+  // Confirm the fix is trace-completeness only — routing outcome for the
+  // fall-through case is byte-identical to before.
+  ok("Level 4 fall-through still routes to fallback_level 4 (routing outcome unchanged by this fix)", rLevel4.fallback_level === 4);
+  ok("Level 4 fall-through still uses routing_path level_4 (unchanged)", rLevel4.routing_path === "level_4");
 }
 
 // ---------------------------------------------------------------------------

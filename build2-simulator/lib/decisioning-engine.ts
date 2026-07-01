@@ -229,6 +229,7 @@ export function runDecisioningEngine(state: VisitorState): DecisioningResult {
     trace.push(step("level_3_check", "PASS — solution-category interest identified → Level 3", "Document 5 §1.6 (Step 4); §4 FALLBACK_CASCADE"));
     return buildResult({ fallback_level: 3, pending_solution_fallback: pendingCoverage, routing_path: "level_3", trace });
   }
+  trace.push(step("level_3_check", "FAIL — no solution-category interest signal", "Document 5 §1.6 (Step 4); §4 FALLBACK_CASCADE"));
 
   // Step 8 — Level 4 default. Document 5 §1.6 Step 4 (tal_member true, no
   // solution-category interest signal) and §1.3 (Level 4 activation conditions).
