@@ -109,7 +109,7 @@ tal_channel: "direct"
   /corpus/                     ← Pinecone-indexed corpus chunks
   /structured/
     jtbd_codes.json            ← 131 records
-    cross_role_weights.json    ← 19 records
+    cross_role_weights.json    ← 20 records
     client_attribute_map.json  ← 36 records
     module_types.json          ← 11 records
     decay_multipliers.json     ← 4 records
@@ -957,7 +957,7 @@ These values must be stated explicitly and sourced:
 | Value | Figure | Source |
 |---|---|---|
 | `CLIENT_ATTRIBUTE_MAP` attributes | 36 (across 3 planes) | Document 8, Section 2 / §CA |
-| Behavioral signals in `CROSS_ROLE_WEIGHTS` | 19 | Document 2 / §7 |
+| Behavioral signals in `CROSS_ROLE_WEIGHTS` | 20 | Document 2 / §7 |
 | JTBD codes | 131 (across 5 solution categories) | §17 JTBD_CODES |
 | Campaign cohorts | 4 (education, acquisition, progression_early_to_mature, progression_win_now) | §6 |
 | Target activity priority ranges | 6 (1000–1999 through 6000–6999) | Document 5, Section 4.2 |

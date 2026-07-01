@@ -69,7 +69,7 @@ Nine integrations are required for full production capability. Each involves a d
 
 | Integration | Direction | Depth |
 |---|---|---|
-| Adobe Analytics → AEP | Inbound | Adobe Analytics source connector; 19 behavioral event types mapped to AEP schema |
+| Adobe Analytics → AEP | Inbound | Adobe Analytics source connector; 20 behavioral event types mapped to AEP schema |
 | Marketo → AEP | Inbound | Identity resolution only — email-to-contact_id mapping for known visitor linkage |
 | AEP scoring pipeline | Internal | Seven-step classify_visitor() function; three-tier confidence hierarchy; holdback group assignment |
 | AEP → Adobe Target | Outbound | Audience segment activation; four campaign cohorts; contact-plane and account-plane attributes |
@@ -137,7 +137,7 @@ The Kalder program operates across five functional layers. Every system that tou
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  COLLECTION LAYER                                           │
-│  Adobe Analytics ──→ AEP (behavioral events, 19 types)     │
+│  Adobe Analytics ──→ AEP (behavioral events, 20 types)     │
 │  Segment (Twilio) ──→ AEP (event routing)                  │
 │  Kafka ──→ AEP (Salesforce opportunity stage, near-RT)      │
 │  Marketo ──→ AEP (identity resolution: email → contact_id) │
@@ -193,7 +193,7 @@ For each of the nine integrations, the table below specifies direction, which sy
 
 ### 1.3 Data Flow by Layer
 
-**Signal collection to AEP (I-01, I-02, I-09).** Adobe Analytics captures 19 behavioral event types from kalder.com page views and interactions. Events are routed to AEP via the Adobe Analytics source connector in real time. Marketo contributes one inbound flow — identity resolution — linking known visitor email addresses to resolved `contact_id` values in the AEP identity graph. This enables the contact-plane scoring model to assign behavioral signals to named individuals rather than anonymous cookies. Kafka provides a separate inbound stream carrying Salesforce opportunity stage data, enabling `progression_win_now` cohort differentiation independent of the behavioral scoring pipeline.
+**Signal collection to AEP (I-01, I-02, I-09).** Adobe Analytics captures 20 behavioral event types from kalder.com page views and interactions. Events are routed to AEP via the Adobe Analytics source connector in real time. Marketo contributes one inbound flow — identity resolution — linking known visitor email addresses to resolved `contact_id` values in the AEP identity graph. This enables the contact-plane scoring model to assign behavioral signals to named individuals rather than anonymous cookies. Kafka provides a separate inbound stream carrying Salesforce opportunity stage data, enabling `progression_win_now` cohort differentiation independent of the behavioral scoring pipeline.
 
 **CDP classification (I-03).** AEP runs the seven-step classify_visitor() function on each session that passes the quality gates. The function applies decay-weighted behavioral signals, applies the differential_insufficient check, assigns confidence tier, and writes all classified attributes to the AEP contact profile. Tier 1 ML classifier output (when active) is applied at Step 7 of the scoring pipeline, overriding Tier 3 behavioral assignments when a higher-authority Tier 1 classification is available. Holdback group assignment is set once at first TAL identification and persists — it is never reassigned.
 
@@ -276,7 +276,7 @@ Sessions that fail any quality gate produce no signal observations. Prior signal
 | 91–180 days | 0.3× |
 | Over 180 days | 0.0× (zero weight; not scored; retained until 365-day deletion) |
 
-**The 19 legitimate_interest behavioral signals and their classification weights** are specified in Document 2 Section 3 and §12 SCORING_RULES. Configure each signal as a named AEP event type with the Analytics event name, AEP schema field, and pre-scoring filter rules from Document 2. Platform Engineers must map each signal to its §CA canonical attribute name — do not use Analytics variable names directly in the AEP schema.
+**The 20 legitimate_interest behavioral signals and their classification weights** are specified in Document 2 Section 3 and §12 SCORING_RULES. Configure each signal as a named AEP event type with the Analytics event name, AEP schema field, and pre-scoring filter rules from Document 2. Platform Engineers must map each signal to its §CA canonical attribute name — do not use Analytics variable names directly in the AEP schema.
 
 ### 2.4 Scoring Pipeline Implementation
 
@@ -816,7 +816,7 @@ This section specifies the consent and privacy architecture governing signal col
 
 Signal consent is structured across two tracks based on the lawful basis available for each signal type.
 
-**Track 1 — Legitimate Interest (LIA complete; all 19 first-party signals):** The nineteen first-party behavioral signals collected from kalder.com page interactions are processed under GDPR Article 6(1)(f) (legitimate interest) and fall outside CCPA opt-out scope. A Legitimate Interest Assessment (LIA) is documented and retained per Document 9 Section 7. These signals may be collected from any visitor whose `visitor_consent_state` is `functional_only` or `full`. They do not require explicit visitor opt-in.
+**Track 1 — Legitimate Interest (LIA complete; all 20 first-party signals):** The twenty first-party behavioral signals collected from kalder.com page interactions are processed under GDPR Article 6(1)(f) (legitimate interest) and fall outside CCPA opt-out scope. A Legitimate Interest Assessment (LIA) is documented and retained per Document 9 Section 7. These signals may be collected from any visitor whose `visitor_consent_state` is `functional_only` or `full`. They do not require explicit visitor opt-in.
 
 **Track 2 — DPA Required (one signal: `demandbase_firmographic_match`):** The Demandbase reverse-IP firmographic enrichment signal requires: (1) completion of a Data Processing Agreement (DPA) review with Demandbase confirming a 90-day maximum retention window, AND (2) `visitor_consent_state: full` (explicit consent from the visitor). Both conditions must be satisfied before `demandbase_firmographic_match` activates. Track 2 DPA review is a named prerequisite — it is not a day-one activity and it is not satisfied by a Demandbase service agreement alone. A Demandbase DPA specifying a retention window exceeding 90 days does not satisfy the Track 2 gate and must be renegotiated. Authority: Document 9 §P; data model v0.2.0 AR-03.
 
@@ -830,7 +830,7 @@ Signal consent is structured across two tracks based on the lawful basis availab
 |---|---|
 | `null` or absent | Apply `declined` behavior — no signal collection, no scoring, Level 5 experience. Null is never permissive. |
 | `declined` | No signal collection, no scoring, Level 5 experience. |
-| `functional_only` | 19 `legitimate_interest` signals collected and scored. `explicit_consent_required` signals suppressed. |
+| `functional_only` | 20 `legitimate_interest` signals collected and scored. `explicit_consent_required` signals suppressed. |
 | `full` | All signals collected and scored (subject to Track 2 DPA completion for firmographic signal). |
 
 **CMP configuration requirement:** The consent management platform must write `visitor_consent_state` to the AEP contact profile before the visitor's second page load. A visitor whose consent state is not written before the second page load receives `declined` treatment for their first session. The CMP is the authoritative source for consent state — not the AEP pipeline, not Demandbase.
@@ -850,12 +850,12 @@ Signal consent is structured across two tracks based on the lawful basis availab
 > This is the most common misconfiguration in multi-region consent architecture. The resolution is to confirm that the CMP is configured to perform IP-based jurisdiction detection for every session independently — not to inherit jurisdiction from the account's `tal_region` attribute. Authority: Document 9 Section 4.2; Document 3 Section 7.3; Document 8 Section 10.3.
 
 **GDPR treatment for EU / UK / EEA visitors:**
-- 19 `legitimate_interest` first-party signals: processed under GDPR Article 6(1)(f) without requiring affirmative consent action from the visitor
+- 20 `legitimate_interest` first-party signals: processed under GDPR Article 6(1)(f) without requiring affirmative consent action from the visitor
 - `demandbase_firmographic_match` (`explicit_consent_required`): requires GDPR Article 6(1)(a) consent (freely given, specific, informed, unambiguous) before collection or processing
 - Default consent state for GDPR-jurisdiction visitors without explicit consent: `functional_only`
 
 **CCPA treatment for California-resident visitors:**
-- 19 `legitimate_interest` signals: unaffected by CCPA opt-out (first-party behavioral signals on owned web property; not sale or sharing of personal information)
+- 20 `legitimate_interest` signals: unaffected by CCPA opt-out (first-party behavioral signals on owned web property; not sale or sharing of personal information)
 - `demandbase_firmographic_match`: requires opt-out notice before activation
 - CCPA jurisdiction is determined by California IP address — not by any account-plane attribute
 
@@ -927,7 +927,7 @@ Client-provided data inputs are classified into three categories: Category A (bl
 3. **`TITLE_ROLE_MAP` minimum** — 10 title entries per solution category spanning all 5 buying group roles
 4. **`visitor_consent_state` CMP configuration** — Confirmed that the consent management platform writes this attribute to AEP before any visitor's second page load
 5. **Salesforce field mapping** — `tal_region`, `tal_open_pipeline`, `tal_channel`, `sfdc_opportunity_created` field mappings confirmed in Salesforce for AEP ingestion
-6. **Adobe Analytics event configuration** — At least 5 of the 19 behavioral signal event types confirmed firing correctly in Analytics to AEP
+6. **Adobe Analytics event configuration** — At least 5 of the 20 behavioral signal event types confirmed firing correctly in Analytics to AEP
 7. **Holdback group configuration** — Confirmed before any contacts enter the pipeline (cannot be retroactively applied)
 8. **Salesforce custom field provisioning** — 21 minimum custom fields for convergence point alerts (3 fields × 7 convergence points); `recommended_action` field minimum 280 characters
 9. **Content authority** — Named Content Ops Lead with authority to commission, review, and approve Content Module nodes in Sanity

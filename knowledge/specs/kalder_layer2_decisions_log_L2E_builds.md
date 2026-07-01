@@ -490,7 +490,7 @@ Nine integrations documented: Adobe Analytics → AEP, Marketo → AEP (identity
 Production replacement for S-01 and S-02. Seven subsections:
 - 2.1: B2B Edition licensing prerequisite (account-contact relationship model required; standard CDP cannot represent composite classification key)
 - 2.2: Schema configuration (36 `CLIENT_ATTRIBUTE_MAP` attributes across three planes; full registry from Document 8 Section 2 reproduced)
-- 2.3: Signal collection architecture (19 behavioral signals; data source, Analytics event name, AEP schema field, pre-scoring filter rules per signal)
+- 2.3: Signal collection architecture (20 behavioral signals; data source, Analytics event name, AEP schema field, pre-scoring filter rules per signal)
 - 2.4: Scoring pipeline implementation (seven-step `classify_visitor()` function; scoring trigger; AEP attributes written per run; re-scoring trigger for zero-party events)
 - 2.5: Tier 1 ML classifier specification (training data requirements; integration point in scoring pipeline; Norris cold-start requirement: minimum data threshold named honestly; interim operating state defined — Tier 3 only, MEDIUM ceiling)
 - 2.6: Holdback group assignment (~10% rate; random assignment at first TAL identification event; must be configured before any contacts enter pipeline)
@@ -537,7 +537,7 @@ Production replacement for S-07. Three subsections:
 
 **Section 8 — Consent Architecture** *(Reader 3 primary; Reader 2 supporting)*  
 Garcia leads. Production replacement for S-03 and S-09 compliance dimensions. Five subsections:
-- 8.1: Two-track signal consent structure (Track 1: LIA complete for all 19 first-party signals; Track 2: DPA review required for `demandbase_firmographic_match`; both Track 2 completion AND `visitor_consent_state: full` required for firmographic bonus)
+- 8.1: Two-track signal consent structure (Track 1: LIA complete for all 20 first-party signals; Track 2: DPA review required for `demandbase_firmographic_match`; both Track 2 completion AND `visitor_consent_state: full` required for firmographic bonus)
 - 8.2: `visitor_consent_state` pre-pipeline gate (four scenarios; null/absent = declined, never permissive; CMP must deliver consent event before visitor's second page load)
 - 8.3: GDPR jurisdiction determination (by visitor IP address, **not** by `tal_region` — must appear prominent; most common misconfiguration in multi-region consent architecture)
 - 8.4: DSR deletion cascade (four steps; 72-hour SLA for AEP/Salesforce/Marketo; 168-hour SLA for Outreach; deletion confirmation record is the legal artifact)
