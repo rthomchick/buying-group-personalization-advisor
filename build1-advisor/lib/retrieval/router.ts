@@ -16,7 +16,7 @@
 // QT-1 or QT-3 — both are Store 2 — never to a Store-1-only type.
 
 import { normalizeQuery } from "./normalizer";
-import { checkDisambiguation, type DisambiguationCheckResult } from "./disambiguation";
+import { checkDisambiguation, type DisambiguationCheckResult, type DisambiguationTerm } from "./disambiguation";
 import { resolveContext, type ContextResolution, type SectionKeyMatch } from "./context-resolver";
 
 export type QueryType = "QT-1" | "QT-2" | "QT-3" | "QT-4" | "QT-5" | "QT-6";
@@ -50,12 +50,18 @@ export type RoutingResult =
  * Stage 4 of the pre-retrieval pipeline. Runs the full normalize → disambiguate →
  * resolve-context sequence and assigns a QT-1..QT-6 classification with its
  * corresponding store target.
+ *
+ * resolvedTerm: when the caller has already shown the disambiguation prompt for
+ * a term and the practitioner picked an option, the clarified query text still
+ * contains that term (e.g. "Classification confidence"), which would otherwise
+ * re-trigger the same halt. Passing the term here skips the halt for that one
+ * term only — any other registry term still halts normally.
  */
-export function routeQuery(rawQuery: string): RoutingResult {
+export function routeQuery(rawQuery: string, resolvedTerm?: DisambiguationTerm): RoutingResult {
   const { normalized } = normalizeQuery(rawQuery);
 
   const disambiguation: DisambiguationCheckResult = checkDisambiguation(normalized);
-  if (disambiguation.halted) {
+  if (disambiguation.halted && disambiguation.term !== resolvedTerm) {
     return { outcome: "halted_disambiguation", term: disambiguation.term, prompt: disambiguation.prompt };
   }
 

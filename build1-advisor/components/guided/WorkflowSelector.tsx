@@ -1,4 +1,4 @@
-// Onboarding (18 steps) / Commissioning (12 steps) / Monitoring (10 steps)
+// Onboarding (18 steps) / Commissioning (12 steps) / Monitoring (8 steps)
 
 "use client";
 
@@ -16,7 +16,7 @@ const WORKFLOWS: { id: WorkflowId; title: string; description: string }[] = [
     title: "Content Commissioning",
     description: "12 steps — content graph node authoring and validation.",
   },
-  { id: "signal_monitoring_10step", title: "Signal Monitoring", description: "10 steps — ongoing signal health checks." },
+  { id: "signal_monitoring_8step", title: "Signal Monitoring", description: "8 steps — ongoing signal health checks." },
 ];
 
 export function WorkflowSelector({ onSelect }: WorkflowSelectorProps) {

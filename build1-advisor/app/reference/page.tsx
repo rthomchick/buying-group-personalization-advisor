@@ -17,7 +17,7 @@ export default function ReferencePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function submitQuery(submittedQuery: string) {
+  async function submitQuery(submittedQuery: string, resolvedTerm?: string) {
     setQuery(submittedQuery);
     setIsLoading(true);
     setError(null);
@@ -26,7 +26,7 @@ export default function ReferencePage() {
       const response = await fetch("/api/reference", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: submittedQuery }),
+        body: JSON.stringify({ query: submittedQuery, resolvedTerm }),
       });
 
       if (!response.ok) {
@@ -45,7 +45,9 @@ export default function ReferencePage() {
   }
 
   function handleClarification(clarification: string) {
-    submitQuery(`${query} — ${clarification}`);
+    if (result?.outcome === "disambiguation_required") {
+      submitQuery(`${query} — ${clarification}`, result.term);
+    }
   }
 
   return (

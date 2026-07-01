@@ -14,7 +14,7 @@
 
 export const DATA_MODEL_VERSION = "0.2.0" as const;
 
-export type WorkflowId = "onboarding_18step" | "content_commissioning_12step" | "signal_monitoring_10step";
+export type WorkflowId = "onboarding_18step" | "content_commissioning_12step" | "signal_monitoring_8step";
 
 export type StepStatus = "not_started" | "in_progress" | "complete" | "deferred" | "hold_active" | "flag_pending";
 

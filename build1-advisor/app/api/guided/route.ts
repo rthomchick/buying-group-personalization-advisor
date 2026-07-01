@@ -56,7 +56,7 @@ type GuidedRequestBody = {
 const WORKFLOW_FILENAMES: Record<WorkflowId, string> = {
   onboarding_18step: "onboarding_18step.json",
   content_commissioning_12step: "commissioning_12step.json",
-  signal_monitoring_10step: "monitoring_10step.json",
+  signal_monitoring_8step: "monitoring_8step.json",
 };
 
 const WORKFLOWS_DIR = path.join(process.cwd(), "data", "workflows");
@@ -71,7 +71,15 @@ function loadWorkflowSteps(workflowId: WorkflowId): LoadStepsResult {
   try {
     const raw = readFileSync(filePath, "utf-8");
     const parsed = JSON.parse(raw);
-    return { ok: true, steps: parsed.steps as WorkflowStepDefinition[] };
+    // workflow_id is not present on individual step objects in the JSON files
+    // — stamp it here from the id used to select the file, so every
+    // WorkflowStepDefinition reaching the evaluator carries it. This is the
+    // single point of injection; nothing else constructs these objects.
+    const steps = (parsed.steps as Omit<WorkflowStepDefinition, "workflow_id">[]).map((step) => ({
+      ...step,
+      workflow_id: workflowId,
+    }));
+    return { ok: true, steps };
   } catch {
     return { ok: false };
   }

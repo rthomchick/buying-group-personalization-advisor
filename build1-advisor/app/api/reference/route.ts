@@ -13,6 +13,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { routeQuery, type RoutingResult } from "../../../lib/retrieval/router";
+import type { DisambiguationTerm } from "../../../lib/retrieval/disambiguation";
 import { lookupTable, type StructuredLookupResult } from "../../../lib/retrieval/structured-store";
 import { queryVectorStore, SIMILARITY_THRESHOLD, type VectorQueryResult } from "../../../lib/retrieval/vector-store";
 import type { ReferenceModeResponse } from "@kalder/shared";
@@ -21,6 +22,7 @@ const DATA_MODEL_VERSION = "0.2.0";
 
 type ReferenceRequestBody = {
   query: string;
+  resolvedTerm?: DisambiguationTerm;
 };
 
 function formatStructuredSource(sectionKey: string, result: StructuredLookupResult): string {
@@ -141,7 +143,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Request body must include a non-empty 'query' string." }, { status: 400 });
   }
 
-  const routing = routeQuery(body.query);
+  const routing = routeQuery(body.query, body.resolvedTerm);
 
   if (routing.outcome === "halted_disambiguation") {
     return NextResponse.json(
