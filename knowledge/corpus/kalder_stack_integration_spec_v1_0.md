@@ -270,10 +270,9 @@ Sessions that fail any quality gate produce no signal observations. Prior signal
 
 | Recency window | Decay multiplier |
 |---|---|
-| 0–30 days | 1.0× |
-| 31–60 days | 0.7× |
-| 61–90 days | 0.5× |
-| 91–180 days | 0.3× |
+| Current session | 1.5× |
+| Last 90 days | 1.0× |
+| 91–180 days | 0.7× |
 | Over 180 days | 0.0× (zero weight; not scored; retained until 365-day deletion) |
 
 **The 20 legitimate_interest behavioral signals and their classification weights** are specified in Document 2 Section 3 and §12 SCORING_RULES. Configure each signal as a named AEP event type with the Analytics event name, AEP schema field, and pre-scoring filter rules from Document 2. Platform Engineers must map each signal to its §CA canonical attribute name — do not use Analytics variable names directly in the AEP schema.
