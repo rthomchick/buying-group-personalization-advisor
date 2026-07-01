@@ -1,41 +1,57 @@
 # Document 5: Personalization Decisioning Rules
 ## Kalder Buying Group Personalization Program
 
-**Status:** Approved
+**Status:** Complete — All sections locked
 **Data model version:** 0.2.0
 **Corpus position:** Document 5 of 9
-**Depends on:** Document 1 (Buying Group Role Architecture), Document 2 (Signal Definition and Confidence Model), Document 3 (Audience and Segmentation Architecture), Document 4 (Content Model and Taxonomy), `kalder_data_model_s0_s1.py` §3, §4, §10, §12, §19, §20
+**Depends on:** Document 1 (Buying Group Role Architecture), Document 2 (Signal Definition and Confidence Model), Document 3 (Audience and Segmentation Architecture), Document 4 (Content Model and Taxonomy), `kalder_data_model.py` §3, §4, §10, §12, §19, §20
 
 ---
 
 ## Table of Contents
 
-- Section 1: Confidence Tier Activation Gates
-- Section 2: Two-Axis vs. Three-Axis Content Selection
-- Section 3: Module-Level Decisioning Rules
-- Section 4: Adobe Target Activity Configuration
-- Section 5: Firmographic-First Path
-- Section 6: Anonymous Visitor Handling
-- Section 7: Holdback Group Specification
-- Section 8: Level 4 Page Assembly Completeness
-- Section 9: Edge Cases and Suppression Rules
-- Section 10: `pending_solution_fallback` Behavior
+- Section 1: Document Scope and Canonical Status
+- Section 2: Confidence Tier Activation Gates
+- Section 3: Two-Axis vs. Three-Axis Content Selection
+- Section 4: Module-Level Decisioning Rules
+- Section 5: Adobe Target Activity Configuration
+- Section 6: Firmographic-First Path
+- Section 7: Anonymous Visitor Handling
+- Section 8: Holdback Group Specification
+- Section 9: Level 4 Page Assembly Completeness
+- Section 10: Edge Cases and Suppression Rules
+- Section 11: `pending_solution_fallback` Behavior
 
 ---
 
+## Section 1 — Document Scope and Canonical Status
 
-# Document 5: Personalization Decisioning Rules
-## Kalder Buying Group Personalization Program
-**Status:** Draft — Section 1 only
-**Data model version:** 0.2.0
-**Corpus position:** Document 5 of 9
-**Depends on:** Document 1 (Buying Group Role Architecture), Document 2 (Signal Definition and Confidence Model), Document 3 (Audience and Segmentation Architecture), Document 4 (Content Model and Taxonomy), `kalder_data_model_s0_s1.py` §3, §4, §12
+Document 5 is the single authoritative source for personalization decisioning logic in the Kalder Buying Group Personalization Program. It owns the rules that translate a visitor's classified state — `confidence_tier`, `role_classification`, `solution_category`, and `buying_stage` — into a specific personalization depth, content selection path, and experience level. No other corpus document specifies these routing rules or extends them. All runtime decisioning in Adobe Target is derived from this document.
+
+Four adjacent decisions are explicitly out of scope here. The scoring pipeline that produces `confidence_tier` and `role_classification` from behavioral signals is owned by Document 2 (Signal Definition and Confidence Model). The audience architecture that defines TAL membership, segment assignment, and AEP audience gates is owned by Document 3 (Audience and Segmentation Architecture). The content taxonomy, module types, and offer catalog structure that the decisioning rules select from are owned by Document 4 (Content Model and Taxonomy). The consent-state conditions that suppress or gate personalization upstream of this document's rules are owned by Document 9 (Privacy and Consent Architecture).
+
+The decisioning rules in this document are the human-readable authority from which Adobe Target activity configurations (Section 5) are derived. The data model (`kalder_data_model.py §3 CONFIDENCE_TIERS`, `§4 FALLBACK_CASCADE`, `§10 MODULE_COMPOSITION_RULES`, `§12 CLASSIFICATION_SCORING_RULES`) is the machine-readable specification of the entities this document references. Both must agree. Any discrepancy between this document's routing rules and the data model's entity definitions is a defect — the data model governs entity definitions; this document governs routing logic.
+
+**What this document owns:** The two-constraint model (Constraint A: role confidence; Constraint B: coverage availability), the five-level fallback cascade, per-module decisioning rules, Adobe Target activity configuration, the firmographic-first path, anonymous visitor handling, holdback group specification, Level 4 page assembly, edge cases and suppression rules, and `pending_solution_fallback` behavior.
+
+**Delegation — what this document does not re-specify:**
+- Signal collection, behavioral scoring, and the seven-step classification sequence → Document 2
+- TAL membership evaluation, Demandbase integration, and segment assignment → Document 3
+- Content tagging requirements, module type definitions, and offer catalog governance → Document 4
+- Progressive disclosure UX specifications (prompt copy, correction paths, placement) → Document 6
+- Lift measurement, holdback group analysis, and experimentation framework → Document 7
+- Operational workflow for content commissioning, sync pipelines, and incident response → Document 8
+- Consent gating conditions, signal legal basis, and suppression rules triggered by consent state → Document 9
+
+**Coverage status note.** Customer Engagement decisioning rules are source-validated against the full content inventory and v1 Target configuration. Rules for IT & Operations, Employee Experience, Risk & Compliance, and AI Platform are specified at architectural completeness but operate under `pending_solution_fallback` for pending and constructed coverage categories. Section 2.5 and Section 11 specify v1 coverage state and resolution roadmap in full.
+
+**Section numbering note.** Prose cross-references within this document have been reconciled to current heading numbers (cross-reference cleanup pass, 2026-06-21). Heading numbers are authoritative.
 
 ---
 
-## Section 1: Confidence Tier Activation Gates
+## Section 2: Confidence Tier Activation Gates
 
-> **Depends on:** `kalder_data_model_s0_s1.py` §3 CONFIDENCE_TIERS, §4 FALLBACK_CASCADE, §12 SCORING_RULES (AR-03); Document 1 §5 and §8; Document 2 §8.2; Document 3 §6.2; Document 4 §7.2 and §7.6
+> **Depends on:** `kalder_data_model.py` §3 CONFIDENCE_TIERS, §4 FALLBACK_CASCADE, §12 SCORING_RULES (AR-03); Document 1 §5 and §8; Document 2 §8.2; Document 3 §6.2; Document 4 §7.2 and §7.6
 
 ---
 
@@ -57,7 +73,7 @@ The fallback levels available at each confidence tier are:
 - Level 4 requires: TAL account identification, no solution-category interest signal sufficient for Level 3
 - Level 5 is the default: no TAL identification or no Demandbase account resolution
 
-Full experience behavior at each level — which modules render, how CTAs are constructed, and which content variants are selected — is specified in Section 3. Adobe Target activity configuration implementing these routing rules is specified in Section 4.
+Full experience behavior at each level — which modules render, how CTAs are constructed, and which content variants are selected — is specified in Section 4. Adobe Target activity configuration implementing these routing rules is specified in Section 5.
 
 ---
 
@@ -69,7 +85,7 @@ Before evaluating any fallback level rule, the routing sequence must first evalu
 
 Do not read `confidence_tier`. Do not apply any fallback level rule. The override is absolute and takes precedence over all other routing conditions, including HIGH confidence tier and coverage availability at higher levels.
 
-The rationale: `differential_insufficient` = `True` indicates that the scoring engine capped the visitor's top role score at 49 because the top-scoring role did not lead the second-highest-scoring role by the minimum 10-point differential required by `§12 SCORING_RULES` [data model AR-03]. The role distinction that Levels 1 and 2 require cannot be made. Serving role-specific or role-influenced content to a visitor whose role is ambiguous between two close candidates is a data quality failure, not a personalization decision. Level 3 solution-interest content is the correct experience until the ambiguity is resolved — typically via a progressive disclosure prompt specified in Section 3 (`progressive_disclosure` module).
+The rationale: `differential_insufficient` = `True` indicates that the scoring engine capped the visitor's top role score at 49 because the top-scoring role did not lead the second-highest-scoring role by the minimum 10-point differential required by `§12 SCORING_RULES` [data model AR-03]. The role distinction that Levels 1 and 2 require cannot be made. Serving role-specific or role-influenced content to a visitor whose role is ambiguous between two close candidates is a data quality failure, not a personalization decision. Level 3 solution-interest content is the correct experience until the ambiguity is resolved — typically via a progressive disclosure prompt specified in Section 4 (`progressive_disclosure` module).
 
 A contact carrying `differential_insufficient` = `True` may have a `fallback_level` value of 2 in their AEP profile from a prior anonymous ID session or a pre-override scoring run. The Target rule for this override supersedes the stored `fallback_level`: when `differential_insufficient` = `True`, serve Level 3 regardless of the `fallback_level` attribute value. The override takes precedence over the fallback level rule evaluation sequence specified in Section 1.5. [Document 3 §6.2 — `differential_insufficient` override; Document 2 §9.5(a)]
 
@@ -183,7 +199,7 @@ The distinction between `partial` and `pending`/`constructed` is a named routing
 
 **Coverage status propagation to Target.** The `solution_category_coverage_status` AEP attribute is updated by the Document 4 Section 8.5 coverage tracking pipeline, which is triggered by Sanity webhook on any `Content Module` node `status` field transition to or from `approved`. When a category advances from `pending` to `partial`, the routing change in Target occurs automatically via the AEP attribute update — no manual Target activity reconfiguration is required. The coverage status written to AEP is the operative routing input; Target reads it at session start. [Document 4, Section 8.5 — coverage tracking pipeline; Document 3, §6.2 — Target activation architecture]
 
-Full specification of the `pending_solution_fallback` path, including its interaction with multi-session visitors and progressive disclosure behavior, is in Section 10.
+Full specification of the `pending_solution_fallback` path, including its interaction with multi-session visitors and progressive disclosure behavior, is in Section 11.
 
 ---
 
@@ -245,7 +261,7 @@ Before serving the candidate level determined in Steps 3 or 4, read the offer ca
 
 *Note for Target implementation:* Per-tuple offer catalog absence is handled by the offer catalog itself — a tuple with no approved offers has no offers for Target to serve, and Target's fallback evaluation handles the demotion. No AEP attribute for tuple-level coverage status is required; the offer catalog state is the operative gate. [Document 4, Section 8.5 — tuple-level monitoring vs. `CLIENT_ATTRIBUTE_MAP`]
 
-*Note for Target implementation:* Target does not natively evaluate arbitrary compound conditions in a single pass; it evaluates audience memberships. The compound conditions in Sections 1.2 and 1.3 must be encoded as compound AEP audience definitions that pre-compute combined conditions (e.g., HIGH confidence AND coverage sufficient AND differential not insufficient) before session evaluation. Sections 1.2–1.4 specify the logic; Section 4 specifies how that logic maps to Target audience configurations, activity priorities, and rule evaluation order.
+*Note for Target implementation:* Target does not natively evaluate arbitrary compound conditions in a single pass; it evaluates audience memberships. The compound conditions in Sections 1.2 and 1.3 must be encoded as compound AEP audience definitions that pre-compute combined conditions (e.g., HIGH confidence AND coverage sufficient AND differential not insufficient) before session evaluation. Sections 1.2–1.4 specify the logic; Section 5 specifies how that logic maps to Target audience configurations, activity priorities, and rule evaluation order.
 
 ---
 
@@ -264,20 +280,20 @@ The following classification states all have deterministic routing outcomes unde
 | LOW confidence + no solution-category interest signal | Level 4 (TAL-identified) or Level 5 (non-TAL) |
 | UNKNOWN confidence + no TAL match | Level 5 |
 | UNKNOWN confidence + TAL match + no solution signal | Level 4 |
-| `visitor_consent_state: declined` | No behavioral signals collected or scored; account-level experience (Level 4) when TAL match exists; Level 5 when no TAL match. Full specification in Section 5 (Firmographic-First Path), Section 9 (Edge Cases and Suppression Rules), and Document 9 (Privacy and Consent Architecture). [N-4 — see note below] |
+| `visitor_consent_state: declined` | No behavioral signals collected or scored; account-level experience (Level 4) when TAL match exists; Level 5 when no TAL match. Full specification in Section 6 (Firmographic-First Path), Section 10 (Edge Cases and Suppression Rules), and Document 9 (Privacy and Consent Architecture). [N-4 — see note below] |
 
-**Note on consent-declined routing (Garcia/Ga-1):** The firmographic bonus pathway that affects whether a firmographic-first visitor can reach MEDIUM confidence requires `visitor_consent_state: functional_only` or `full`, pending Track 2 legal review of the Demandbase DPA. Section 1 routing conditions do not imply that the firmographic bonus is unconditionally available. Under current Track 2 pending status, the firmographic bonus (`+30` from `firmographic_confirmation_bonus` in `§12 SCORING_RULES`) is suppressed for all visitors regardless of consent state; additionally, `visitor_consent_state: functional_only` suppresses all `explicit_consent_required` signals (including `demandbase_firmographic_match`) even after Track 2 completes. Both Track 2 completion AND `visitor_consent_state: full` are required for the firmographic bonus to activate. Full specification is in Section 5 (Firmographic-First Path) and Document 9 (Privacy and Consent Architecture). [Document 3, Section 4.2 — Layer 1 consent interaction; Document 2, Section 9.4 — Tier 2 Track 2 gate]
-
----
-
-*End of Section 1. Section 3 specifies the experience behavior — which modules render and how content variants are selected — at each fallback level. Section 4 specifies how Target activities are configured to implement the routing sequence above. Section 5 specifies the firmographic-first path for visitors identified by Demandbase account match before behavioral signals accumulate. Section 8 specifies the Level 4 account-level experience compositionally. Section 10 specifies the `pending_solution_fallback` path in full. Section 11 specifies progressive disclosure for `differential_insufficient` visitors.*
+**Note on consent-declined routing (Garcia/Ga-1):** The firmographic bonus pathway that affects whether a firmographic-first visitor can reach MEDIUM confidence requires `visitor_consent_state: functional_only` or `full`, pending Track 2 legal review of the Demandbase DPA. Section 2 routing conditions do not imply that the firmographic bonus is unconditionally available. Under current Track 2 pending status, the firmographic bonus (`+30` from `firmographic_confirmation_bonus` in `§12 SCORING_RULES`) is suppressed for all visitors regardless of consent state; additionally, `visitor_consent_state: functional_only` suppresses all `explicit_consent_required` signals (including `demandbase_firmographic_match`) even after Track 2 completes. Both Track 2 completion AND `visitor_consent_state: full` are required for the firmographic bonus to activate. Full specification is in Section 6 (Firmographic-First Path) and Document 9 (Privacy and Consent Architecture). [Document 3, Section 4.2 — Layer 1 consent interaction; Document 2, Section 9.4 — Tier 2 Track 2 gate]
 
 ---
 
+*End of Section 1. Section 4 specifies the experience behavior — which modules render and how content variants are selected — at each fallback level. Section 5 specifies how Target activities are configured to implement the routing sequence above. Section 6 specifies the firmographic-first path for visitors identified by Demandbase account match before behavioral signals accumulate. Section 9 specifies the Level 4 account-level experience compositionally. Section 11 specifies the `pending_solution_fallback` path in full. Section 11 specifies progressive disclosure for `differential_insufficient` visitors.*
 
-## Section 2: Two-Axis vs. Three-Axis Content Selection
+---
 
-> **Depends on:** Document 2 (Signal Definition and Confidence Model), Sections 7.2–7.5 (KNOWN/INFERRED/UNKNOWN definitions, activation conditions, interaction matrix); Document 4 Section 1.2 (Axis Conditionality Principle), Section 5.3 (module type reference table); Document 5 Section 1 (confidence tier context); Document 5 Section 7, Section 7.7 (holdback and progressive disclosure); `kalder_data_model_s0_s1.py` §4 FALLBACK_CASCADE / PROBABLE_JOB_PRIORS
+
+## Section 3: Two-Axis vs. Three-Axis Content Selection
+
+> **Depends on:** Document 2 (Signal Definition and Confidence Model), Sections 7.2–7.5 (KNOWN/INFERRED/UNKNOWN definitions, activation conditions, interaction matrix); Document 4 Section 1.2 (Axis Conditionality Principle), Section 5.3 (module type reference table); Document 5 Section 1 (confidence tier context); Document 5 Section 7, Section 7.7 (holdback and progressive disclosure); `kalder_data_model.py` §4 FALLBACK_CASCADE / PROBABLE_JOB_PRIORS
 
 ---
 
@@ -359,7 +375,7 @@ When the buying job axis is not active — UNKNOWN buying job confidence at any 
 
 `PROBABLE_JOB_PRIORS` is a role × `buying_stage` lookup table that returns the most statistically probable buying job for a given `(role_classification, buying_stage)` combination. For module types with `buying_job` in their `intended_axes`, this prior value is used as a `jtbd_code` for offer catalog matching — it selects which buying-job-tagged content variant is served, using the prior as a proxy for the visitor's actual buying job. It is a content selection input, not a classification claim. The system does not assert that the visitor is in the returned buying job state.
 
-**`PROBABLE_JOB_PRIORS` lookup table** (authoritative from Document 2, Section 7.4 and `kalder_data_model_s0_s1.py §4`):
+**`PROBABLE_JOB_PRIORS` lookup table** (authoritative from Document 2, Section 7.4 and `kalder_data_model.py §4`):
 
 | Role | Targeted | Engaged | Prioritized | Qualified |
 |---|---|---|---|---|
@@ -403,7 +419,7 @@ These four rules are deterministic. When `PROBABLE_JOB_PRIORS` returns `None`, t
 
 ### 2.6 Buying Job Axis and the Holdback Group
 
-Holdback visitors — contacts with `holdback_group = True` — receive the Level 5 default brand experience and are never served the `progressive_disclosure` module, which does not render at Level 5 per Document 4, Section 5.2 and Section 7, Section 7.7. The absence of progressive disclosure means holdback visitors never encounter a buying job prompt and therefore never produce `buying_job_confirmed` (KNOWN state).
+Holdback visitors — contacts with `holdback_group = True` — receive the Level 5 default brand experience and are never served the `progressive_disclosure` module, which does not render at Level 5 per Document 4, Section 5.2 and Section 8, Section 7.7. The absence of progressive disclosure means holdback visitors never encounter a buying job prompt and therefore never produce `buying_job_confirmed` (KNOWN state).
 
 **Named measurement asymmetry:** The holdback group's three-axis exposure is structurally limited compared to the personalization group in two ways:
 
@@ -412,7 +428,7 @@ Holdback visitors — contacts with `holdback_group = True` — receive the Leve
 
 The four module types affected by this asymmetry are the three-axis participants: `cta`, `gated_assets`, `proof`, and `use_cases`. For these slots, the personalization group can receive buying-job-specific content that the holdback group structurally cannot — even when both groups have comparable role and stage classifications.
 
-This is a named measurement asymmetry in the holdback design, not a system failure. It must be accounted for in Document 7's lift measurement methodology when comparing offer performance on three-axis module types between holdback and treatment populations. An unadjusted comparison of `cta` click rates between holdback and treatment will understate treatment performance relative to the two-axis slots because the treatment group benefits from buying-job specificity that the holdback group cannot receive. [Cross-reference: Section 7, Section 7.7]
+This is a named measurement asymmetry in the holdback design, not a system failure. It must be accounted for in Document 7's lift measurement methodology when comparing offer performance on three-axis module types between holdback and treatment populations. An unadjusted comparison of `cta` click rates between holdback and treatment will understate treatment performance relative to the two-axis slots because the treatment group benefits from buying-job specificity that the holdback group cannot receive. [Cross-reference: Section 8, Section 7.7]
 
 ---
 
@@ -422,7 +438,7 @@ The following numbered sequence is the complete implementation recipe for buying
 
 **Step 1 — Evaluate role confidence.**
 Read `confidence_tier` from the visitor's AEP contact profile.
-- If `confidence_tier` = `LOW` or `UNKNOWN`: buying job axis is not evaluated for any module slot. Stop. Proceed to level-appropriate fallback (Level 3, 4, or 5 per Section 1).
+- If `confidence_tier` = `LOW` or `UNKNOWN`: buying job axis is not evaluated for any module slot. Stop. Proceed to level-appropriate fallback (Level 3, 4, or 5 per Section 2).
 - If `confidence_tier` = `HIGH` or `MEDIUM`: continue to Step 2.
 
 **Step 2 — Check `buying_job_confirmed` (KNOWN state).**
@@ -455,12 +471,12 @@ An implementation that reads the attribute value without checking its timestamp 
 
 ---
 
-*End of Section 2. Section 3 specifies per-module offer selection logic and cites the "Three-axis activation is per-module, not per-page" rule from Section 2.3 as its authority for axis-conditional content selection. Section 2.4's PROBABLE_JOB_PRIORS table is the authoritative reference for prior-based offer matching. Section 2.5 null-prior rules apply exclusively to the four three-axis module types at ratifier × targeted/engaged combinations.*
+*End of Section 2. Section 4 specifies per-module offer selection logic and cites the "Three-axis activation is per-module, not per-page" rule from Section 2.3 as its authority for axis-conditional content selection. Section 2.4's PROBABLE_JOB_PRIORS table is the authoritative reference for prior-based offer matching. Section 2.5 null-prior rules apply exclusively to the four three-axis module types at ratifier × targeted/engaged combinations.*
 
 ---
 
 
-## Section 3: Module-Level Decisioning Rules
+## Section 4: Module-Level Decisioning Rules
 
 > **Depends on:** Document 4 Section 5.2 (per-module type specifications), Section 5.3 (module type reference table); Document 5 Section 1 (fallback level routing); Document 5 Section 2 (buying job axis activation); Document 5 Section 4.5 (cta dual offer set configuration), Section 4.7 (named conflict scenario resolutions)
 
@@ -468,13 +484,13 @@ An implementation that reads the attribute value without checking its timestamp 
 
 ### 3.0 Overview: The Two-Layer Offer Matching Model
 
-Section 3 specifies Layer 2 of the offer matching model. Layer 1 is specified in Section 4.
+Section 4 specifies Layer 2 of the offer matching model. Layer 1 is specified in Section 5.
 
-**Layer 1 — Activity audience gate (Section 4):** Determines which visitors enter a Target activity. The activity audience gate evaluates cohort membership, `confidence_tier`, `differential_insufficient` state, and `holdback_group` status. A visitor who does not satisfy the activity's audience conditions is not served by that activity; Target evaluates the next lower-priority activity. Layer 1 is entirely specified in Section 4. Section 3 does not repeat it.
+**Layer 1 — Activity audience gate (Section 5):** Determines which visitors enter a Target activity. The activity audience gate evaluates cohort membership, `confidence_tier`, `differential_insufficient` state, and `holdback_group` status. A visitor who does not satisfy the activity's audience conditions is not served by that activity; Target evaluates the next lower-priority activity. Layer 1 is entirely specified in Section 5. Section 4 does not repeat it.
 
-**Layer 2 — Per-offer attribute matching (this section):** Within an activity that a visitor has entered, determines which specific offer in the catalog they receive. Offer matching reads `role_classification`, `solution_category`, `buying_stage`, and — when three-axis conditions are active — `jtbd_code` from the visitor's AEP contact profile, and matches those values against offer attributes written to the catalog at Sanity-to-Target sync time. Section 3 specifies this matching for each of the eleven module types.
+**Layer 2 — Per-offer attribute matching (this section):** Within an activity that a visitor has entered, determines which specific offer in the catalog they receive. Offer matching reads `role_classification`, `solution_category`, `buying_stage`, and — when three-axis conditions are active — `jtbd_code` from the visitor's AEP contact profile, and matches those values against offer attributes written to the catalog at Sanity-to-Target sync time. Section 4 specifies this matching for each of the eleven module types.
 
-The two layers are complementary and non-overlapping. Section 3 specifications reference offer attributes only. They do not re-specify cohort conditions or confidence tier audience gates — those belong to Layer 1.
+The two layers are complementary and non-overlapping. Section 4 specifications reference offer attributes only. They do not re-specify cohort conditions or confidence tier audience gates — those belong to Layer 1.
 
 **The `confidence_tier_minimum` offer gate:** Within an activity that a visitor has entered, individual offers carry a `confidence_tier_minimum` field that may further restrict which offers within the activity the visitor is eligible to receive. This is an offer-level constraint, not an activity-level constraint. A visitor admitted by the activity's audience gate may still be ineligible for specific offers within that activity if their `confidence_tier` does not meet the offer's `confidence_tier_minimum`. The visitor receives the offer whose `confidence_tier_minimum` they meet or exceed.
 
@@ -538,7 +554,7 @@ Level 5: Brand default `benefits` offer. No attribute matching.
 
 **Named conflict scenario:** `cta_vs_benefits_buying_job_mismatch`. When this conflict fires, the `benefits` slot is unaffected — it serves its role-default content regardless of the `cta` module's buying_job-axis selection. The conflict is not a failure; it is the documented content gap where late-stage CTA language may not be reinforced by the `benefits` copy. No `benefits` offer substitution occurs. [Document 5 Section 4.7; Document 4 Section 5.4.2]
 
-**Cross-references:** Section 2.3 (two-axis only; `buying_job` omitted by design from `benefits`'s `intended_axes`). D5-Flag-04: if a late-stage `buying_stage: qualified` benefits offer set is ever commissioned, the `benefits` module's `intended_axes` would need to be extended to include `bg_stage`, which requires a Document 4 amendment. Section 3 does not make that amendment. This is a forward dependency, not a current specification gap.
+**Cross-references:** Section 2.3 (two-axis only; `buying_job` omitted by design from `benefits`'s `intended_axes`). D5-Flag-04: if a late-stage `buying_stage: qualified` benefits offer set is ever commissioned, the `benefits` module's `intended_axes` would need to be extended to include `bg_stage`, which requires a Document 4 amendment. Section 4 does not make that amendment. This is a forward dependency, not a current specification gap.
 
 ---
 
@@ -815,14 +831,14 @@ Level 5: Slot not rendered. Holdback visitors receive Level 5 and therefore neve
 
 ### 3.12 Scope Boundary
 
-Section 3 specifies Layer 2 offer matching — which offer is served within an activity to which visitor, for each of the eleven module types. Section 4 specifies Layer 1 — which activity fires for which visitor. Section 2 specifies the buying job axis activation state that governs `jtbd_code` matching across the four three-axis module types (`cta`, `gated_assets`, `proof`, `use_cases`). Section 8 specifies the Level 4 account-level experience composition as a whole — which module slots render at Level 4 and what the assembled experience looks like. Document 8 specifies how the offer catalog is populated, maintained, and kept current via the Sanity-to-Target sync pipeline. Cross-references between Section 3 and these sections are by citation; the specifications do not repeat each other.
+Section 4 specifies Layer 2 offer matching — which offer is served within an activity to which visitor, for each of the eleven module types. Section 5 specifies Layer 1 — which activity fires for which visitor. Section 3 specifies the buying job axis activation state that governs `jtbd_code` matching across the four three-axis module types (`cta`, `gated_assets`, `proof`, `use_cases`). Section 9 specifies the Level 4 account-level experience composition as a whole — which module slots render at Level 4 and what the assembled experience looks like. Document 8 specifies how the offer catalog is populated, maintained, and kept current via the Sanity-to-Target sync pipeline. Cross-references between Section 4 and these sections are by citation; the specifications do not repeat each other.
 
 ---
 
 
-## Section 4: Adobe Target Activity Configuration
+## Section 5: Adobe Target Activity Configuration
 
-> **Depends on:** `kalder_data_model_s0_s1.py` §10 MODULE_COMPOSITION_RULES; Document 3 Section 2.3 (campaign cohort AEP segment definitions), Section 6.2 (Target activation architecture), Section 8.2 (`tal_new_logo_eligible` suppression); Document 4 Section 5.3 (module type reference table), Section 5.4.2 (named conflict scenarios), Section 8.3.2 Phase 4 (Sanity-to-Target sync fields); Document 5 Section 1 (two-constraint model, rule evaluation sequence, D5-Flag-05)
+> **Depends on:** `kalder_data_model.py` §10 MODULE_COMPOSITION_RULES; Document 3 Section 2.3 (campaign cohort AEP segment definitions), Section 6.2 (Target activation architecture), Section 8.2 (`tal_new_logo_eligible` suppression); Document 4 Section 5.3 (module type reference table), Section 5.4.2 (named conflict scenarios), Section 8.3.2 Phase 4 (Sanity-to-Target sync fields); Document 5 Section 1 (two-constraint model, rule evaluation sequence, D5-Flag-05)
 
 ---
 
@@ -836,11 +852,11 @@ Adobe Target evaluates visitor audience membership against registered activities
 
 **Principle 2 — Offer catalogs, not activities, carry the per-tuple gate.**
 
-The per-tuple offer catalog gate from Section 1, Step 5 (D5-Flag-05) is implemented via the offer catalog's content state, not via a separate Target audience condition or AEP attribute. Each activity's offer catalog is populated only with approved `Content Module` nodes that have cleared the Sanity-to-Target sync pipeline (Document 4, Section 8.3.2 Phase 4). If no approved offer exists in the catalog for a visitor's `(role_classification, solution_category, buying_stage)` tuple at the axis level of the current activity, Target has no offer to serve for that activity and produces no serving event. Evaluation falls through to the next activity in priority order. No AEP attribute for tuple-level coverage status is required; the catalog state is the gate. This is the same principle stated in Document 4, Section 8.5: "Adobe Target does not require tuple-level coverage status as an AEP attribute: per-tuple coverage gating in Target is implemented via the offer catalog itself."
+The per-tuple offer catalog gate from Section 2, Step 5 (D5-Flag-05) is implemented via the offer catalog's content state, not via a separate Target audience condition or AEP attribute. Each activity's offer catalog is populated only with approved `Content Module` nodes that have cleared the Sanity-to-Target sync pipeline (Document 4, Section 8.3.2 Phase 4). If no approved offer exists in the catalog for a visitor's `(role_classification, solution_category, buying_stage)` tuple at the axis level of the current activity, Target has no offer to serve for that activity and produces no serving event. Evaluation falls through to the next activity in priority order. No AEP attribute for tuple-level coverage status is required; the catalog state is the gate. This is the same principle stated in Document 4, Section 8.5: "Adobe Target does not require tuple-level coverage status as an AEP attribute: per-tuple coverage gating in Target is implemented via the offer catalog itself."
 
 **Principle 3 — Audience definitions pre-compute compound conditions.**
 
-The compound conditions from Section 1 — for example, `confidence_tier = HIGH AND differential_insufficient = False AND solution_category_coverage_status = complete` — cannot be evaluated as live logic inside a Target activity. Target reads pre-computed audience segment memberships at session start, not raw attribute combinations. Compound conditions must be defined as AEP audience segments using Real-Time CDP audience rules, evaluated against the visitor's AEP contact profile before session evaluation. Target reads the resulting audience membership boolean, not the underlying attribute values. Section 4.3 specifies the named compound audience definitions required for each campaign cohort.
+The compound conditions from Section 2 — for example, `confidence_tier = HIGH AND differential_insufficient = False AND solution_category_coverage_status = complete` — cannot be evaluated as live logic inside a Target activity. Target reads pre-computed audience segment memberships at session start, not raw attribute combinations. Compound conditions must be defined as AEP audience segments using Real-Time CDP audience rules, evaluated against the visitor's AEP contact profile before session evaluation. Target reads the resulting audience membership boolean, not the underlying attribute values. Section 4.3 specifies the named compound audience definitions required for each campaign cohort.
 
 ---
 
@@ -857,7 +873,7 @@ The activity priority numbering convention encodes `axis_priority_order` from `M
 | 3000–3999 | `confidence_tier` | Role confidence level; overrides role and `solution_category` axes |
 | 4000–4999 | `role` | Role classification; overrides `solution_category` |
 | 5000–5999 | `solution_category` | Broadest; baseline personalization when no finer axis is available |
-| 6000–6999 | Non-axis activities | Activities that are not axis-personalization activities: Level 4 account-level experiences (6001–6004, one per cohort), suppression activities (6200–6299, Section 9), and the Level 5 global default (6999). 6100–6199 is reserved — future use. Holdback group activities are at 5951–5954 (below this range; see Section 7). This range also accommodates future axis additions. |
+| 6000–6999 | Non-axis activities | Activities that are not axis-personalization activities: Level 4 account-level experiences (6001–6004, one per cohort), suppression activities (6200–6299, Section 10), and the Level 5 global default (6999). 6100–6199 is reserved — future use. Holdback group activities are at 5951–5954 (below this range; see Section 8). This range also accommodates future axis additions. |
 
 This ordering maps smaller integers to more specific axes, which is the correct directionality for Target's evaluation model. A `buying_job`-axis activity at priority 1203 is evaluated before a `role`-axis activity at priority 4202 for the same module slot — which is the `highest_specificity_wins` policy in operation.
 
@@ -928,7 +944,7 @@ When a new `Content Module` node is approved in Sanity and written to the Target
 
 ### 4.3 Campaign Cohort Audience Architecture
 
-Each campaign cohort maps to a set of Target activities with an AEP audience segment as the outermost eligibility gate. Within each cohort's activity set, fallback level routing from Section 1 is implemented through the priority convention and compound audience definitions specified below.
+Each campaign cohort maps to a set of Target activities with an AEP audience segment as the outermost eligibility gate. Within each cohort's activity set, fallback level routing from Section 2 is implemented through the priority convention and compound audience definitions specified below.
 
 #### 4.3.1 `education` Cohort
 
@@ -1212,9 +1228,9 @@ The Level 5 default activity has no AEP audience gate and no Target condition. I
 ---
 
 
-## Section 5: Firmographic-First Path
+## Section 6: Firmographic-First Path
 
-> **Depends on:** `kalder_data_model_s0_s1.py` §12 SCORING_RULES (seven-step scoring sequence, firmographic bonus, behavioral floor, differential check order AR-03, score clamp), §19 TITLE_ROLE_MAP; Document 2 Section 4 (seven-step scoring sequence, classification_mismatch flag); Document 3 Section 4.2 (Layer 1 behavioral scoring, firmographic bonus pathway, consent interaction, session ceiling), Section 5 (Layer 3 promotion mechanics); Document 5 Section 1 (two-constraint model, fallback level routing); Document 5 Section 2.2 (INFERRED excluded at MEDIUM)
+> **Depends on:** `kalder_data_model.py` §12 SCORING_RULES (seven-step scoring sequence, firmographic bonus, behavioral floor, differential check order AR-03, score clamp), §19 TITLE_ROLE_MAP; Document 2 Section 4 (seven-step scoring sequence, classification_mismatch flag); Document 3 Section 4.2 (Layer 1 behavioral scoring, firmographic bonus pathway, consent interaction, session ceiling), Section 5 (Layer 3 promotion mechanics); Document 5 Section 1 (two-constraint model, fallback level routing); Document 5 Section 2.2 (INFERRED excluded at MEDIUM)
 
 ---
 
@@ -1229,9 +1245,9 @@ The firmographic-first path is a named routing path that activates when a specif
 
 These are entry conditions, not routing conditions. The firmographic-first path does not guarantee a MEDIUM experience; it specifies the logic by which a sub-MEDIUM behavioral signal may be amplified to reach MEDIUM.
 
-**What the firmographic-first path is not:** It is not a general rule for all Demandbase-identified visitors. TAL identification (`tal_member = True`) alone does not invoke this path. A Layer 1 visitor whose behavioral score already meets the MEDIUM threshold through behavioral accumulation alone (≥ 50 without bonus) is already routing to Level 2 through the standard Section 1 cascade — the firmographic-first path does not apply to them. A Layer 1 visitor with no title match, or whose behavioral score is below the 15-point floor, does not receive the firmographic bonus regardless of TAL status. The firmographic-first path is a named amplification path for a specific sub-population, not a bypass of behavioral scoring.
+**What the firmographic-first path is not:** It is not a general rule for all Demandbase-identified visitors. TAL identification (`tal_member = True`) alone does not invoke this path. A Layer 1 visitor whose behavioral score already meets the MEDIUM threshold through behavioral accumulation alone (≥ 50 without bonus) is already routing to Level 2 through the standard Section 2 cascade — the firmographic-first path does not apply to them. A Layer 1 visitor with no title match, or whose behavioral score is below the 15-point floor, does not receive the firmographic bonus regardless of TAL status. The firmographic-first path is a named amplification path for a specific sub-population, not a bypass of behavioral scoring.
 
-**Identity plane distinction (Ra-1):** Account-level identification (Demandbase reverse-IP → `tal_member = True`) and contact-level identification (`contact_id` resolution → Layer 3) are distinct identity states. The firmographic-first path applies exclusively at Layer 1 — account-identified, contact-unresolved. Layer 3 visitors have a stable `contact_id` and route through the standard Section 1 cascade with the full Tier 1 and Tier 2 confidence pathways available to them. A visitor who is Layer 3 is not on the firmographic-first path regardless of their Demandbase title match status.
+**Identity plane distinction (Ra-1):** Account-level identification (Demandbase reverse-IP → `tal_member = True`) and contact-level identification (`contact_id` resolution → Layer 3) are distinct identity states. The firmographic-first path applies exclusively at Layer 1 — account-identified, contact-unresolved. Layer 3 visitors have a stable `contact_id` and route through the standard Section 2 cascade with the full Tier 1 and Tier 2 confidence pathways available to them. A visitor who is Layer 3 is not on the firmographic-first path regardless of their Demandbase title match status.
 
 ---
 
@@ -1290,7 +1306,7 @@ The bonus does not apply. The mismatch is flagged: `classification_mismatch = Tr
 
 If `differential_insufficient = True` at the pre-bonus score: Priority 0 override applies as in Case 1. Route to Level 3.
 
-If `differential_insufficient = False`: route via standard Section 1 cascade using the behavioral confidence tier.
+If `differential_insufficient = False`: route via standard Section 2 cascade using the behavioral confidence tier.
 
 The `classification_mismatch = True` flag is not used for real-time routing. It is a diagnostic attribute available in the AEP profile for two downstream functions: (a) sales intelligence — surfaces to the account executive via the Outreach integration as an account-level anomaly flagging that the title-inferred role and the behavioral role diverge; (b) signal weight validation — tracked by the Analytics team as a model accuracy input. Neither function affects the current session's experience.
 
@@ -1320,7 +1336,7 @@ The upgrade ceiling is MEDIUM. A Layer 1 firmographic-first visitor cannot upgra
 
 **At session start, below MEDIUM (firmographic-first entry state):**
 
-The visitor's current experience is determined by their Section 1 routing state after behavioral scoring without the firmographic bonus (Track 2 is currently pending):
+The visitor's current experience is determined by their Section 2 routing state after behavioral scoring without the firmographic bonus (Track 2 is currently pending):
 
 - If `tal_member = True` AND solution-category interest signals are present: **Level 3** (solution-interest experience). The `progressive_disclosure` module renders at Level 3 with an initial role identification prompt — no role assumption; invites the visitor to self-identify. This is the primary conversion mechanism for a firmographic-first visitor at Level 3: a response upgrades classification state and, if a `contact_id` is produced, promotes to Layer 3.
 - If `tal_member = True` AND no solution-category interest signals: **Level 4** (account-level experience). The `progressive_disclosure` module renders at Level 4 with a TAL-context invitation prompt — lower-commitment than the Level 3 prompt; invites the visitor to identify their evaluation context. This is the entry point for firmographic-first visitors with no accumulated solution signal.
@@ -1354,7 +1370,7 @@ Read `tal_member` from AEP account-plane profile.
 
 **Step 2 — Confirm Layer 1 state (no `contact_id`).**
 Read `contact_id` from AEP contact profile.
-- If `contact_id` is present and resolved: visitor is Layer 3. Firmographic-first path does not apply. Route via standard Section 1 cascade with full Tier 1 and Tier 2 pathways available.
+- If `contact_id` is present and resolved: visitor is Layer 3. Firmographic-first path does not apply. Route via standard Section 2 cascade with full Tier 1 and Tier 2 pathways available.
 - If `contact_id` is null or unresolved: visitor is Layer 1. Continue to Step 3.
 
 **Step 3 — Read `visitor_consent_state`.**
@@ -1388,8 +1404,8 @@ Execute `§12 SCORING_RULES` Steps 1–3: cumulative signal accumulation, minimu
 **Step 8 — Clamp score and assign `confidence_tier`.**
 Execute `§12 SCORING_RULES Step 5`: clamp post-bonus score to [0, 100]. Assign `confidence_tier` per `§3 CONFIDENCE_TIERS` thresholds based on the clamped score. Then apply the Layer 1 ceiling override: if the assigned `confidence_tier` = `HIGH`, override to `MEDIUM` and write `MEDIUM` to the AEP contact profile. `HIGH` is not a valid `confidence_tier` output at Layer 1. The override fires on the tier assignment output, not on the raw score value. Write `confidence_tier` and `role_classification` to AEP contact profile.
 
-**Step 9 — Route via Section 1 rule evaluation sequence.**
-Execute Section 1, Steps 2–5 using the assigned `confidence_tier` and `role_classification`. The MEDIUM ceiling from Step 8 ensures Step 3 cannot produce Level 1 at Layer 1. The Section 1 cascade produces the final routing outcome: Level 2 (MEDIUM), Level 3 (LOW/solution signal present), or Level 4 (TAL, no solution signal). Write classification outputs to AEP under `(anonymous_id, solution_category)` composite key.
+**Step 9 — Route via Section 2 rule evaluation sequence.**
+Execute Section 2, Steps 2–5 using the assigned `confidence_tier` and `role_classification`. The MEDIUM ceiling from Step 8 ensures Step 3 cannot produce Level 1 at Layer 1. The Section 2 cascade produces the final routing outcome: Level 2 (MEDIUM), Level 3 (LOW/solution signal present), or Level 4 (TAL, no solution signal). Write classification outputs to AEP under `(anonymous_id, solution_category)` composite key.
 
 ---
 
@@ -1398,7 +1414,7 @@ Execute Section 1, Steps 2–5 using the assigned `confidence_tier` and `role_cl
 ---
 
 
-## Section 6: Anonymous Visitor Handling
+## Section 7: Anonymous Visitor Handling
 
 > **Depends on:** Document 3 Section 1.6 (non-TAL behavior rules), Section 4.3 (Layer 2 anonymous behavioral state), Section 5.2 (Layer 2 → Layer 1 promotion path), Section 8.7 (Level 5 default brand experience); Document 5 Section 1.6 (rule evaluation sequence Step 4); Document 5 Section 3 (per-module Level 5 behavior — authority); Document 5 Section 4 (Level 5 global default activity, Target priority 6999); Document 5 Section 5.5 (session upgrade timing)
 
@@ -1412,23 +1428,23 @@ Level 5 is the terminal routing outcome for three distinct visitor states. They 
 |---|---|---|---|
 | **State A — Layer 2 (no account match)** | `tal_member = False` because Demandbase reverse-IP returned no account match for this IP | Yes — captured in Segment event stream; not scored (TAL filter not satisfied) | Yes — if a future session produces a Demandbase account match that resolves to a TAL account, the visitor promotes to Layer 1; behavioral history accumulated under the anonymous identifier carries forward per Document 3 Section 5.2 decay rules |
 | **State B — Out of program** | `tal_member = False` because Demandbase reverse-IP resolved the IP to a specific account that is not on the TAL | Yes — captured in Segment event stream; not scored (TAL filter not satisfied) | Yes — if the account is added to the TAL, the next Demandbase match will establish TAL membership; retained behavioral history becomes eligible for scoring at that point |
-| **State C — Suppressed TAL member** | `tal_member = True` AND `tal_program_status = post_sale` AND `tal_upsell_override_active = False` | Yes — collected normally; suppression check (not the TAL filter) prevents scoring | Conditionally — suppression lifts when `tal_upsell_override_active` is set to `True` by the Revenue team; full specification in Section 9 and Document 3 Section 8 |
+| **State C — Suppressed TAL member** | `tal_member = True` AND `tal_program_status = post_sale` AND `tal_upsell_override_active = False` | Yes — collected normally; suppression check (not the TAL filter) prevents scoring | Conditionally — suppression lifts when `tal_upsell_override_active` is set to `True` by the Revenue team; full specification in Section 10 and Document 3 Section 8 |
 
 State C is listed here to prevent conflation with States A and B when debugging Level 5 traffic. A suppressed TAL member is identified, in the database, and producing behavioral signals — the acquisition pipeline suppression, not the absence of a TAL match, is what produces the Level 5 experience. Debugging Level 5 traffic without distinguishing State C from States A and B will produce misleading diagnostics.
 
-**Level 5 is not a failure state.** [Document 3, Section 8.7] It is the correct experience for the visitor population described above. Section 6 reaffirms this in the anonymous visitor context: States A and B visitors are receiving the experience the program is designed to deliver for unidentified or out-of-program visitors. No intervention is required and no escalation is triggered by Level 5 traffic in these states.
+**Level 5 is not a failure state.** [Document 3, Section 8.7] It is the correct experience for the visitor population described above. Section 7 reaffirms this in the anonymous visitor context: States A and B visitors are receiving the experience the program is designed to deliver for unidentified or out-of-program visitors. No intervention is required and no escalation is triggered by Level 5 traffic in these states.
 
 ---
 
 ### 6.2 What Anonymous Visitors Experience
 
-The following consolidates per-module Level 5 behavior from Section 3 for States A and B. It is a reference summary, not a new specification; Section 3 is the authority for per-module Level 5 behavior.
+The following consolidates per-module Level 5 behavior from Section 4 for States A and B. It is a reference summary, not a new specification; Section 4 is the authority for per-module Level 5 behavior.
 
-- All eleven module slots serve their Level 5 default offer or do not render, per the per-module specification in Section 3. For modules with a brand default offer at Level 5 (`hero`, `benefits`, `cta`, `narrative`), the slot renders with non-personalized brand content. For modules with no Level 5 offer (`gated_assets`, `proof`, `problem_framing`, `outcomes`, `use_cases`, `trust_signals`, `progressive_disclosure`), the slot does not render.
+- All eleven module slots serve their Level 5 default offer or do not render, per the per-module specification in Section 4. For modules with a brand default offer at Level 5 (`hero`, `benefits`, `cta`, `narrative`), the slot renders with non-personalized brand content. For modules with no Level 5 offer (`gated_assets`, `proof`, `problem_framing`, `outcomes`, `use_cases`, `trust_signals`, `progressive_disclosure`), the slot does not render.
 - No personalization signal is applied — no `role_classification`, `buying_stage`, or `solution_category` matching occurs. The Level 5 global default activity (Target priority 6999) has no AEP audience gate and no offer attribute matching; it serves the same offer to all visitors.
 - Behavioral signal collection continues for visitors with `visitor_consent_state = full` or `functional_only` — events are captured in the Segment event stream — but the scoring pipeline does not execute because the TAL filter (`tal_member = True`) is not satisfied.
 - The `progressive_disclosure` module does not render at Level 5. Anonymous visitors do not encounter a buying job prompt or a role identification prompt. [Section 3.11 — `progressive_disclosure` Level 5: not rendered]
-- No Target personalization activity above priority 6999 is evaluated for anonymous visitors. The Level 5 global default activity is the only activity that fires. [Section 4 — Level 5 global default activity]
+- No Target personalization activity above priority 6999 is evaluated for anonymous visitors. The Level 5 global default activity is the only activity that fires. [Section 5 — Level 5 global default activity]
 
 ---
 
@@ -1444,7 +1460,7 @@ When a mid-session match fires:
 
 **Deterministic transition rule:** The outcome of the mid-session resolution is one of exactly two states:
 
-- **TAL account match (`tal_member = True`):** visitor transitions from Layer 2 to Layer 1. Routes per Section 1 cascade from next page navigation forward, using the updated AEP profile and any behavioral signals accumulated during the Layer 2 session.
+- **TAL account match (`tal_member = True`):** visitor transitions from Layer 2 to Layer 1. Routes per Section 2 cascade from next page navigation forward, using the updated AEP profile and any behavioral signals accumulated during the Layer 2 session.
 - **Non-TAL account match (Demandbase resolved an account, but it is not on the TAL):** visitor remains at Level 5. `tal_member` does not become `True`. The visitor is now in State B (out of program) rather than State A. The experience does not change at next page navigation.
 
 **Rarity caveat:** Mid-session Demandbase resolution is implementation-dependent. In standard configurations where the Demandbase reverse-IP call fires synchronously at session start, a mid-session match is not possible. This section applies to configurations where resolution is asynchronous or delayed. Document 8 specifies the Demandbase API integration configuration; the timing of resolution is a Document 8 implementation decision.
@@ -1460,7 +1476,7 @@ The following decision table is the operational reference for platform engineers
 | `False` | No account resolved (IP unmatched) | N/A | **State A — Layer 2** | No TAL account match |
 | `False` | Account resolved; account not on TAL | N/A | **State B — Out of program** | Account not TAL-eligible |
 | `True` | TAL account resolved | `post_sale`, `tal_upsell_override_active = False` | **State C — Suppressed** | Acquisition pipeline suppressed |
-| `True` | TAL account resolved | `active_prospect` | **Not Level 5** | Routes per Section 1 cascade |
+| `True` | TAL account resolved | `active_prospect` | **Not Level 5** | Routes per Section 2 cascade |
 
 **States A and B are indistinguishable from the `tal_member` attribute alone.** Both produce `tal_member = False`. The `tal_member` attribute does not preserve the reason for the False value — it does not distinguish between "Demandbase returned no match" and "Demandbase returned a match for a non-TAL account." Distinguishing States A and B requires inspecting the Demandbase resolution log: did Demandbase return any account match for this IP, or no match at all?
 
@@ -1473,11 +1489,11 @@ For most operational purposes, States A and B are treated identically: Level 5, 
 ---
 
 
-## Section 7: Holdback Group Specification
+## Section 8: Holdback Group Specification
 
 > **Depends on:** Document 3 Section 2.3 (campaign cohort AEP segment definitions), Section 8.2 (suppression rules); Document 5 Section 1 (two-constraint model, fallback levels); Document 5 Section 4 (activity priority convention, 6000s range table)
 
-> **Cross-section dependency:** The holdback activity priority placement at 5950–5954 requires an update to the Section 4 range table. The 6100–6199 sub-range previously assigned to holdback in the Section 4 range table note should be reassigned to "reserved — future use." The platform engineering team must apply this update to Section 4 before configuring holdback activities in Target.
+> **Cross-section dependency:** The holdback activity priority placement at 5950–5954 requires an update to the Section 5 range table. The 6100–6199 sub-range previously assigned to holdback in the Section 5 range table note should be reassigned to "reserved — future use." The platform engineering team must apply this update to Section 5 before configuring holdback activities in Target.
 
 ---
 
@@ -1514,7 +1530,7 @@ Each holdback group receives the Level 5 default brand experience — the same e
 
 **Multi-person buying group attribution and account-level holdback analysis (Gr-2):** Holdback assignment is individual-level — each visitor is assigned to holdback or personalization based on a hash of their own stable identifier. This is the correct assignment mechanism for session-level analysis and for behavioral signal collection. However, B2B primary outcomes — opportunity creation, deal stage advancement, deal close — are account-level events produced by buying groups, not individual conversion events.
 
-For account-level outcome analysis in Document 7, an account is treated as "in holdback" when the majority (≥50%) of its identified contacts across the relevant cohort are holdback-assigned. This is the working aggregation rule for v1. Document 7 owns the formal account-level aggregation methodology and may refine this threshold based on account size distribution and contact identification rates in the program. Section 7 establishes the individual-level assignment mechanism; Document 7 establishes how that mechanism aggregates to account-level for business outcome measurement.
+For account-level outcome analysis in Document 7, an account is treated as "in holdback" when the majority (≥50%) of its identified contacts across the relevant cohort are holdback-assigned. This is the working aggregation rule for v1. Document 7 owns the formal account-level aggregation methodology and may refine this threshold based on account size distribution and contact identification rates in the program. Section 8 establishes the individual-level assignment mechanism; Document 7 establishes how that mechanism aggregates to account-level for business outcome measurement.
 
 ---
 
@@ -1562,7 +1578,7 @@ The hash produces a value in the range [0, 100). Visitors whose hash value falls
 | **Post-sale** | Holdback assignment is irrelevant at `tal_program_status` = `post_sale` transition; the attribute remains set but is not evaluated by any active Target activity |
 | **Identity stitching** | When an anonymous holdback visitor is promoted to a resolved `contact_id`, the `holdback_group = True` value carries forward to the identified contact profile |
 
-**[CA FLAG]: `holdback_group` is a new AEP contact profile attribute that must be added to `CLIENT_ATTRIBUTE_MAP` (§CA) in the next implementation pass of `kalder_data_model_s0_s1.py`.**
+**[CA FLAG]: `holdback_group` is a new AEP contact profile attribute that must be added to `CLIENT_ATTRIBUTE_MAP` (§CA) in the next implementation pass of `kalder_data_model.py`.**
 
 Target reads `holdback_group` as a contact profile attribute at session start. The holdback activities (Section 7.5) use `holdback_group = True` as part of their AEP audience gate condition.
 
@@ -1580,7 +1596,7 @@ The priority placement at 5950–5954 ensures that a holdback visitor who has ex
 
 If holdback activities were placed at 6100–6199 (after Level 4 at 6001–6004), a holdback visitor who qualifies for Level 4 would be served the Level 4 account-level experience by the Level 4 activity before the holdback gate fired — contaminating the control condition with a partial-personalization treatment. The 5950–5954 placement prevents this.
 
-**Section 4 cross-section update (Alfonso A-2):** The Section 4 range table note for the 6000–6999 range must be updated to reflect that holdback moved to 5950–5954 and is not in the 6000s range. The 6100–6199 sub-range previously assigned to holdback in the Section 4 range table description should be reassigned to "reserved — future use." Additionally, the Section 4 section footer cross-reference that cites "Section 7 at 6100–6199" must be updated to cite "Section 7 at 5951–5954." Both locations must be updated before the platform engineer configures holdback activities in Target.
+**Section 5 cross-section update (Alfonso A-2):** The Section 5 range table note for the 6000–6999 range must be updated to reflect that holdback moved to 5950–5954 and is not in the 6000s range. The 6100–6199 sub-range previously assigned to holdback in the Section 5 range table description should be reassigned to "reserved — future use." Additionally, the Section 5 section footer cross-reference that cites "Section 8 at 6100–6199" must be updated to cite "Section 8 at 5951–5954." Both locations must be updated before the platform engineer configures holdback activities in Target.
 
 **Holdback activity table:**
 
@@ -1641,30 +1657,30 @@ At v1 launch, `customer_engagement` within the `acquisition` cohort is the only 
 
 ### 7.8 Relationship to Document 7
 
-**What Section 7 specifies and hands to Document 7:**
+**What Section 8 specifies and hands to Document 7:**
 
-Section 7 specifies the holdback group definition (who is in holdback, based on TAL identification + cohort membership + `holdback_group = True`), the assignment mechanism (deterministic hash of stable identifier, written to `holdback_group` AEP attribute at first TAL identification), the traffic percentage (10% per cohort, explicitly stated as an unvalidated starting hypothesis), the cohort-level segmentation structure (four holdback groups, one per cohort), the Target activity configuration (priorities 5951–5954, placement before Level 4 account activities), the holdback visitor experience (Level 5 default, signal collection and scoring continue normally), the account-level aggregation working rule (≥50% of identified contacts holdback-assigned = account treated as holdback for outcome analysis), and the solution-category sub-segmentation upgrade path (500 unique holdback visitors per 90 days per category is the activation threshold hypothesis).
+Section 8 specifies the holdback group definition (who is in holdback, based on TAL identification + cohort membership + `holdback_group = True`), the assignment mechanism (deterministic hash of stable identifier, written to `holdback_group` AEP attribute at first TAL identification), the traffic percentage (10% per cohort, explicitly stated as an unvalidated starting hypothesis), the cohort-level segmentation structure (four holdback groups, one per cohort), the Target activity configuration (priorities 5951–5954, placement before Level 4 account activities), the holdback visitor experience (Level 5 default, signal collection and scoring continue normally), the account-level aggregation working rule (≥50% of identified contacts holdback-assigned = account treated as holdback for outcome analysis), and the solution-category sub-segmentation upgrade path (500 unique holdback visitors per 90 days per category is the activation threshold hypothesis).
 
-**What Document 7 inherits from Section 7:**
+**What Document 7 inherits from Section 8:**
 
 The holdback group definition as the control condition for all lift calculations. The `holdback_group` AEP attribute as the segment dimension for control/treatment split analysis. The 10% traffic percentage as the starting hypothesis to be validated by Document 7's power calculation — if Document 7 determines a different percentage is required, it governs. The cohort segmentation as the primary analysis dimension for lift breakdown. The account-level aggregation working rule (≥50% threshold) as the starting assumption for Document 7's formal aggregation methodology. The solution-category sub-segmentation conditions as the criteria for upgrading to finer-grained analysis.
 
-**What Document 7 owns and Section 7 does not specify:**
+**What Document 7 owns and Section 8 does not specify:**
 
 Minimum detectable effect calculations and formal power calculation methodology. Confidence interval specifications and statistical significance thresholds. Novelty effect identification procedures and the timing model for when novelty effects dissipate. Simpson's paradox risk in segment-level analysis and the mitigation approach. The formal account-level aggregation methodology for business outcome attribution. The reporting cadence for lift results and the escalation path when lift is not measurable. The attribution model for multi-person buying groups — how conversion credit is divided across buying group members when some are in holdback and some are in the personalization group.
 
 **Scope boundaries:**
 
-Section 7 does not specify the statistical measurement methodology — that is Document 7. Section 7 does not specify Marketo holdback behavior (whether holdback visitors are explicitly excluded from Marketo email programs as a matter of program design, rather than simply not receiving Target-triggered enrollments) — that is Document 8. Section 7 does not specify how holdback assignment interacts with progressive disclosure beyond the note in Section 7.7 that holdback visitors receive Level 5 and the `progressive_disclosure` module does not render at Level 5. Section 7 does not specify post-sale holdback behavior — holdback assignment is effectively retired at `tal_program_status = post_sale` transition; the attribute remains set but is not read by any active Target activity for post-sale visitors.
+Section 8 does not specify the statistical measurement methodology — that is Document 7. Section 8 does not specify Marketo holdback behavior (whether holdback visitors are explicitly excluded from Marketo email programs as a matter of program design, rather than simply not receiving Target-triggered enrollments) — that is Document 8. Section 8 does not specify how holdback assignment interacts with progressive disclosure beyond the note in Section 7.7 that holdback visitors receive Level 5 and the `progressive_disclosure` module does not render at Level 5. Section 8 does not specify post-sale holdback behavior — holdback assignment is effectively retired at `tal_program_status = post_sale` transition; the attribute remains set but is not read by any active Target activity for post-sale visitors.
 
 ---
 
-*End of Section 7. Document 7 (Measurement and Experimentation Framework) inherits the holdback group definition as specified above as its control condition foundation. Section 4 requires a range table update: holdback activities at 5950–5954 should be added to the 5000s range description, and the 6100–6199 sub-range in the 6000s description should be reassigned from "holdback" to "reserved — future use." Section 9 specifies suppression activity configuration in the 6200–6299 range.*
+*End of Section 8. Document 7 (Measurement and Experimentation Framework) inherits the holdback group definition as specified above as its control condition foundation. Section 5 requires a range table update: holdback activities at 5950–5954 should be added to the 5000s range description, and the 6100–6199 sub-range in the 6000s description should be reassigned from "holdback" to "reserved — future use." Section 10 specifies suppression activity configuration in the 6200–6299 range.*
 
 ---
 
 
-## Section 8: Level 4 Page Assembly Completeness
+## Section 9: Level 4 Page Assembly Completeness
 
 > **Resolves:** D5-Flag-03
 > **Depends on:** Document 4 Section 5.2 (per-module Level 4 behavior), Section 5.3 (module type reference table), Section 8.4 (progressive_disclosure commission block, D8-Flag-07); Document 5 Section 1.3 (Level 4 activation rule); Document 5 Section 3 (per-module Level 4 offer matching — authority; Section 8 cites, does not repeat); Document 3 Section 4.2 (Layer 1 personalization depth, account-plane attributes)
@@ -1742,7 +1758,7 @@ These six slots share a common characteristic: each carries a default offer that
 
 ### 8.4 Level 4 Page Composition by Template
 
-The following specifications describe the Level 4 composition for the two primary templates. They are design guidance — slot ordering is a UX/engineering decision, not a binding Target configuration requirement. Section 8 specifies which module types have Level 4 offers available; template implementation is a Layer 3 deliverable.
+The following specifications describe the Level 4 composition for the two primary templates. They are design guidance — slot ordering is a UX/engineering decision, not a binding Target configuration requirement. Section 9 specifies which module types have Level 4 offers available; template implementation is a Layer 3 deliverable.
 
 **Solution page template at Level 4:**
 
@@ -1817,12 +1833,12 @@ The following checklist is the content team's reference for commissioning the Le
 
 ---
 
-*End of Section 8. D5-Flag-03 resolved. Section 3 remains the authority for per-module Level 4 offer matching logic. Document 6 owns the progressive disclosure UX specification that must be approved before the `progressive_disclosure` commission block (D8-Flag-07) lifts. Section 9 specifies suppression activities that affect which Level 4 visitors are routed to Level 5 rather than receiving the Level 4 experience specified here.*
+*End of Section 9. D5-Flag-03 resolved. Section 4 remains the authority for per-module Level 4 offer matching logic. Document 6 owns the progressive disclosure UX specification that must be approved before the `progressive_disclosure` commission block (D8-Flag-07) lifts. Section 10 specifies suppression activities that affect which Level 4 visitors are routed to Level 5 rather than receiving the Level 4 experience specified here.*
 
 ---
 
 
-## Section 9: Edge Cases and Suppression Rules
+## Section 10: Edge Cases and Suppression Rules
 
 > **Depends on:** Document 3 Section 1.3 (account status classification, trial/POC exception), Section 8.2 (account-level program suppression), Section 8.3 (page-level and surface-level suppression — authority); Document 2 Section 4.3 (post-sale noise filter, trial/POC exception, Filter 4 surface exclusion); Document 5 Section 1.2 (differential_insufficient Priority 0 override); Document 5 Section 4.3 (compound override audience definitions); Document 5 Section 4.8 (6200–6299 range reservation); Document 5 Section 5.4 Case 2 (classification_mismatch flag); Document 5 Section 7.7 (holdback and Outreach interaction)
 
@@ -1850,13 +1866,13 @@ Document 5 specifies the routing rule: when `tal_upsell_override_active = True`,
 
 **Trial/POC exception:**
 
-Accounts with `tal_program_status = active_prospect` (the computed override applied to trial and POC accounts per Document 3, Section 1.3 and Document 2, Section 4.3) route through the standard Section 1 cascade — they are not in the post-sale suppression path. This exception prevents suppression misapplication: a trial account in active evaluation should receive role-appropriate personalization, not the post-sale default. Ensure that the `active_prospect` override is applied before the suppression check at session start. [Document 3, Section 1.3]
+Accounts with `tal_program_status = active_prospect` (the computed override applied to trial and POC accounts per Document 3, Section 1.3 and Document 2, Section 4.3) route through the standard Section 2 cascade — they are not in the post-sale suppression path. This exception prevents suppression misapplication: a trial account in active evaluation should receive role-appropriate personalization, not the post-sale default. Ensure that the `active_prospect` override is applied before the suppression check at session start. [Document 3, Section 1.3]
 
 ---
 
 ### 9.2 Page-Level and Surface-Level Suppression
 
-Document 3, Section 8.3 is the authority for page-level and surface-level suppression rules and implementation details. Section 9 specifies the routing consequences only.
+Document 3, Section 8.3 is the authority for page-level and surface-level suppression rules and implementation details. Section 10 specifies the routing consequences only.
 
 **Hard suppression pages (careers, IR, press, legal):**
 
@@ -1898,23 +1914,23 @@ For pages not scoped to a specific solution category, the program uses the visit
 
 1. If `tal_solution_interest_flags` indicates a single dominant solution category: that category governs. The visitor's classification under that category's key determines fallback level.
 2. If `tal_solution_interest_flags` indicates multiple solution categories at comparable priority: use the `role_confidence_score` at the `(contact_id, solution_category)` key as the tiebreaker — the solution category for which the visitor holds the highest `role_confidence_score` in their AEP classification profile governs. This is the most readily available and implementation-stable proxy for accumulated signal strength across session history. If two solution categories produce identical `role_confidence_score` values, the most recently scored category governs (the category whose classification key was last updated, per the `classification_updated_at` timestamp in the AEP contact profile).
-3. If no solution interest signal exists (no `tal_solution_interest_flags` set): the visitor has no identifiable solution category context. Route to Level 4 (TAL-identified, no solution signal) or Level 5 (non-TAL), per Section 1 standard cascade.
+3. If no solution interest signal exists (no `tal_solution_interest_flags` set): the visitor has no identifiable solution category context. Route to Level 4 (TAL-identified, no solution signal) or Level 5 (non-TAL), per Section 2 standard cascade.
 
 This rule produces a deterministic outcome for every possible `tal_solution_interest_flags` state, including null. The program does not speculate about solution category on non-solution pages — it uses the account-plane interest signal when available and falls back to Level 4 when not.
 
-Section 9 specifies the classification context governance rule only. Whether the web experience surfaces solution-category navigation that reflects the visitor's multi-category profile is a Layer 3 experience design decision not specified here.
+Section 10 specifies the classification context governance rule only. Whether the web experience surfaces solution-category navigation that reflects the visitor's multi-category profile is a Layer 3 experience design decision not specified here.
 
 ---
 
 ### 9.4 `differential_insufficient` Mid-Session State Change
 
-Section 1.2 established the Priority 0 override for `differential_insufficient = True`. Section 9 specifies what happens when this flag changes value mid-session.
+Section 1.2 established the Priority 0 override for `differential_insufficient = True`. Section 10 specifies what happens when this flag changes value mid-session.
 
 **True → False (role ambiguity resolves):**
 
 A visitor arrives with `differential_insufficient = True`. Target routes them to Level 3 via the `differential_override_[cohort]` compound audience at priority 1001–1004. During the session, additional behavioral signals sharpen the role differential — the top role pulls ahead by more than 10 points. The scoring engine re-scores and produces `differential_insufficient = False`.
 
-At the visitor's next page navigation, Target reads the updated AEP profile. The `differential_override_[cohort]` compound audience condition is no longer satisfied (`differential_insufficient ≠ True`). Standard fallback level routing from Section 1 resumes. The visitor's updated `confidence_tier` determines their new fallback level, which may be Level 2 or Level 1 if MEDIUM or HIGH confidence was reached in the re-score. A visitor can jump from Level 3 to Level 1 at a single page navigation if the re-score warrants it. (N-3)
+At the visitor's next page navigation, Target reads the updated AEP profile. The `differential_override_[cohort]` compound audience condition is no longer satisfied (`differential_insufficient ≠ True`). Standard fallback level routing from Section 2 resumes. The visitor's updated `confidence_tier` determines their new fallback level, which may be Level 2 or Level 1 if MEDIUM or HIGH confidence was reached in the re-score. A visitor can jump from Level 3 to Level 1 at a single page navigation if the re-score warrants it. (N-3)
 
 **False → True (new signals create ambiguity):**
 
@@ -1948,7 +1964,7 @@ This is a **named v1 limitation**, not a permanent constraint. When ML classifie
 
 Section 5.4 Case 2 defined `classification_mismatch = True`: set when the Demandbase firmographic role inference differs from the behavioral top-scoring role. The visitor's web experience routing is governed by the behavioral classification — the `classification_mismatch` flag does not change the fallback level or the content served on kalder.com. That routing specification is complete in Sections 1 and 5. (G-1)
 
-Section 9 specifies the third function of the flag: sales intelligence surfacing to the AE via the Outreach integration.
+Section 10 specifies the third function of the flag: sales intelligence surfacing to the AE via the Outreach integration.
 
 **Sales activation routing:**
 
@@ -1964,7 +1980,7 @@ The `classification_mismatch` flag does not produce any change to the visitor's 
 
 ### 9.7 Target Suppression Activity Configuration (6200–6299 Range)
 
-Section 4 reserved priority range 6200–6299 for suppression activities. This section specifies what is configured in that range at v1 and how the range interacts with the primary suppression mechanism.
+Section 5 reserved priority range 6200–6299 for suppression activities. This section specifies what is configured in that range at v1 and how the range interacts with the primary suppression mechanism.
 
 **Primary mechanism — audience exclusion:**
 
@@ -1984,21 +2000,21 @@ The 6200–6299 range may be populated with additional suppression activities as
 
 ---
 
-*End of Section 9. Document 3 Section 8 is the authority for the full suppression architecture. Section 10 specifies the `pending_solution_fallback` path, which governs visitors in solution categories where coverage status is `pending` or `constructed` — a related but distinct edge case not covered here. Section 7 specifies holdback group configuration; holdback visitors who are also post-sale are excluded from holdback activities by virtue of being excluded from all acquisition cohort audiences.*
+*End of Section 10. Document 3 Section 8 is the authority for the full suppression architecture. Section 11 specifies the `pending_solution_fallback` path, which governs visitors in solution categories where coverage status is `pending` or `constructed` — a related but distinct edge case not covered here. Section 8 specifies holdback group configuration; holdback visitors who are also post-sale are excluded from holdback activities by virtue of being excluded from all acquisition cohort audiences.*
 
 ---
 
 
-## Section 10: `pending_solution_fallback` Behavior
+## Section 11: `pending_solution_fallback` Behavior
 
 > **Fulfills forward references from:** Section 1.4
-> **Depends on:** `kalder_data_model_s0_s1.py` §4 FALLBACK_CASCADE (`pending_solution_fallback` definition, `apply_firmographic_bonus: False`, logging requirement); Document 4 Section 7.2 (four-state COVERAGE_STATUS_HIERARCHY), Section 7.4 (coverage gap monitoring), Section 7.6 (v1 launch coverage state), Section 8.5 (coverage tracking pipeline); Document 5 Section 1.1 (two-constraint model), Section 1.4 (`pending_solution_fallback` summary), Section 1.5 (v1 coverage state table), Section 3.11 (`progressive_disclosure` level activation), Section 5.3 (firmographic bonus activation conditions)
+> **Depends on:** `kalder_data_model.py` §4 FALLBACK_CASCADE (`pending_solution_fallback` definition, `apply_firmographic_bonus: False`, logging requirement); Document 4 Section 7.2 (four-state COVERAGE_STATUS_HIERARCHY), Section 7.4 (coverage gap monitoring), Section 7.6 (v1 launch coverage state), Section 8.5 (coverage tracking pipeline); Document 5 Section 1.1 (two-constraint model), Section 1.4 (`pending_solution_fallback` summary), Section 1.5 (v1 coverage state table), Section 3.11 (`progressive_disclosure` level activation), Section 5.3 (firmographic bonus activation conditions)
 
 ---
 
 ### 10.1 The Two-Constraint Model in the Coverage Context
 
-Section 1.1 established that personalization depth is governed by two independent constraints that must both be satisfied simultaneously. Section 10 applies that model to the coverage dimension.
+Section 1.1 established that personalization depth is governed by two independent constraints that must both be satisfied simultaneously. Section 11 applies that model to the coverage dimension.
 
 **Constraint A — Role confidence** (confidence tier and `differential_insufficient` state) is produced by the classification pipeline: behavioral scoring, ML classifier output, and zero-party declarations. Constraint A is unaffected by `pending_solution_fallback`. A HIGH-confidence Champion in a pending solution category is correctly classified. Their behavioral score, Tier 1 ML classifier output, and Tier 2 zero-party confirmations are the same values they would carry in a fully-covered category. The classification pipeline produces the same output regardless of coverage state.
 
@@ -2065,7 +2081,7 @@ The v1 period for visitors in pending categories is a classification accumulatio
 
 ### 10.5 `progressive_disclosure` Behavior Under `pending_solution_fallback`
 
-Section 1.4 deferred this specification to Section 10.
+Section 1.4 deferred this specification to Section 11.
 
 **The question:** Should the `progressive_disclosure` module render for a HIGH-confidence Champion in a pending category? If so, which prompt variant?
 
@@ -2083,7 +2099,7 @@ A reader who encounters a HIGH-confidence visitor receiving the Level 3 `progres
 
 ### 10.6 Logging Requirement and Measurement Integration
 
-`§4 FALLBACK_CASCADE` specifies a logging requirement: all `pending_solution_fallback` activation events must be flagged with `solution_key` and `visitor_id` for coverage gap tracking. Section 10 operationalizes this requirement.
+`§4 FALLBACK_CASCADE` specifies a logging requirement: all `pending_solution_fallback` activation events must be flagged with `solution_key` and `visitor_id` for coverage gap tracking. Section 11 operationalizes this requirement.
 
 **Log event fields:**
 
@@ -2109,7 +2125,7 @@ The `pending_solution_fallback` event log feeds the coverage gap tracking dashbo
 
 ### 10.7 v1 State and Resolution Roadmap
 
-The v1 launch coverage state is specified in Document 4, Section 7.6 and summarized in Document 5, Section 1.5. Section 10 adds the resolution path for each pending and partial category.
+The v1 launch coverage state is specified in Document 4, Section 7.6 and summarized in Document 5, Section 1.5. Section 11 adds the resolution path for each pending and partial category.
 
 **`pending_solution_fallback` deactivation conditions by category:**
 
@@ -2123,7 +2139,23 @@ Visitors who have been engaging with kalder.com during the v1 period in pending 
 
 ---
 
-*End of Section 10. Section 1.4 forward references are fulfilled. `§4 FALLBACK_CASCADE` logging requirement is operationalized in Section 10.6. Document 4 Section 8.5 is the authority for the coverage tracking pipeline that triggers AEP attribute updates. Document 7 inherits the compound holdback + `pending_solution_fallback` disaggregation requirement specified in Section 10.6.*
+*End of Section 11. Section 1.4 forward references are fulfilled. `§4 FALLBACK_CASCADE` logging requirement is operationalized in Section 10.6. Document 4 Section 8.5 is the authority for the coverage tracking pipeline that triggers AEP attribute updates. Document 7 inherits the compound holdback + `pending_solution_fallback` disaggregation requirement specified in Section 10.6.*
 
 ---
 
+
+---
+
+## Cross-Reference Table
+
+| Document | Relationship | Specific Dependency |
+|---|---|---|
+| `kalder_data_model.py` | Document 5 depends on this | `§3 CONFIDENCE_TIERS` (fallback level thresholds), `§4 FALLBACK_CASCADE` (five-level cascade definitions, `pending_solution_fallback`, `holdback_group`, logging requirement), `§10 MODULE_COMPOSITION_RULES` (module slot definitions, intended_axes), `§12 CLASSIFICATION_SCORING_RULES` (scoring sequence, firmographic bonus guard rail, differential_insufficient flag — AR-03), `§19 TITLE_ROLE_MAP` (firmographic-first path title lookup), `§20 WEBSITE_SURFACE_TAXONOMY` (solution_category surface assignments) |
+| Document 1 — Buying Group Role Architecture | Document 5 depends on this | Five role definitions and the confidence tier model that the fallback cascade levels and two-axis vs. three-axis activation rules are expressed against |
+| Document 2 — Signal Definition and Confidence Model | Document 5 depends on this | Seven-step scoring sequence, KNOWN/INFERRED/UNKNOWN buying job confidence states, and MEDIUM confidence ceiling that govern cascade entry conditions; Section 8.2 fallback cascade summary is the companion reference |
+| Document 3 — Audience and Segmentation Architecture | Document 5 depends on this | TAL membership criteria, Demandbase Layer 1 identification, segment definitions and AEP audience gates that activate Target activities; `tal_member`, `solution_category`, and firmographic plane attributes used throughout |
+| Document 4 — Content Model and Taxonomy | Document 5 depends on this | Module type reference table (Section 5.3), offer catalog structure, coverage status hierarchy (Section 7.2), per-tuple coverage gate, and v1 launch coverage state (Section 7.6) that govern Constraint B evaluation |
+| Document 6 — Buying Group Journey and Convergence Model | Document 5 depends on this | Progressive disclosure UX specifications (Section 3 — prompt copy, correction paths, placement) and convergence point definitions that Section 4 and Section 8 reference |
+| Document 7 — Measurement and Experimentation Framework | Depends on Document 5 | Holdback group specification (Section 8), `pending_solution_fallback` logging requirement (Section 11.6), and fallback level routing outcomes that define the measurement segment taxonomy and lift calculation dimensions |
+| Document 8 — Operational Runbook | Depends on Document 5 | Adobe Target activity configuration (Section 5) and Sanity-to-Target sync pipeline specification that Document 8 implements; Level 4 and Level 5 experience composition that governs content commissioning scope |
+| Document 9 — Privacy and Consent Architecture | Document 5 depends on this | Consent-state gating conditions that determine which signals are available to the scoring pipeline upstream of Section 2 rule evaluation; suppression logic for visitors in geographic opt-out jurisdictions |

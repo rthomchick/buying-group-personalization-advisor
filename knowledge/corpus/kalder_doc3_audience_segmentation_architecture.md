@@ -4,24 +4,51 @@
 **Document version:** 1.0 (consolidated — all sections approved)
 **Date:** June 2026
 **Status:** Approved
-**Depends on:** Buying Group Role Architecture (Document 1), Signal Definition and Confidence Model (Document 2), `kalder_data_model_s0_s1.py` v0.2.0
+**Depends on:** Buying Group Role Architecture (Document 1), Signal Definition and Confidence Model (Document 2), `kalder_data_model.py` v0.2.0
 
 ---
 
 **Sections in this document:**
 
-1. TAL Architecture and Governance
-2. Buying Group Stages and Cohort Entry Logic
-3. Account-Level vs. Contact-Level Segmentation
-4. Identification Layers and Personalization Availability
-5. Anonymous-to-Known Contact Promotion
-6. Segment-to-Channel Mapping
-7. Geographic Segmentation
-8. Exclusion and Suppression Logic
+- Section 1: Document Scope and Canonical Status
+- Section 2: TAL Architecture and Governance
+- Section 3: Buying Group Stages and Cohort Entry Logic
+- Section 4: Account-Level vs. Contact-Level Segmentation
+- Section 5: Identification Layers and Personalization Availability
+- Section 6: Anonymous-to-Known Contact Promotion
+- Section 7: Segment-to-Channel Mapping
+- Section 8: Geographic Segmentation
+- Section 9: Exclusion and Suppression Logic
 
 ---
 
-## Section 1: TAL Architecture and Governance
+## Section 1 — Document Scope and Canonical Status
+
+Document 3 is the single authoritative source for audience architecture, TAL governance, buying group stage definitions, cohort entry logic, identification layer structure, segment-to-channel mapping, geographic segmentation, and exclusion and suppression logic in the Kalder Buying Group Personalization Program. It defines how the program identifies which accounts and contacts qualify for personalization treatment, at what depth, and through which channels. No other corpus document re-specifies TAL governance rules, re-defines cohort entry conditions, or extends the segment-to-channel activation map.
+
+Three adjacent decisions are explicitly out of scope here. The role definitions and confidence tier thresholds that determine which contacts qualify for contact-level personalization are owned by Document 1 (Buying Group Role Architecture). The scoring pipeline that produces `confidence_tier` and `role_classification` from behavioral signals is owned by Document 2 (Signal Definition and Confidence Model). The runtime decisioning logic that translates AEP audience membership into Adobe Target experience selection is owned by Document 5 (Personalization Decisioning Rules).
+
+The audience architecture in this document is the human-readable authority from which AEP audience segment definitions, Marketo program enrollment rules, and Outreach sequence triggers are derived. The canonical machine-readable entity definitions are in `kalder_data_model.py §5 COVERAGE_STATUS`, `§6 SEGMENT_DEFINITIONS`, and `§14 CHANNEL_ACTIVATION_MAP`. Any discrepancy between this document's segment definitions and the data model is a defect — the data model governs entity definitions; this document governs their strategic rationale and operational governance.
+
+**What this document owns:** TAL architecture and governance (Section 2), buying group stages and cohort entry logic (Section 3), account-level vs. contact-level segmentation (Section 4), identification layers and personalization availability (Section 5), anonymous-to-known contact promotion (Section 6), segment-to-channel mapping (Section 7), geographic segmentation (Section 8), and exclusion and suppression logic (Section 9).
+
+**Delegation — what this document does not re-specify:**
+- Buying group role definitions and behavioral signatures → Document 1
+- Signal weight matrix, seven-step scoring sequence, and confidence tier thresholds → Document 2
+- Content node schemas, tagging taxonomy, and offer catalog structure → Document 4
+- Runtime experience selection logic, fallback cascade routing, and Adobe Target activity configuration → Document 5
+- Buying group stage strategic definitions, convergence points, and JTBD code library → Document 6
+- Lift measurement methodology, segment-level analysis breakdowns, and experimentation design → Document 7
+- Operational workflow for list hygiene, suppression management, and DSR execution → Document 8
+- Legal basis for signal collection, consent-state gating conditions, and geographic suppression legal framework → Document 9
+
+**Coverage status note.** TAL architecture and suppression logic apply uniformly across all five solution categories. Segment-to-channel activation varies by solution category coverage status — pending categories activate at Level 3 ceiling per `pending_solution_fallback`. Section 9 specifies geographic suppression rules; the legal framework that governs those rules is in Document 9.
+
+**Section numbering note.** Prose cross-references within this document have been reconciled to current heading numbers (cross-reference cleanup pass, 2026-06-21). Heading numbers are authoritative.
+
+---
+
+## Section 2: TAL Architecture and Governance
 
 ---
 
@@ -135,7 +162,7 @@ The following behaviors apply to all visitors whose IP cannot be resolved to a T
 
 ### Data Model Update Note
 
-The following canonical TAL account attributes must be added as entries in `CLIENT_ATTRIBUTE_MAP` (§CA) in the next implementation pass of `kalder_data_model_s0_s1.py`:
+The following canonical TAL account attributes must be added as entries in `CLIENT_ATTRIBUTE_MAP` (§CA) in the next implementation pass of `kalder_data_model.py`:
 
 `tal_member`, `tal_program_status`, `tal_account_type_source`, `tal_upsell_override_active`, `tal_solution_interest_flags`, `tal_region`, `tal_marquee`, `tal_new_logo_eligible`, `tal_open_pipeline`, `tal_account_domain`, `tal_channel`, `tal_last_refreshed_at`
 
@@ -143,7 +170,7 @@ These attributes represent the data contract between the Salesforce CRM source o
 
 ---
 
-## Section 2: Buying Group Stages and Cohort Entry Logic
+## Section 3: Buying Group Stages and Cohort Entry Logic
 
 ---
 
@@ -182,7 +209,7 @@ The `bg_stage` attribute is an AEP account-level computed attribute. Its value i
 
 ### 2.3 The Four Campaign Cohorts
 
-Each cohort entry requires `tal_program_status` = `active_prospect`. The AEP segment definition for each cohort is stated below as the exact attribute conditions that produce cohort membership in AEP. Channel mapping is summarized here; full channel activation specifications are in Section 6.
+Each cohort entry requires `tal_program_status` = `active_prospect`. The AEP segment definition for each cohort is stated below as the exact attribute conditions that produce cohort membership in AEP. Channel mapping is summarized here; full channel activation specifications are in Section 7.
 
 **`education` — Priority: 4 (lowest)**
 
@@ -322,7 +349,7 @@ The measurement responsibility for validating whether `bg_health_single_eb_eleva
 
 ### Data Model Update Note
 
-The following attributes defined in this section must be added as entries in `CLIENT_ATTRIBUTE_MAP` (§CA) in the next implementation pass of `kalder_data_model_s0_s1.py`:
+The following attributes defined in this section must be added as entries in `CLIENT_ATTRIBUTE_MAP` (§CA) in the next implementation pass of `kalder_data_model.py`:
 
 `bg_stage`, `sfdc_opportunity_created`, `sfdc_opportunity_stage`, `sfdc_opportunity_stage_stale`, `contact_engagement_event_count_180d`, `hand_raiser_event`, `bg_cohort`, `bg_health_single_eb_elevated`
 
@@ -332,7 +359,7 @@ The following attributes defined in this section must be added as entries in `CL
 
 ---
 
-## Section 3: Account-Level vs. Contact-Level Segmentation
+## Section 4: Account-Level vs. Contact-Level Segmentation
 
 ---
 
@@ -395,7 +422,7 @@ The dependency is one-directional and gated: an account must first pass the AEP 
 
 One consequence of this architecture: a contact's experience depth can change between sessions as their contact-plane attributes update — without any change to the account's cohort or stage. Conversely, an account-plane cohort transition (e.g., `acquisition` → `progression_early_to_mature`) immediately changes which channel activations the account is eligible for, even before any individual contact's classification state changes.
 
-Detail on Adobe Target rule syntax and AEP segment query definitions is deferred to Section 6.
+Detail on Adobe Target rule syntax and AEP segment query definitions is deferred to Section 7.
 
 ---
 
@@ -434,7 +461,7 @@ The distinction matters operationally: `tal_solution_interest_flags` answers "wh
 
 ---
 
-## Section 4: Identification Layers and Personalization Availability
+## Section 5: Identification Layers and Personalization Availability
 
 ---
 
@@ -442,7 +469,7 @@ The distinction matters operationally: `tal_solution_interest_flags` answers "wh
 
 What the program knows about a visitor determines what it can serve. Identification layer is the shorthand for that state: it describes the combination of account-level resolution, contact-level resolution, and available data authority tiers that are currently active for a given visitor. As identification improves, the program's ability to personalize with precision improves alongside it.
 
-Three layers are defined. Each is a stable operational state with a defined maximum personalization depth. Visitors can move between layers — promotion mechanics are specified in Section 5.
+Three layers are defined. Each is a stable operational state with a defined maximum personalization depth. Visitors can move between layers — promotion mechanics are specified in Section 6.
 
 | Layer | Identification State | Identity Resolved? | Max Personalization Depth | Confidence Ceiling |
 |---|---|---|---|---|
@@ -470,7 +497,7 @@ Maximum personalization, with behavioral accumulation: Level 3 (solution-interes
 
 **Consent interaction at Layer 1.** Visitors with `visitor_consent_state` = `declined` receive the account-level experience (Level 4) when a TAL match exists; no behavioral signal observations are collected or scored. Visitors with `full` or `functional_only` consent receive behavioral scoring on all 19 first-party behavioral signals, subject to the Track 2 constraint above. Note that the firmographic bonus suppression has two independent causes: Track 2 pending status suppresses the bonus for all visitors regardless of consent state; `functional_only` consent state additionally suppresses all `explicit_consent_required` signals, including `demandbase_firmographic_match`, meaning the firmographic bonus would remain suppressed for `functional_only` visitors even after Track 2 completes. Both Track 2 completion and `full` consent state are required for the firmographic bonus to activate. The `firmographic_enrichment_cache` in AEP retains the Demandbase reverse-IP match result for 90 days; consent withdrawal purges the cache, which can cause a returning visitor to be treated as unidentified until a new Demandbase match resolves in a subsequent session [Section 1.7].
 
-**Promotion.** When a Layer 1 visitor submits a form, responds to a progressive disclosure prompt, or is matched to a CRM contact record, they promote to Layer 3. The promotion mechanics — trigger event, behavioral history stitching, anonymous identifier to stable `contact_id` migration, and decay recalculation — are specified in Section 5.
+**Promotion.** When a Layer 1 visitor submits a form, responds to a progressive disclosure prompt, or is matched to a CRM contact record, they promote to Layer 3. The promotion mechanics — trigger event, behavioral history stitching, anonymous identifier to stable `contact_id` migration, and decay recalculation — are specified in Section 6.
 
 ---
 
@@ -486,7 +513,7 @@ Maximum personalization, with behavioral accumulation: Level 3 (solution-interes
 
 **Consent interaction at Layer 2.** Visitors with `visitor_consent_state` = `declined` at Layer 2 cannot build a behavioral signal record. Signal collection is suppressed from the first declined session, which means the Segment event stream receives no observations during the declined period. A declined visitor who subsequently changes their consent state to `full` or `functional_only` will have no pre-consent behavioral history available to the scoring pipeline — nothing was collected, so nothing can be stitched. The Layer 2 behavioral accumulation that typically accelerates scoring at promotion is absent for visitors with a prior declined period.
 
-**Promotion.** If a Demandbase match resolves in a subsequent session, the retained Layer 2 behavioral history becomes available to the scoring pipeline and the visitor is promoted to Layer 1. If a form fill or CRM match occurs simultaneously with or prior to a Demandbase match, the visitor promotes directly to Layer 3, bypassing Layer 1 entirely. The promotion mechanics are specified in Section 5.
+**Promotion.** If a Demandbase match resolves in a subsequent session, the retained Layer 2 behavioral history becomes available to the scoring pipeline and the visitor is promoted to Layer 1. If a form fill or CRM match occurs simultaneously with or prior to a Demandbase match, the visitor promotes directly to Layer 3, bypassing Layer 1 entirely. The promotion mechanics are specified in Section 6.
 
 ---
 
@@ -500,13 +527,13 @@ Tier 1 (ML classifier): available for Champion, Economic Buyer, and Influencer a
 
 Tier 2 (zero-party self-identification): available for all five roles. When combined with behavioral confirmation, produces HIGH `confidence_tier`. Zero-party declarations decay after 90 days from the date of self-identification and require re-confirmation.
 
-Tier 3 (behavioral inference): available for all five roles. Behavioral signals accumulated during Layers 1 and 2 — with their original timestamps — carry forward into the Layer 3 scoring profile per the promotion mechanics in Section 5. Tier 3 alone is capped at MEDIUM `confidence_tier` regardless of score value.
+Tier 3 (behavioral inference): available for all five roles. Behavioral signals accumulated during Layers 1 and 2 — with their original timestamps — carry forward into the Layer 3 scoring profile per the promotion mechanics in Section 6. Tier 3 alone is capped at MEDIUM `confidence_tier` regardless of score value.
 
 **Personalization depth at Layer 3.** Level 1 (HIGH confidence, role-specific) is the maximum — subject to two independent constraints operating simultaneously. First, `confidence_tier` must be HIGH, which requires Tier 1 or Tier 2 + behavioral confirmation. MEDIUM tier at Layer 3 produces Level 2; LOW and UNKNOWN produce Levels 3–4 through the cascade routing sequence [Document 1, Section 8.8]. Second, the active solution category's content coverage must not be `pending_solution_fallback`. A Layer 3 visitor classified at HIGH confidence in a solution category with `coverage_status: pending` receives the best available general content for that area — functionally Level 3 or below — because role-specific content inventory for that category is not yet available [Document 1, pending_solution_fallback]. At v1 launch, Customer Engagement is the only fully covered solution category; four others carry pending or partial coverage. Both constraints must be satisfied independently — HIGH confidence is necessary but not sufficient for a Level 1 experience.
 
 **Consent interaction at Layer 3.** CRM match via the Kafka pipeline is not gated on `visitor_consent_state` — a `declined` visitor's `contact_id` may be resolved if they appear in the CRM, and account-plane attributes remain current. However, no contact-plane behavioral scoring executes for a `declined` visitor regardless of `contact_id` resolution status. A `declined` known contact at a TAL account receives Level 4 (account-level, no behavioral personalization) — the same operational ceiling as a Layer 1 `declined` visitor. Visitors with `functional_only` consent receive behavioral scoring on all 19 first-party signals; the firmographic bonus pathway remains suppressed regardless of consent state until Track 2 legal review completes.
 
-**Promotion.** Layer 3 is the terminal identification layer — there is no Layer 4. Behavioral history stitching at Layer 3 promotion — how pre-promotion anonymous signals accumulated during Layers 1 and 2 are merged into the stable `contact_id` profile — is specified in Section 5.
+**Promotion.** Layer 3 is the terminal identification layer — there is no Layer 4. Behavioral history stitching at Layer 3 promotion — how pre-promotion anonymous signals accumulated during Layers 1 and 2 are merged into the stable `contact_id` profile — is specified in Section 6.
 
 ---
 
@@ -516,7 +543,7 @@ A visitor moving from Layer 2 to Layer 1, or from Layer 1 to Layer 3, should exp
 
 ---
 
-## Section 5: Anonymous-to-Known Contact Promotion
+## Section 6: Anonymous-to-Known Contact Promotion
 
 ---
 
@@ -524,7 +551,7 @@ A visitor moving from Layer 2 to Layer 1, or from Layer 1 to Layer 3, should exp
 
 Promotion is the pipeline event by which a visitor moves from a lower identification layer to a higher one. Each promotion path has a defined trigger event, a behavioral history stitching operation, a decay recalculation step, and a resulting AEP profile state. This section specifies all three paths and the failure modes that arise when those mechanics encounter data quality problems.
 
-One timing rule governs all three paths and must be stated before the paths are specified individually: a promotion event triggers an AEP profile update and a scoring pipeline run. These operations are not guaranteed to complete within the current session. **The new classification produced by the promotion is available to Adobe Target at the start of the next session in which the visitor appears, not necessarily within the current session.** The in-session experience behavior during the window between a promotion event and the next session start is an experience design decision owned by Document 5 (Personalization Decisioning Rules). Section 5 specifies what the pipeline can and cannot support; Document 5 decides what to serve.
+One timing rule governs all three paths and must be stated before the paths are specified individually: a promotion event triggers an AEP profile update and a scoring pipeline run. These operations are not guaranteed to complete within the current session. **The new classification produced by the promotion is available to Adobe Target at the start of the next session in which the visitor appears, not necessarily within the current session.** The in-session experience behavior during the window between a promotion event and the next session start is an experience design decision owned by Document 5 (Personalization Decisioning Rules). Section 6 specifies what the pipeline can and cannot support; Document 5 decides what to serve.
 
 ---
 
@@ -547,7 +574,7 @@ Step 3 — Decay recalculation. Behavioral signals from Layer 2 are rescored at 
 
 Step 4 — Scoring. The composite classification key for Layer 1 is `(anonymous_id, solution_category)` — the temporary anonymous identifier. Scoring produces contact-plane attributes under this key. A stable `contact_id` does not yet exist; Tier 1 and Tier 2 data authority pathways are not yet open.
 
-**AEP profile state after Path A:** `tal_member` = `true`; account-plane attributes (`bg_stage`, `bg_cohort`, and all Section 1 and 2 attributes) are now computable and begin updating; contact-plane attributes are keyed to `(anonymous_id, solution_category)` and reflect accumulated behavioral scoring; no stable `contact_id` exists.
+**AEP profile state after Path A:** `tal_member` = `true`; account-plane attributes (`bg_stage`, `bg_cohort`, and all Section 2 and 3 attributes) are now computable and begin updating; contact-plane attributes are keyed to `(anonymous_id, solution_category)` and reflect accumulated behavioral scoring; no stable `contact_id` exists.
 
 **Timestamp preservation:** The Segment event pipeline must preserve original observation timestamps when forwarding Layer 2 event history to the Layer 1 scoring run. Assigning the Path A promotion timestamp to pre-promotion events would apply `current_session` weights (1.5×) to observations that are weeks or months old, producing an inflated score on the first Layer 1 scoring run. [PENDING: Document 8 owner to specify the Segment event pipeline timestamp preservation implementation for Path A promotion events.]
 
@@ -633,7 +660,7 @@ This failure mode does not require a flag — the CRM governance rule produces a
 
 ### Data Model Update Note
 
-The following attributes defined or introduced in this section must be added as entries in `CLIENT_ATTRIBUTE_MAP` (§CA) in the next implementation pass of `kalder_data_model_s0_s1.py`:
+The following attributes defined or introduced in this section must be added as entries in `CLIENT_ATTRIBUTE_MAP` (§CA) in the next implementation pass of `kalder_data_model.py`:
 
 `stitching_pending`, `multi_match_unresolved`
 
@@ -646,7 +673,7 @@ Two Document 8 items remain open from this section:
 
 ---
 
-## Section 6: Segment-to-Channel Mapping
+## Section 7: Segment-to-Channel Mapping
 
 ---
 
@@ -672,7 +699,7 @@ Adobe Target is the delivery layer for the fallback cascade. Each cohort maps to
 
 **The `differential_insufficient` override.** When `differential_insufficient` = `True`, the contact's `confidence_tier` is LOW regardless of the raw score that triggered the flag. Role-specific content cannot be reliably selected when two roles scored within 10 points of each other. The Target rule for this override: when `differential_insufficient` = `True`, serve solution-interest content at Level 3 regardless of the contact's `fallback_level` value. This override takes precedence over the fallback level rule evaluation sequence. A contact with `fallback_level` = 2 (indicating a MEDIUM behavioral accumulation under a temporary anonymous ID, for example) but `differential_insufficient` = `True` is served Level 3 content — not Level 2 role-influenced content — because the role distinction that Level 2 requires cannot be made.
 
-**Latency.** Target reads the AEP contact profile at session start. The profile reflects the state written by the most recent scoring run before the session began. A promotion event (Section 5) produces a new classification available at the next session start, not within the current session.
+**Latency.** Target reads the AEP contact profile at session start. The profile reflects the state written by the most recent scoring run before the session began. A promotion event (Section 6) produces a new classification available at the next session start, not within the current session.
 
 **Per-cohort Target activation:**
 
@@ -738,7 +765,7 @@ A contact with `differential_insufficient` = `True` has a LOW-tier classificatio
 
 ### Data Model Update Note
 
-No new AEP attributes are introduced in Section 6. All attributes referenced — `bg_cohort`, `bg_stage`, `tal_channel`, `tal_marquee`, `tal_open_pipeline`, `sfdc_opportunity_created`, `sfdc_opportunity_stage`, `sfdc_opportunity_stage_stale`, `role_classification`, `confidence_tier`, `differential_insufficient`, `fallback_level`, `tal_solution_interest_flags` — are defined in prior sections and flagged for `CLIENT_ATTRIBUTE_MAP` (§CA) addition in their originating sections.
+No new AEP attributes are introduced in Section 7. All attributes referenced — `bg_cohort`, `bg_stage`, `tal_channel`, `tal_marquee`, `tal_open_pipeline`, `sfdc_opportunity_created`, `sfdc_opportunity_stage`, `sfdc_opportunity_stage_stale`, `role_classification`, `confidence_tier`, `differential_insufficient`, `fallback_level`, `tal_solution_interest_flags` — are defined in prior sections and flagged for `CLIENT_ATTRIBUTE_MAP` (§CA) addition in their originating sections.
 
 Three Document 8 items remain open from this section:
 
@@ -748,7 +775,7 @@ Three Document 8 items remain open from this section:
 
 ---
 
-## Section 7: Geographic Segmentation
+## Section 8: Geographic Segmentation
 
 ---
 
@@ -792,7 +819,7 @@ Marketo reads `tal_region` for two purposes: campaign routing to the regional ca
 
 ---
 
-## Section 8: Exclusion and Suppression Logic
+## Section 9: Exclusion and Suppression Logic
 
 ---
 
@@ -865,4 +892,19 @@ Implementation: the pre-scoring pipeline filter applied by the scoring engine re
 
 ### 8.5 Suppression Interaction with Promotion Events
 
-Suppression rules interact with the promotion mechanics specified in Section 5 at one edge case worth stating explicitly. If a visitor is mid-session on a promotion path — for example, a contact is in the middle of a Path B (Layer 1 → Layer 3) promotion triggered by a form fill — and the Kafka pipeline simultaneously delivers a `tal_program_status` change (e.g., the account has just been marked `post_sale` due to a contract close during the session), the session-level suppression lock applies. Per Section 1.7, session-level account status is locked at session start; re-evaluation occurs at the next session start. The promotion event that occurred mid-session is processed, but the suppression rule does not activate until the next session. This behavior is consistent with the cascade level stability rule established in Document 1 — session-level state does not change mid-session regardless of what arrives via pipeline during that session. The next session start evaluates the current AEP profile state and applies the `post_sale` suppression at that point.
+Suppression rules interact with the promotion mechanics specified in Section 6 at one edge case worth stating explicitly. If a visitor is mid-session on a promotion path — for example, a contact is in the middle of a Path B (Layer 1 → Layer 3) promotion triggered by a form fill — and the Kafka pipeline simultaneously delivers a `tal_program_status` change (e.g., the account has just been marked `post_sale` due to a contract close during the session), the session-level suppression lock applies. Per Section 1.7, session-level account status is locked at session start; re-evaluation occurs at the next session start. The promotion event that occurred mid-session is processed, but the suppression rule does not activate until the next session. This behavior is consistent with the cascade level stability rule established in Document 1 — session-level state does not change mid-session regardless of what arrives via pipeline during that session. The next session start evaluates the current AEP profile state and applies the `post_sale` suppression at that point.
+---
+
+## Cross-Reference Table
+
+| Document | Relationship | Specific Dependency |
+|---|---|---|
+| `kalder_data_model.py` | Document 3 depends on this | `§5 COVERAGE_STATUS` (coverage status per solution category governing channel activation depth), `§6 SEGMENT_DEFINITIONS` (AEP audience segment specifications), `§14 CHANNEL_ACTIVATION_MAP` (segment-to-channel activation rules), `§CA CLIENT_ATTRIBUTE_MAP` (TAL account and contact attribute registry — `tal_member`, `tal_program_status`, `bg_cohort`, `bg_stage`, `confidence_tier`, `role_classification`, and all attributes registered via §CA flags in Sections 2–9) |
+| Document 1 — Buying Group Role Architecture | Document 3 depends on this | Role definitions and confidence tier activation gates that determine which contacts qualify for each segment tier and which channels activate at each level |
+| Document 2 — Signal Definition and Confidence Model | Document 3 depends on this | Seven-step scoring sequence, confidence tier outputs, and identification layer definitions (`tal_member`, Layer 1/2/3 architecture) that govern segment entry conditions and promotion path mechanics |
+| Document 4 — Content Model and Taxonomy | Depends on Document 3 | Campaign cohort definitions (Section 3) and `tal_new_logo_eligible` suppression flag that govern channel-level content distribution scope |
+| Document 5 — Personalization Decisioning Rules | Depends on Document 3 | TAL membership criteria, Demandbase Layer 1 identification, AEP audience gates, and firmographic plane attributes that activate Adobe Target activities and govern the firmographic-first path |
+| Document 6 — Buying Group Journey and Convergence Model | Depends on Document 3 | Stage-to-cohort mapping (Section 3) and convergence point proximity signals that inform cohort assignment logic and channel activation thresholds |
+| Document 7 — Measurement and Experimentation Framework | Depends on Document 3 | Segment definitions and cohort architecture that define measurement dimensions, holdback group structure, and segment-level analysis breakdowns for lift calculation |
+| Document 8 — Operational Runbook | Depends on Document 3 | TAL data contract (Section 2), suppression governance rules (Section 9), and `CLIENT_ATTRIBUTE_MAP` entries that Document 8 implements operationally via list hygiene and DSR execution procedures |
+| Document 9 — Privacy and Consent Architecture | Document 3 depends on this | Legal basis for cross-session behavioral inference, consent-state gating on signal collection, and geographic suppression legal framework that governs the rules specified in Section 8 |

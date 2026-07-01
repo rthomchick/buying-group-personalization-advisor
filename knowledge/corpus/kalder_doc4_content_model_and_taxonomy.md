@@ -3,28 +3,55 @@
 **Status:** Approved — all sections reviewed and approved by Advisory Council
 **Data model version:** 0.2.0
 **Corpus position:** Document 4 of 9
-**Depends on:** Document 1 (Buying Group Role Architecture), Document 2 (Signal Definition and Confidence Model), Document 3 (Audience and Segmentation Architecture), `kalder_data_model_s0_s1.py` §2, §3, §4, §5, §9, §10, §16, §17, §H AR-02, §CA CR-09
+**Depends on:** Document 1 (Buying Group Role Architecture), Document 2 (Signal Definition and Confidence Model), Document 3 (Audience and Segmentation Architecture), `kalder_data_model.py` §2, §3, §4, §5, §9, §10, §16, §17, §H AR-02, §CA CR-09
 **Required by:** Document 5 (Personalization Decisioning Rules), Document 6 (Buying Group Journey and Convergence Model), Document 8 (Operational Runbook)
 
 ---
 
 ## Table of Contents
 
-- [Section 1: Content Node Type Schema](#section-1-content-node-type-schema)
-- [Section 2: Content Type Taxonomy](#section-2-content-type-taxonomy)
-- [Section 3: Tagging Taxonomy and Governance](#section-3-tagging-taxonomy-and-governance)
-- [Section 4: Through-Line Requirement](#section-4-through-line-requirement)
-- [Section 5: Module Types and Composition Rules](#section-5-module-types-and-composition-rules)
-- [Section 6: Converge Content Rules](#section-6-converge-content-rules)
-- [Section 7: Coverage Completeness Architecture](#section-7-coverage-completeness-architecture)
-- [Section 8: Kalder Compose Integration](#section-8-kalder-compose-integration)
+- [Section 1: Document Scope and Canonical Status](#section-1-document-scope-and-canonical-status)
+- [Section 2: Content Node Type Schema](#section-2-content-node-type-schema)
+- [Section 3: Content Type Taxonomy](#section-3-content-type-taxonomy)
+- [Section 4: Tagging Taxonomy and Governance](#section-4-tagging-taxonomy-and-governance)
+- [Section 5: Through-Line Requirement](#section-5-through-line-requirement)
+- [Section 6: Module Types and Composition Rules](#section-6-module-types-and-composition-rules)
+- [Section 7: Converge Content Rules](#section-7-converge-content-rules)
+- [Section 8: Coverage Completeness Architecture](#section-8-coverage-completeness-architecture)
+- [Section 9: Kalder Compose Integration](#section-9-kalder-compose-integration)
 
 ---
 
 
-## Section 1: Content Node Type Schema
+## Section 1 — Document Scope and Canonical Status
 
-> **Depends on:** `kalder_data_model_s0_s1.py` §2, §3, §4, §5, §9, §10, §16, §17, §H AR-02, §CA CR-09
+Document 4 is the single authoritative source for the content graph schema, content type taxonomy, tagging governance rules, module composition logic, coverage completeness architecture, and content commissioning workflow in the Kalder Buying Group Personalization Program. It defines what a content node is, what fields it must carry, how nodes are tagged for retrieval, how they compose into assembled page experiences, and what "sufficient coverage" means at each personalization level. No other corpus document re-specifies node schemas, re-defines content types, or extends the tagging taxonomy.
+
+Four adjacent decisions are explicitly out of scope here. The role definitions and behavioral signatures that content tagging references are owned by Document 1 (Buying Group Role Architecture). The buying job confidence model that governs three-axis content selection is owned by Document 2 (Signal Definition and Confidence Model). The runtime logic that selects content nodes and assembles experiences from the offer catalog is owned by Document 5 (Personalization Decisioning Rules). The convergence point definitions and double-diamond phase structure that govern converge-phase content generation are owned by Document 6 (Buying Group Journey and Convergence Model).
+
+The content node schemas in this document are the human-readable authority from which the Sanity CMS schema, the Kalder Compose generation parameters, and the Adobe Target offer catalog synchronization payload are derived. The canonical machine-readable definitions are in `kalder_data_model.py §16 CONTENT_GRAPH_NODE_TYPES`, `§9 CONTENT_TYPE_TAXONOMY`, `§10 MODULE_TYPES`, and `§5 COVERAGE_STATUS`. Any discrepancy between this document's schema definitions and the data model is a defect — the data model governs entity definitions; this document governs their operational meaning and authoring governance.
+
+**What this document owns:** The ten content node type schemas (Section 2), content type taxonomy (Section 3), tagging taxonomy and governance rules (Section 4), through-line requirement (Section 5), module types and composition rules (Section 6), converge content governance (Section 7), coverage completeness architecture (Section 8), and Kalder Compose integration and commissioning workflow (Section 9).
+
+**Delegation — what this document does not re-specify:**
+- Buying group role definitions and behavioral signatures used in content tagging → Document 1
+- Signal weights, buying job confidence model, and KNOWN/INFERRED/UNKNOWN activation conditions → Document 2
+- Audience segmentation, TAL membership criteria, and AEP audience gate definitions → Document 3
+- Runtime experience selection logic, fallback cascade routing, and Adobe Target activity configuration → Document 5
+- Convergence point definitions, double-diamond phase structure, and progressive disclosure UX → Document 6
+- Lift measurement methodology, holdback group design, and experimentation framework → Document 7
+- Operational workflow for commissioning, Sanity-to-Target sync pipeline, and incident response → Document 8
+- Consent-state conditions that gate content collection or distribution → Document 9
+
+**Coverage status note.** Content node schemas and tagging governance apply uniformly across all five solution categories. Coverage completeness — the extent to which approved node inventory exists for a given `(role, buying_stage, solution_category)` tuple — varies by category at v1 launch. Customer Engagement is the only category with complete coverage at v1. IT & Operations carries partial coverage. Employee Experience, Risk & Compliance, and AI Platform carry pending coverage. Section 8 specifies the four-state coverage hierarchy and the per-tuple gate logic in full.
+
+**Section numbering note.** Prose cross-references within this document have been reconciled to current heading numbers (cross-reference cleanup pass, 2026-06-21). Heading numbers are authoritative.
+
+---
+
+## Section 2: Content Node Type Schema
+
+> **Depends on:** `kalder_data_model.py` §2, §3, §4, §5, §9, §10, §16, §17, §H AR-02, §CA CR-09
 
 ---
 
@@ -36,15 +63,15 @@ The graph model makes partial-page personalization possible. Consider a solution
 
 The graph relationships between node types are not decoration. They enforce semantic constraints that flat CMS models cannot. A `Content Module` carrying a `narrative_ref` to a `Narrative` node is making a verifiable structural claim: this module belongs to a through-line family governed by that narrative's `solution_claim` and `message_pillar`. The Sanity schema validates the claim at publish time. Semantic constraints that live in editorial convention rather than schema structure will not survive distributed authoring at scale.
 
-One architectural boundary requires explicit statement here because it governs every AEP and Target integration specification downstream. Adobe Target does not query Sanity nodes at render time. Content node metadata required for Target content selection rules is synchronized to Adobe Target's activity configuration at content publication time — when a `Content Module` or `Experience` node enters `status: approved`, the Sanity publication event triggers a synchronization step that makes the node's selection metadata (`role`, `solution_category`, `buying_stage`, `fallback_level`, `confidence_tier_minimum`, `phase`) available in the Target offer catalog. Any field that Adobe Target must read at session time to select an experience must therefore be present in the synchronized offer catalog, not retrieved from Sanity at runtime. The synchronization mechanism is a Document 8 operational specification. Section 1 establishes the architectural principle: Sanity is the authoring source of truth; AEP/Target is the runtime selection surface; they are not the same system. A schema field that exists in Sanity but is not included in the synchronization payload is invisible to Adobe Target.
+One architectural boundary requires explicit statement here because it governs every AEP and Target integration specification downstream. Adobe Target does not query Sanity nodes at render time. Content node metadata required for Target content selection rules is synchronized to Adobe Target's activity configuration at content publication time — when a `Content Module` or `Experience` node enters `status: approved`, the Sanity publication event triggers a synchronization step that makes the node's selection metadata (`role`, `solution_category`, `buying_stage`, `fallback_level`, `confidence_tier_minimum`, `phase`) available in the Target offer catalog. Any field that Adobe Target must read at session time to select an experience must therefore be present in the synchronized offer catalog, not retrieved from Sanity at runtime. The synchronization mechanism is a Document 8 operational specification. Section 2 establishes the architectural principle: Sanity is the authoring source of truth; AEP/Target is the runtime selection surface; they are not the same system. A schema field that exists in Sanity but is not included in the synchronization payload is invisible to Adobe Target.
 
-The ten node types specified in this section — `Audience`, `JTBD`, `Problem`, `Outcome`, `Narrative`, `Proof`, `Asset`, `Content Module`, `Experience`, `Channel` — are from `kalder_data_model_s0_s1.py §16 CONTENT_GRAPH_NODE_TYPES`. Every node that enters the content graph conforms to one of these ten schemas. The schemas are the generation parameters for Kalder Compose and the field contracts that Adobe Target's content selection rules read against. A node that does not conform to its schema cannot enter an approved publication state in Sanity and therefore cannot be served.
+The ten node types specified in this section — `Audience`, `JTBD`, `Problem`, `Outcome`, `Narrative`, `Proof`, `Asset`, `Content Module`, `Experience`, `Channel` — are from `kalder_data_model.py §16 CONTENT_GRAPH_NODE_TYPES`. Every node that enters the content graph conforms to one of these ten schemas. The schemas are the generation parameters for Kalder Compose and the field contracts that Adobe Target's content selection rules read against. A node that does not conform to its schema cannot enter an approved publication state in Sanity and therefore cannot be served.
 
 ---
 
 ## 1.2 Node Type Specifications
 
-**Axis Conditionality Principle:** A node type varies only on the axes specified in its variation profile. Variation on additional axes is conditionally applied, governed by the module type's `intended_axes` specification in `§10 MODULE_TYPES` (elaborated in Section 5). This principle is what keeps the content inventory sustainable — a node type that required variation on all five personalization axes simultaneously (`role` × `solution_category` × `buying_stage` × `buying_job` × `confidence_tier`) would produce a combinatorially unmanageable authoring load. Every node type specification below states explicitly which axes it varies on and which it intentionally omits.
+**Axis Conditionality Principle:** A node type varies only on the axes specified in its variation profile. Variation on additional axes is conditionally applied, governed by the module type's `intended_axes` specification in `§10 MODULE_TYPES` (elaborated in Section 6). This principle is what keeps the content inventory sustainable — a node type that required variation on all five personalization axes simultaneously (`role` × `solution_category` × `buying_stage` × `buying_job` × `confidence_tier`) would produce a combinatorially unmanageable authoring load. Every node type specification below states explicitly which axes it varies on and which it intentionally omits.
 
 ---
 
@@ -105,7 +132,7 @@ The ten node types specified in this section — `Audience`, `JTBD`, `Problem`, 
 
 **Graph references:** `JTBD` nodes are referenced by `Content Module` nodes and `Proof` nodes (inbound) via those nodes' `jtbd_code` reference fields. `JTBD` nodes carry no outbound references to other node types — they are a lookup target. The cross-document validation that `validate_signal_references()` performs on `BUYING_JOB_INFERENCE_SIGNALS` has a content graph analog: `validate_jtbd_references()` verifies at CI time that every `jtbd_code` reference on a `Content Module` or `Proof` node resolves to an approved `JTBD` node in the same `solution_category`.
 
-**Coverage tracking:** `coverage_status` field present. Represents the coverage completeness of content authored against this specific JTBD code. A `JTBD` node moves from `constructed` to `partial` when at least one approved `Content Module` references it; from `partial` to `complete` when the minimum required `Content Module` count per role is met (specified in Section 7). The rollup to solution-category coverage status applies the `COVERAGE_STATUS_HIERARCHY` minimum-rank rule: a solution category is only `complete` if all `JTBD` nodes required for that category are `complete`.
+**Coverage tracking:** `coverage_status` field present. Represents the coverage completeness of content authored against this specific JTBD code. A `JTBD` node moves from `constructed` to `partial` when at least one approved `Content Module` references it; from `partial` to `complete` when the minimum required `Content Module` count per role is met (specified in Section 8). The rollup to solution-category coverage status applies the `COVERAGE_STATUS_HIERARCHY` minimum-rank rule: a solution category is only `complete` if all `JTBD` nodes required for that category are `complete`.
 
 **Authoring notes:** `JTBD` nodes should be provisioned from `§17 JTBD_CODES` before `Content Module` authoring begins for a given solution category. A missing `JTBD` node will block `Content Module` publication. `jtbd_code` field must use the exact code string from `§17`; do not introduce code aliases or paraphrases. `probable_job_prior: true` nodes represent the most common content selection entry points and should be prioritized in content commissioning sequencing.
 
@@ -202,7 +229,7 @@ The ten node types specified in this section — `Audience`, `JTBD`, `Problem`, 
 
 **The status dependency rule:** A `Content Module` node in `status: approved` requires its `narrative_ref` to resolve to a `Narrative` node in `status: approved`. Sanity validation blocks a `Content Module` from entering `approved` if its referenced `Narrative` is in `draft` or `under_review`. This is the machine-testable expression of the through-line requirement.
 
-**Coverage tracking:** `Narrative` nodes do not carry a `coverage_status` field. Coverage tracking operates at the `Content Module` level. A missing `Narrative` node for a required `(solution_category, buying_stage)` pair will surface as a `Content Module` publication block, which propagates to coverage gap reporting in Section 7.
+**Coverage tracking:** `Narrative` nodes do not carry a `coverage_status` field. Coverage tracking operates at the `Content Module` level. A missing `Narrative` node for a required `(solution_category, buying_stage)` pair will surface as a `Content Module` publication block, which propagates to coverage gap reporting in Section 8.
 
 **Authoring notes:** `Narrative` nodes should be authored by the content strategist and approved before `Content Module` commissioning begins for the relevant `(solution_category, buying_stage)` pair. Amending a `Narrative` node's `solution_claim` or `message_pillar` after dependent `Content Module` nodes have been approved requires those modules to be returned to `under_review` and re-approved — Sanity should enforce this via a validation hook on `Narrative` status changes. Do not conflate `solution_claim` with a product feature claim; it is a claim about what the buyer achieves, not what the product does.
 
@@ -241,7 +268,7 @@ The ten node types specified in this section — `Audience`, `JTBD`, `Problem`, 
 
 **Coverage tracking:** `coverage_status` field present. Coverage at the `Proof` level tracks whether the solution category has sufficient substantiated claims across all four buying job stages.
 
-**Authoring notes:** `claim` must be factually substantiated — it is the field most likely to be audited for accuracy. Do not paraphrase or embellish quantitative claims. `Proof` nodes with `proof_type: customer_reference` require legal review before entering `status: approved`. `Content Module` nodes that reference a `Proof` node currently in legal review should not be held in `under_review` solely because of the pending `Proof` status — the `Content Module` may be approved with the `proof_ref` omitted (published without that specific proof point) and the `Proof` reference added when legal review completes. The `Content Module` re-enters `under_review` only to add the proof reference, not to revise the `content_body`. This pattern prevents legal review timelines from blocking content module approval pipelines and must be documented as an explicit workflow path in the Kalder Compose commissioning procedures (Section 8). `Proof` nodes are shared across roles; role-specific framing of a proof point (how the same evidence is presented to a Champion vs. an Economic Buyer) is handled in the `Content Module` that references the `Proof` node, not in the `Proof` node itself.
+**Authoring notes:** `claim` must be factually substantiated — it is the field most likely to be audited for accuracy. Do not paraphrase or embellish quantitative claims. `Proof` nodes with `proof_type: customer_reference` require legal review before entering `status: approved`. `Content Module` nodes that reference a `Proof` node currently in legal review should not be held in `under_review` solely because of the pending `Proof` status — the `Content Module` may be approved with the `proof_ref` omitted (published without that specific proof point) and the `Proof` reference added when legal review completes. The `Content Module` re-enters `under_review` only to add the proof reference, not to revise the `content_body`. This pattern prevents legal review timelines from blocking content module approval pipelines and must be documented as an explicit workflow path in the Kalder Compose commissioning procedures (Section 9). `Proof` nodes are shared across roles; role-specific framing of a proof point (how the same evidence is presented to a Champion vs. an Economic Buyer) is handled in the `Content Module` that references the `Proof` node, not in the `Proof` node itself.
 
 ---
 
@@ -277,7 +304,7 @@ The ten node types specified in this section — `Audience`, `JTBD`, `Problem`, 
 
 **Graph references:** `Asset` nodes are referenced by `Content Module` nodes (inbound) when assets are embedded in or linked from module content. `Asset` nodes optionally reference `JTBD` nodes (outbound) via `jtbd_ref`. `Asset` nodes do not reference `Narrative` nodes — assets are evidence and resource layers, not through-line participants. `Asset` nodes are not role-variant by design; the graph does not require five role-specific variants of a case study. Role-specific framing of asset presentation is handled in the `gated_assets` or `proof` module that surfaces the asset.
 
-**Coverage tracking:** `coverage_status` field present. Coverage tracks whether the required asset inventory by `buying_job` and `solution_category` is complete per the thresholds in Section 7.
+**Coverage tracking:** `coverage_status` field present. Coverage tracks whether the required asset inventory by `buying_job` and `solution_category` is complete per the thresholds in Section 8.
 
 **Authoring notes:** `maps_to_signals` must reference valid keys from `§7 CROSS_ROLE_WEIGHTS`. This is validated by `validate_signal_references()` and should be populated during asset commissioning, not retrospectively. Gated assets with `gating: gated_registration` must not be surfaced to visitors below the `MEDIUM` confidence tier; this is enforced by the `confidence_tier_minimum` field and the Adobe Target content selection rule for the `gated_assets` module.
 
@@ -287,7 +314,7 @@ The ten node types specified in this section — `Audience`, `JTBD`, `Problem`, 
 
 **Purpose:** Represents a discrete, role-and-stage-specific content unit that is assembled into a page experience at render time. `Content Module` nodes are the primary personalization unit in the content graph — the node type that Adobe Target selects and substitutes based on the visitor's contact-plane classification profile. A `Content Module` corresponds to a specific module slot in the `Experience` node that governs the page it appears on. All role-variant diverge-phase content lives at this node type level.
 
-**Varies on:** `role`, `solution_category`, `buying_stage`. At minimum, a `Content Module` varies on these three axes — one node per `(role, solution_category, buying_stage)` combination for each module slot. When three-axis personalization is active, `buying_job` is an additional variation axis, but only within the conditions specified in `MODULE_COMPOSITION_RULES §10` (three-axis activation requires HIGH role confidence and KNOWN or INFERRED buying job confidence per Section 5 rules). `Content Module` nodes do not vary by `confidence_tier` — the `confidence_tier_minimum` field sets a display gate, but the node itself does not have separate variants per tier.
+**Varies on:** `role`, `solution_category`, `buying_stage`. At minimum, a `Content Module` varies on these three axes — one node per `(role, solution_category, buying_stage)` combination for each module slot. When three-axis personalization is active, `buying_job` is an additional variation axis, but only within the conditions specified in `MODULE_COMPOSITION_RULES §10` (three-axis activation requires HIGH role confidence and KNOWN or INFERRED buying job confidence per Document 2's buying job confidence rules). `Content Module` nodes do not vary by `confidence_tier` — the `confidence_tier_minimum` field sets a display gate, but the node itself does not have separate variants per tier.
 
 **Axis variation note:** The combination of `role` (5 values) × `solution_category` (5 values) × `buying_stage` (4 values) produces up to 100 potential `Content Module` nodes per module slot without the `buying_job` axis. This is the manageable authoring load. Adding `buying_job` as a required fourth axis for all content would produce up to 400 nodes per slot — which is not sustainable. `buying_job` variation on `Content Module` is therefore **conditionally applied**: only for module types where `intended_axes` in `§10 MODULE_TYPES` includes `buying_job`. For module types where `buying_job` is in `omitted_axes_rationale`, `Content Module` nodes do not vary on that axis and the `jtbd_ref` field is advisory rather than deterministic.
 
@@ -320,7 +347,7 @@ The ten node types specified in this section — `Audience`, `JTBD`, `Problem`, 
 
 **Graph references:** `Content Module` nodes are referenced by `Experience` nodes (inbound) as part of the experience composition. `Content Module` nodes reference `Narrative` nodes (outbound, required), `JTBD` nodes (outbound, conditionally required), `Audience` nodes (outbound, optional), `Problem` nodes (outbound, optional), `Outcome` nodes (outbound, optional), `Proof` nodes (outbound, optional), and `Asset` nodes (outbound, optional).
 
-**Coverage tracking:** `coverage_status` field present. `Content Module` coverage is the primary coverage tracking surface. Coverage completeness reporting in Section 7 aggregates `Content Module` `coverage_status` values by `(solution_category, role, buying_stage)` combination, applying the `COVERAGE_STATUS_HIERARCHY` minimum-rank rule.
+**Coverage tracking:** `coverage_status` field present. `Content Module` coverage is the primary coverage tracking surface. Coverage completeness reporting in Section 8 aggregates `Content Module` `coverage_status` values by `(solution_category, role, buying_stage)` combination, applying the `COVERAGE_STATUS_HIERARCHY` minimum-rank rule.
 
 **Authoring notes:** A `Content Module` must not contain its own `solution_claim` or `message_pillar` text — those values are inherited structurally from the referenced `Narrative` node. If an author finds they need to write a `solution_claim` into a `Content Module`'s `content_body`, that is a signal that either (a) the `Narrative` node for this `(solution_category, buying_stage)` pair does not exist and must be created first, or (b) the author is drafting a new claim that should be reviewed as a potential amendment to the `Narrative` node. The `phase: converge` distinction must be applied correctly: if a module is intended for Champion distribution rather than Adobe Target serving, it must be tagged `phase: converge`. Mis-tagging converge content as diverge is the primary through-line failure mode.
 
@@ -421,7 +448,7 @@ The following describes the principal reference relationships between node types
 - `pending`: The node has been defined (schema exists, required fields populated) but no downstream content has been produced against it. A `JTBD` node at `pending` means no `Content Module` references it. An `Audience` node at `pending` means no approved `Content Module` exists for this role × solution category pair.
 - `constructed`: Content exists but has not been source-validated. Most `§17 JTBD_CODES` begin at `constructed`. A `Content Module` at `constructed` has been generated by Kalder Compose but not yet approved by human review.
 - `partial`: Some of the required downstream content exists and is approved, but the complete required inventory is not yet met. A `JTBD` node moves from `constructed` to `partial` when at least one approved `Content Module` references it.
-- `complete`: All required downstream content for this node exists in approved state. Completeness thresholds are specified in Section 7.
+- `complete`: All required downstream content for this node exists in approved state. Completeness thresholds are specified in Section 8.
 
 **Solution-category rollup:** A solution category's effective `coverage_status` is the minimum `coverage_status` across all `JTBD` nodes, `Audience` nodes, and `Content Module` nodes required for that category. This is the `inheritance_rule: minimum_across_all_associated_entities` rule from `COVERAGE_STATUS_HIERARCHY`. The `validate_coverage_consistency()` helper function in `§H AR-02` enforces this at CI time.
 
@@ -431,13 +458,13 @@ The rollup is computable, not aspirational. `coverage_status` fields must not be
 
 ---
 
-*End of Section 1. Section 2 (Content Type Taxonomy) specifies how the 30 content types in `§9 CONTENT_TYPE_TAXONOMY` map to node types and module slots. Section 3 (Tagging Taxonomy and Governance) specifies the field-level governance rules for applying the metadata fields defined in this section. Section 7 (Coverage Completeness Architecture) specifies the minimum content inventory thresholds that must be met at each node type level to activate personalization per fallback cascade level.*
+*End of Section 1. Section 3 (Content Type Taxonomy) specifies how the 30 content types in `§9 CONTENT_TYPE_TAXONOMY` map to node types and module slots. Section 4 (Tagging Taxonomy and Governance) specifies the field-level governance rules for applying the metadata fields defined in this section. Section 8 (Coverage Completeness Architecture) specifies the minimum content inventory thresholds that must be met at each node type level to activate personalization per fallback cascade level.*
 
 ---
 
-## Section 2: Content Type Taxonomy
+## Section 3: Content Type Taxonomy
 
-> **Depends on:** Document 4 Section 1 (`Asset` node type), Document 4 Section 3, Document 2 Section 7 (`BUYING_JOB_INFERENCE_SIGNALS`), `kalder_data_model_s0_s1.py` §9, §7 CROSS_ROLE_WEIGHTS
+> **Depends on:** Document 4 Section 2 (`Asset` node type), Document 2 Section 7 (`BUYING_JOB_INFERENCE_SIGNALS`), `kalder_data_model.py` §9, §7 CROSS_ROLE_WEIGHTS
 
 ---
 
@@ -447,7 +474,7 @@ Content types and node types are two separate classification systems that operat
 
 The content type tells the personalization system what behavioral signals are possible when the asset is engaged with (via `maps_to_signals`). The node type tells the system how the asset is structured and how it can be referenced by `Content Module` nodes in the content graph. These are distinct responsibilities; conflating them creates confusion in both content planning and content graph maintenance.
 
-The distinction matters operationally because the two vocabularies serve different audiences. Content authors think and commission work in content type vocabulary ("we need more case studies for the `supplier_selection` stage across Customer Engagement"); the personalization machinery operates in node type vocabulary ("retrieve all approved `Asset` nodes with `buying_job: supplier_selection` and `solution_category: customer_engagement`"). Section 2 is the translation layer between those two vocabularies, enabling content plans written in one language to be executed in the other.
+The distinction matters operationally because the two vocabularies serve different audiences. Content authors think and commission work in content type vocabulary ("we need more case studies for the `supplier_selection` stage across Customer Engagement"); the personalization machinery operates in node type vocabulary ("retrieve all approved `Asset` nodes with `buying_job: supplier_selection` and `solution_category: customer_engagement`"). Section 3 is the translation layer between those two vocabularies, enabling content plans written in one language to be executed in the other.
 
 ---
 
@@ -524,15 +551,15 @@ At the `supplier_selection` stage, a buyer has shortlisted vendors and is making
 |---|---|---|---|---|---|---|
 | `roi_calculator` | ROI Calculator / TCO Tool | `economic_buyer` | `diverge` | `ungated` | Strong | maps to `roi_calculator_usage`; EB = 22 (highest EB signal in inventory); counter-indicator for `problem_identification` |
 | `pricing_page` | Pricing Page | `economic_buyer` | `diverge` | `ungated` | Strong | maps to `pricing_page_view`; EB = 15, Ratifier = 5; counter-indicator for `problem_identification` |
-| `executive_brief` | Executive Brief | `economic_buyer` | `converge` | `gated_email` | Strong | maps to `executive_brief_download`; EB = 12, Champion = 10, User = −10; **converge-phase** — generated from approved diverge content; see Section 6 |
+| `executive_brief` | Executive Brief | `economic_buyer` | `converge` | `gated_email` | Strong | maps to `executive_brief_download`; EB = 12, Champion = 10, User = −10; **converge-phase** — generated from approved diverge content; see Section 7 |
 | `competitive_comparison` | Competitive Comparison | `champion` | `diverge` | `gated_email` | Strong | maps to `competitive_comparison_view`; Champion = 18; counter-indicator for `problem_identification` |
 | `case_study` | Case Study / Success Story | `champion` | `diverge` | `gated_email` | Weak | maps to `case_study_download`; Champion = 20; weak (not strong) indicator — consumed across stages by Champions |
-| `consensus_brief` | Consensus Brief | `champion` | `converge` | `gated_email` | — | maps to `executive_brief_download`; **converge-phase** — synthesized from approved diverge content; not in `BUYING_JOB_INFERENCE_SIGNALS`; see Section 6 |
+| `consensus_brief` | Consensus Brief | `champion` | `converge` | `gated_email` | — | maps to `executive_brief_download`; **converge-phase** — synthesized from approved diverge content; not in `BUYING_JOB_INFERENCE_SIGNALS`; see Section 7 |
 | `analyst_report` | Analyst Report | `champion` | `diverge` | `gated_email` | Weak | Weak indicator for `supplier_selection` — consumed by Champions at final validation stage |
 | `legal_procurement` | Legal / Procurement Documentation | `ratifier` | `diverge` | `ungated` | — | Counter-indicator for `problem_identification` and `solution_exploration`; no named signal in Document 2 signal inventory [REQUIRES CONFIRMATION FROM §9 v0.1.0] |
 | `howto_training` | How-To / Training Content | `user` | `diverge` | `ungated` | — | maps to `howto_training_content`; User = 18; counter-indicator for `supplier_selection`; consumed at adoption phase |
 
-**Content planning implications.** The `roi_calculator` carries the highest single-signal weight for Economic Buyer (22) in the entire CROSS_ROLE_WEIGHTS inventory. An EB who interacts with the ROI calculator is almost certainly in a `supplier_selection` buying job; this is both the strongest EB signal and the strongest `supplier_selection` inference trigger. Despite this, ROI calculators are often deprioritized as "engineering-heavy" — they require interactive tooling rather than document authoring. The production investment is justified by the signal quality: no other single content type produces an EB signal of comparable weight. `competitive_comparison` is the Champion analog — Champion = 18 is among the top three Champion signals. These two content types together are the core inventory required to trigger `supplier_selection` INFERRED buying job state. `executive_brief` and `consensus_brief` are converge-phase and cannot be commissioned independently — they require approved diverge content to synthesize from (Section 6). Teams must not sequence converge content ahead of the diverge inventory it depends on.
+**Content planning implications.** The `roi_calculator` carries the highest single-signal weight for Economic Buyer (22) in the entire CROSS_ROLE_WEIGHTS inventory. An EB who interacts with the ROI calculator is almost certainly in a `supplier_selection` buying job; this is both the strongest EB signal and the strongest `supplier_selection` inference trigger. Despite this, ROI calculators are often deprioritized as "engineering-heavy" — they require interactive tooling rather than document authoring. The production investment is justified by the signal quality: no other single content type produces an EB signal of comparable weight. `competitive_comparison` is the Champion analog — Champion = 18 is among the top three Champion signals. These two content types together are the core inventory required to trigger `supplier_selection` INFERRED buying job state. `executive_brief` and `consensus_brief` are converge-phase and cannot be commissioned independently — they require approved diverge content to synthesize from (Section 7). Teams must not sequence converge content ahead of the diverge inventory it depends on.
 
 ---
 
@@ -622,10 +649,10 @@ Phase classification governs whether a content type is eligible for Adobe Target
 | Phase | Content Types | Notes |
 |---|---|---|
 | `diverge` (always) | `thought_leadership`, `analyst_report`, `diagnostic_assessment`, `benchmark_report`, `category_explainer`, `blog_article`, `industry_page`, `product_solution_overview`, `use_case_page`, `product_tour`, `webinar_event_registration`, `video_content`, `technical_documentation`, `integration_catalog`, `rfp_template`, `security_compliance`, `faq_support_docs`, `roi_calculator`, `pricing_page`, `competitive_comparison`, `case_study`, `legal_procurement`, `howto_training`, `community_forum` | Served by Adobe Target to individual role-classified visitors; never distributed as converge content |
-| `converge` (always) | `executive_brief`, `consensus_brief` | Distributed internally by Champions; never served by Adobe Target under any circumstances; generated from approved diverge content per Section 6 rules; subject to the `narrative_ref` structural constraint from Section 1 and the through-line corollary from Section 4 |
-| Phase-agnostic (node-level determination) | Content types that can serve as embedded content within either a diverge-phase `Content Module` or a converge-phase synthesis document — primarily `case_study`, `analyst_report`, and `benchmark_report` when referenced as proof points | Phase is set at the individual `Asset` node level via the `phase` field; governed per Section 3 tagging rules |
+| `converge` (always) | `executive_brief`, `consensus_brief` | Distributed internally by Champions; never served by Adobe Target under any circumstances; generated from approved diverge content per Section 7 rules; subject to the `narrative_ref` structural constraint from Section 2 and the through-line corollary from Section 5 |
+| Phase-agnostic (node-level determination) | Content types that can serve as embedded content within either a diverge-phase `Content Module` or a converge-phase synthesis document — primarily `case_study`, `analyst_report`, and `benchmark_report` when referenced as proof points | Phase is set at the individual `Asset` node level via the `phase` field; governed per Section 4 tagging rules |
 
-The two converge-phase content types — `executive_brief` and `consensus_brief` — are subject to the converge content generation rules specified in Section 6. Their `phase: converge` classification means they are never commissioned independently. A `consensus_brief` is always generated as a synthesis of approved diverge-phase content for the same `(solution_category, buying_stage)` pair, referencing the same `Narrative` node that governs the diverge-phase modules it synthesizes. The through-line requirement specified in Section 4 makes this a structural constraint, not an editorial preference: a converge document that does not share the `Narrative` parent of its source diverge content cannot be guaranteed to maintain factual backbone coherence.
+The two converge-phase content types — `executive_brief` and `consensus_brief` — are subject to the converge content generation rules specified in Section 7. Their `phase: converge` classification means they are never commissioned independently. A `consensus_brief` is always generated as a synthesis of approved diverge-phase content for the same `(solution_category, buying_stage)` pair, referencing the same `Narrative` node that governs the diverge-phase modules it synthesizes. The through-line requirement specified in Section 5 makes this a structural constraint, not an editorial preference: a converge document that does not share the `Narrative` parent of its source diverge content cannot be guaranteed to maintain factual backbone coherence.
 
 ---
 
@@ -635,23 +662,23 @@ The 31 content types in this taxonomy are the complete reference set from which 
 
 At v1 launch, Customer Engagement is the only solution category with content inventory across all four buying job groups. IT & Operations carries partial coverage (some buying job groups represented, none complete). Employee Experience, Risk & Compliance, and AI Platform carry pending coverage, meaning the `pending_solution_fallback` from Document 1 (`§4 SCORING_RULES`) is active for visitors whose solution interest maps to those categories. Visitors classified in those categories receive a MEDIUM confidence ceiling and experience Level 3 or below regardless of their behavioral signal strength, until content inventory for those categories is produced and approved.
 
-The content type taxonomy in Section 2.3 is the authoring reference that should drive commissioning decisions. A coverage gap analysis starts from this taxonomy: for each solution category, for each buying job group, for each primary role affinity — which content types are present in the approved node inventory, and which are absent? Section 7 specifies what counts as "sufficient" for each coverage level. Section 2.3 specifies what the taxonomy to assess against looks like.
+The content type taxonomy in Section 2.3 is the authoring reference that should drive commissioning decisions. A coverage gap analysis starts from this taxonomy: for each solution category, for each buying job group, for each primary role affinity — which content types are present in the approved node inventory, and which are absent? Section 8 specifies what counts as "sufficient" for each coverage level. Section 2.3 specifies what the taxonomy to assess against looks like.
 
 ---
 
-*End of Section 2. Section 3 (Tagging Taxonomy and Governance) specifies the `content_type` and `content_format` field governance rules for `Asset` nodes. Section 5 (Module Types and Composition Rules) specifies how `Asset` nodes are surfaced via the `gated_assets` and related module types. Section 6 (Converge Content Governance) specifies the generation rules for `executive_brief` and `consensus_brief` content types.*
+*End of Section 2. Section 4 (Tagging Taxonomy and Governance) specifies the `content_type` and `content_format` field governance rules for `Asset` nodes. Section 6 (Module Types and Composition Rules) specifies how `Asset` nodes are surfaced via the `gated_assets` and related module types. Section 7 (Converge Content Governance) specifies the generation rules for `executive_brief` and `consensus_brief` content types.*
 
 ---
 
-## Section 3: Tagging Taxonomy and Governance
+## Section 4: Tagging Taxonomy and Governance
 
-> **Depends on:** Document 4 Section 1 (node type schemas), Document 4 Section 4 (through-line requirement), `kalder_data_model_s0_s1.py` §2, §1d, §5, §3, §17, §10, §CA, §4
+> **Depends on:** Document 4 Section 2 (node type schemas), Document 4 Section 5 (through-line requirement), `kalder_data_model.py` §2, §1d, §5, §3, §17, §10, §CA, §4
 
 ---
 
 ### 3.1 The Tagging Taxonomy: Purpose and Scope
 
-Section 1 specified what fields exist on each node type's schema — what field names are present, what types they carry, and their role in the content graph. Section 3 governs how those fields are applied in practice: what values are permitted, when each field is required versus optional, what the runtime consequence of a missing or incorrect value is, and what rule a content author applies to set each field correctly.
+Section 2 specified what fields exist on each node type's schema — what field names are present, what types they carry, and their role in the content graph. Section 4 governs how those fields are applied in practice: what values are permitted, when each field is required versus optional, what the runtime consequence of a missing or incorrect value is, and what rule a content author applies to set each field correctly.
 
 The six canonical tag fields governed here are: `role`, `solution_category`, `buying_stage`, `jtbd_code`, `phase`, and `confidence_tier_minimum`. These fields are the signals Adobe Target reads to select which content node to serve at session time, and the signals the content graph uses to enforce semantic constraints. A tagging error is not a minor quality issue. A `Content Module` tagged with the wrong `confidence_tier_minimum` will be served to visitors whose role confidence cannot support its specificity, or withheld from visitors who should receive it. Tagging errors produce incorrect experiences at scale — silently, because the schema will not catch a value that is legal but wrong.
 
@@ -663,11 +690,11 @@ The table below is the master reference for all six canonical tag fields. Each r
 
 | Field | Allowed Values | Authority Source | Node Types: Required | Node Types: Optional | Node Types: N/A | Failure Behavior |
 |---|---|---|---|---|---|---|
-| `role` | `champion` / `economic_buyer` / `influencer` / `user` / `ratifier`. Standard five-role enum; `Experience` nodes extend with `default` for fallback-level configurations (Levels 3–5) — see Section 1 `Experience` node specification. | `§2 ROLES` | `Audience`, `Content Module` | `Problem`, `Outcome`, `Proof`, `Asset` | `JTBD`, `Narrative`, `Experience`, `Channel` | **Blocking** — missing or invalid value prevents Sanity publication |
+| `role` | `champion` / `economic_buyer` / `influencer` / `user` / `ratifier`. Standard five-role enum; `Experience` nodes extend with `default` for fallback-level configurations (Levels 3–5) — see Section 2 `Experience` node specification. | `§2 ROLES` | `Audience`, `Content Module` | `Problem`, `Outcome`, `Proof`, `Asset` | `JTBD`, `Narrative`, `Experience`, `Channel` | **Blocking** — missing or invalid value prevents Sanity publication |
 | `solution_category` | `it_operations` / `customer_engagement` / `employee_experience` / `risk_compliance` / `ai_platform` | `§1d SOLUTION_CATEGORIES` | `Audience`, `JTBD`, `Problem`, `Outcome`, `Narrative`, `Proof`, `Asset`, `Content Module`, `Experience` | — | `Channel` | **Blocking** — missing or invalid value prevents Sanity publication |
 | `buying_stage` | `targeted` / `engaged` / `prioritized` / `qualified` | `§5 BG_STAGES` | `Narrative`, `Content Module`, `Experience` | `Problem`, `Outcome`, `Proof`, `Asset` | `Audience`, `JTBD`, `Channel` | **Blocking** on required node types; **Warning** on optional node types — publication allowed with flag |
 | `jtbd_code` (via `jtbd_ref`) | Valid `JTBD` node reference in same `solution_category` | `§17 JTBD_CODES` scoped by `solution_category` | `Content Module` where `module_type.intended_axes` includes `buying_job` (per `§10 MODULE_TYPES`) | `Content Module` (other `module_type`), `Proof`, `Asset`, `Problem`, `Outcome` | `Audience`, `Narrative`, `Experience`, `Channel` | **Blocking** when conditionally required; **Warning** when optional — two-axis fallback activates; cross-`solution_category` reference is always **Blocking** |
-| `phase` | `diverge` / `converge` | `kalder_data_model_s0_s1.py §9 CONTENT_TYPE_TAXONOMY` phase field semantics | `Content Module` | `Asset`, `Experience` | `Audience`, `JTBD`, `Problem`, `Outcome`, `Narrative`, `Proof`, `Channel` | **Blocking** — missing value prevents Sanity publication; `converge` on a node referenced by a web-active `Channel` is a **cross-node blocking error** |
+| `phase` | `diverge` / `converge` | `kalder_data_model.py §9 CONTENT_TYPE_TAXONOMY` phase field semantics | `Content Module` | `Asset`, `Experience` | `Audience`, `JTBD`, `Problem`, `Outcome`, `Narrative`, `Proof`, `Channel` | **Blocking** — missing value prevents Sanity publication; `converge` on a node referenced by a web-active `Channel` is a **cross-node blocking error** |
 | `confidence_tier_minimum` | `UNKNOWN` / `LOW` / `MEDIUM` / `HIGH` | `§3 CONFIDENCE_TIERS` | `Content Module`, `Asset` | — | `Audience`, `JTBD`, `Problem`, `Outcome`, `Narrative`, `Proof`, `Experience`, `Channel` | **Blocking** — missing value prevents Sanity publication [CA FLAG] |
 
 ---
@@ -686,7 +713,7 @@ The table below is the master reference for all six canonical tag fields. Each r
 
 **Optional on:** `Problem`, `Outcome`, `Proof`, `Asset`. These node types are often role-shareable; `role` on these types is advisory metadata that supports retrieval and authoring context, not a runtime selection gate.
 
-**Not applicable to:** `JTBD`, `Narrative`, `Experience`, `Channel`. `Narrative` nodes are intentionally role-agnostic — they are scoped to `(solution_category, buying_stage)` to enforce the through-line across all role variants (see Section 4). `Experience` nodes carry `role` via their constituent `Content Module` slots, not as a direct field.
+**Not applicable to:** `JTBD`, `Narrative`, `Experience`, `Channel`. `Narrative` nodes are intentionally role-agnostic — they are scoped to `(solution_category, buying_stage)` to enforce the through-line across all role variants (see Section 5). `Experience` nodes carry `role` via their constituent `Content Module` slots, not as a direct field.
 
 **Graceful degradation:** Not applicable on required node types — the field is blocking. On optional node types (`Proof`, `Asset`), absence of `role` means the node is treated as role-neutral and eligible for selection across all roles. This is the correct behavior for shared proof points and ungated assets.
 
@@ -750,7 +777,7 @@ The table below is the master reference for all six canonical tag fields. Each r
 
 **Allowed values:** A Sanity reference field pointing to an approved `JTBD` node. The `JTBD` node's `jtbd_code` value must be a valid code from `§17 JTBD_CODES` scoped to the same `solution_category` as the referencing node. `jtbd_code` is not a free-text string field — it is a reference. Authority: `§17 JTBD_CODES`.
 
-**Conditional requirement rule:** `jtbd_ref` is **required** on `Content Module` nodes where the selected `module_type` includes `buying_job` in its `§10 MODULE_TYPES intended_axes`. `jtbd_ref` is **optional** on all other node types. The Sanity form implementation must enforce this conditionally: when an author selects a `module_type` whose `intended_axes` includes `buying_job`, the `jtbd_ref` field becomes required in the Sanity schema validation and blocks publication if absent. When the selected `module_type` does not include `buying_job` in its `intended_axes`, `jtbd_ref` is optional and its absence does not block publication. The authority for which `module_type` values include `buying_job` in `intended_axes` is `§10 MODULE_TYPES` (elaborated in Section 5 of this document).
+**Conditional requirement rule:** `jtbd_ref` is **required** on `Content Module` nodes where the selected `module_type` includes `buying_job` in its `§10 MODULE_TYPES intended_axes`. `jtbd_ref` is **optional** on all other node types. The Sanity form implementation must enforce this conditionally: when an author selects a `module_type` whose `intended_axes` includes `buying_job`, the `jtbd_ref` field becomes required in the Sanity schema validation and blocks publication if absent. When the selected `module_type` does not include `buying_job` in its `intended_axes`, `jtbd_ref` is optional and its absence does not block publication. The authority for which `module_type` values include `buying_job` in `intended_axes` is `§10 MODULE_TYPES` (elaborated in Section 6 of this document).
 
 **Required on:** `Content Module` (when `module_type.intended_axes` includes `buying_job`).
 
@@ -802,7 +829,7 @@ The table below is the master reference for all six canonical tag fields. Each r
 
 **Allowed values:** `UNKNOWN` / `LOW` / `MEDIUM` / `HIGH` — from `§3 CONFIDENCE_TIERS`.
 
-**Required on:** `Content Module`, `Asset`. [CA FLAG] — this field must be present in the Sanity-to-Target synchronization payload for Adobe Target to evaluate it at session time. See Section 1.1 architectural principle and `CLIENT_ATTRIBUTE_MAP` (§CA) entry registered in Section 1.
+**Required on:** `Content Module`, `Asset`. [CA FLAG] — this field must be present in the Sanity-to-Target synchronization payload for Adobe Target to evaluate it at session time. See Section 1.1 architectural principle and `CLIENT_ATTRIBUTE_MAP` (§CA) entry registered in Section 2.
 
 **Optional on:** None.
 
@@ -831,7 +858,7 @@ Tag **`UNKNOWN`** or **`LOW`** when the module is appropriate across multiple ro
 
 **Validation behavior:** Missing value is **Blocking** on `Content Module` and `Asset`. Non-enum value is **Blocking**. A module tagged `HIGH` with `phase: converge` is valid — converge modules may be HIGH-specificity. A module tagged `UNKNOWN` with `phase: diverge` is valid and expected for fallback-level diverge experiences.
 
-**`[CA FLAG]`:** `confidence_tier_minimum` maps to a new entry in `CLIENT_ATTRIBUTE_MAP` (§CA). Registered in Section 1 of this document. No duplicate entry required here.
+**`[CA FLAG]`:** `confidence_tier_minimum` maps to a new entry in `CLIENT_ATTRIBUTE_MAP` (§CA). Registered in Section 2 of this document. No duplicate entry required here.
 
 ---
 
@@ -868,7 +895,7 @@ The `JTBD` node referenced via `jtbd_ref` must carry the same `solution_category
 
 **`confidence_tier_minimum: HIGH` + `phase: diverge`**
 
-A `Content Module` tagged `HIGH` and `diverge` is a valid and expected combination — it represents a role-specific experience for HIGH-confidence visitors served via Adobe Target. This combination also requires an approved `Narrative` parent (enforced by `narrative_ref` per Section 1). The combination is valid; no additional constraint applies beyond the standard `narrative_ref` requirement.
+A `Content Module` tagged `HIGH` and `diverge` is a valid and expected combination — it represents a role-specific experience for HIGH-confidence visitors served via Adobe Target. This combination also requires an approved `Narrative` parent (enforced by `narrative_ref` per Section 2). The combination is valid; no additional constraint applies beyond the standard `narrative_ref` requirement.
 
 **`phase: converge` + web-active `Channel` eligibility**
 
@@ -882,12 +909,12 @@ The `Narrative` node referenced via `narrative_ref` on a `Content Module` must c
 
 ### 3.6 `CLIENT_ATTRIBUTE_MAP` Additions from Section 3
 
-The following `[CA FLAG]` markers were registered in Section 3.3's governance blocks. Cross-checked against Section 1 flags to avoid duplication.
+The following `[CA FLAG]` markers were registered in Section 3.3's governance blocks. Cross-checked against Section 2 flags to avoid duplication.
 
-**Already registered in Section 1 — no new entry required from Section 3:**
-- `confidence_tier_minimum` (on `Asset`): registered in Section 1, Asset node [CA FLAG].
-- `confidence_tier_minimum` (on `Content Module`): registered in Section 1, Content Module node [CA FLAG].
-- `solution_category_coverage_status`: registered in Section 1, coverage rollup [CA FLAG].
+**Already registered in Section 2 — no new entry required from Section 4:**
+- `confidence_tier_minimum` (on `Asset`): registered in Section 2, Asset node [CA FLAG].
+- `confidence_tier_minimum` (on `Content Module`): registered in Section 2, Content Module node [CA FLAG].
+- `solution_category_coverage_status`: registered in Section 2, coverage rollup [CA FLAG].
 
 **Already registered in upstream documents — no new entry required:**
 - `role_classification` (maps `role` field): registered in Document 2 composite classification output, `CLIENT_ATTRIBUTE_MAP` (§CA).
@@ -896,19 +923,19 @@ The following `[CA FLAG]` markers were registered in Section 3.3's governance bl
 - `buying_job_confirmed`, `buying_job_inferred`: registered in Document 2 Section 7 (Buying Job Confidence Model), `CLIENT_ATTRIBUTE_MAP` (§CA).
 - `confidence_tier`: registered in Document 2 composite classification output, `CLIENT_ATTRIBUTE_MAP` (§CA).
 
-**Net new from Section 3:** None. All tag fields map to `CLIENT_ATTRIBUTE_MAP` entries already registered in Section 1 or upstream documents. Section 3 introduces no new AEP/Target-surfacing requirements beyond those already flagged.
+**Net new from Section 4:** None. All tag fields map to `CLIENT_ATTRIBUTE_MAP` entries already registered in Section 2 or upstream documents. Section 4 introduces no new AEP/Target-surfacing requirements beyond those already flagged.
 
-This is expected: Section 3 governs how existing content graph fields are applied — it does not introduce new fields. New fields introduced by this section's governance rules (if any arose) would require a Section 1 schema update and a new `CLIENT_ATTRIBUTE_MAP` entry. None arose in this drafting pass.
-
----
-
-*End of Section 3. Section 5 (Module Types and Composition Rules) specifies the `intended_axes` profiles per `§10 MODULE_TYPES` that govern the conditional `jtbd_ref` requirement on `Content Module` nodes. Document 5 (Personalization Decisioning Rules) specifies the full runtime behavior of the two-axis fallback activated when `jtbd_ref` is absent on optional-`jtbd_ref` modules. Document 9 (Privacy and Consent Architecture) specifies the consent-state conditions under which tag-based personalization is suppressed — those conditions are out of scope here.*
+This is expected: Section 4 governs how existing content graph fields are applied — it does not introduce new fields. New fields introduced by this section's governance rules (if any arose) would require a Section 2 schema update and a new `CLIENT_ATTRIBUTE_MAP` entry. None arose in this drafting pass.
 
 ---
 
-## Section 4: Through-Line Requirement
+*End of Section 4. Section 6 (Module Types and Composition Rules) specifies the `intended_axes` profiles per `§10 MODULE_TYPES` that govern the conditional `jtbd_ref` requirement on `Content Module` nodes. Document 5 (Personalization Decisioning Rules) specifies the full runtime behavior of the two-axis fallback activated when `jtbd_ref` is absent on optional-`jtbd_ref` modules. Document 9 (Privacy and Consent Architecture) specifies the consent-state conditions under which tag-based personalization is suppressed — those conditions are out of scope here.*
 
-> **Depends on:** Document 4 Section 1 (`Narrative` node schema, `narrative_ref` enforcement), Document 1 (role architecture), Document 6 (convergence points, double-diamond structure), `kalder_data_model_s0_s1.py` §16, §18
+---
+
+## Section 5: Through-Line Requirement
+
+> **Depends on:** Document 4 Section 2 (`Narrative` node schema, `narrative_ref` enforcement), Document 1 (role architecture), Document 6 (convergence points, double-diamond structure), `kalder_data_model.py` §16, §18
 
 ---
 
@@ -928,7 +955,7 @@ The through-line requirement exists to prevent this. It does not restrict person
 
 ### 4.2 What the Through-Line Is: `solution_claim` and `message_pillar`
 
-The through-line is operationalized through two required fields on the `Narrative` node (specified in Section 1): `solution_claim` and `message_pillar`. These fields exist on the `Narrative` node, not on individual `Content Module` nodes. A `Content Module` does not carry its own `solution_claim` or `message_pillar`. It references a `Narrative` node via the required `narrative_ref` field, and the values of those fields govern the module's content. This structural inheritance is what makes the through-line machine-enforceable rather than editorially aspirational.
+The through-line is operationalized through two required fields on the `Narrative` node (specified in Section 2): `solution_claim` and `message_pillar`. These fields exist on the `Narrative` node, not on individual `Content Module` nodes. A `Content Module` does not carry its own `solution_claim` or `message_pillar`. It references a `Narrative` node via the required `narrative_ref` field, and the values of those fields govern the module's content. This structural inheritance is what makes the through-line machine-enforceable rather than editorially aspirational.
 
 **`solution_claim`** is the canonical, factually grounded statement of what Kalder's solution achieves in a specific solution category and buying stage context. It answers: what is the core capability claim this program is making to this audience at this point in their evaluation? It is specific enough to be falsifiable and stable enough to anchor all role variants for this `(solution_category, buying_stage)` pair.
 
@@ -979,7 +1006,7 @@ The `supporting_claims` array must be seeded at `Narrative` node creation with a
 
 The through-line is enforced through two complementary layers. Neither layer alone is sufficient.
 
-**Structural enforcement.** The `narrative_ref` required field on all `phase: diverge` and `phase: converge` `Content Module` nodes (specified in Section 1) enforces three things at the Sanity schema level: (1) that a shared `Narrative` parent exists for the module's `(solution_category, buying_stage)` pair, (2) that the `Narrative` node is in `status: approved` before the `Content Module` can enter `status: approved`, and (3) that the `solution_claim` and `message_pillar` values governing this module are always read from the `Narrative` node rather than stored redundantly — or divergently — on the module itself.
+**Structural enforcement.** The `narrative_ref` required field on all `phase: diverge` and `phase: converge` `Content Module` nodes (specified in Section 2) enforces three things at the Sanity schema level: (1) that a shared `Narrative` parent exists for the module's `(solution_category, buying_stage)` pair, (2) that the `Narrative` node is in `status: approved` before the `Content Module` can enter `status: approved`, and (3) that the `solution_claim` and `message_pillar` values governing this module are always read from the `Narrative` node rather than stored redundantly — or divergently — on the module itself.
 
 Structural enforcement is necessary but not sufficient. It guarantees that a shared `Narrative` parent exists and is approved. It does not evaluate the `content_body` of the `Content Module` for semantic consistency with that parent. A module can correctly reference an approved `Narrative` node and still introduce a claim not in `solution_claim`, `message_pillar`, or `supporting_claims`. It can selectively emphasize one aspect of the `solution_claim` so heavily that a reader would come away with a materially different impression of the vendor's core capability than another role variant produces. The structural layer catches schema violations. It does not catch semantic drift.
 
@@ -1007,17 +1034,17 @@ This means the through-line requirement is the prerequisite for coherent Consens
 
 The content graph encodes this relationship structurally. A converge-phase `Content Module` (a Consensus Brief or Executive Brief) carries the same required `narrative_ref` field as a diverge-phase module. It references the same `Narrative` node that governs the diverge-phase modules it synthesizes. This is not merely schema compliance — it is what makes the Consensus Brief's synthesis coherent. The `Narrative` node is the shared spine that connects individual role evaluation content to group alignment content. Both phases reference it. Neither phase can introduce claims outside it.
 
-For the full specification of convergence points, Champion distribution mechanics, and the double-diamond phase structure that governs when converge content is generated and circulated, see Document 6 (Buying Group Journey and Convergence Model) and `kalder_data_model_s0_s1.py §18 BUYING_GROUP_CONVERGENCE_POINTS`.
+For the full specification of convergence points, Champion distribution mechanics, and the double-diamond phase structure that governs when converge content is generated and circulated, see Document 6 (Buying Group Journey and Convergence Model) and `kalder_data_model.py §18 BUYING_GROUP_CONVERGENCE_POINTS`.
 
 ---
 
-*End of Section 4. Section 5 (Module Types and Composition Rules) specifies the eleven module types from `§10 MODULE_TYPES`, their `intended_axes` variation profiles, and the `MODULE_COMPOSITION_RULES` conflict resolution policy. Section 8 (Kalder Compose Integration) specifies the generate → review → approve → publish workflow, including through-line review as a named step in the human review stage.*
+*End of Section 4. Section 6 (Module Types and Composition Rules) specifies the eleven module types from `§10 MODULE_TYPES`, their `intended_axes` variation profiles, and the `MODULE_COMPOSITION_RULES` conflict resolution policy. Section 9 (Kalder Compose Integration) specifies the generate → review → approve → publish workflow, including through-line review as a named step in the human review stage.*
 
 ---
 
-## Section 5: Module Types and Composition Rules
+## Section 6: Module Types and Composition Rules
 
-> **Depends on:** Document 4 Section 1 (`Content Module` node type, `Experience` node `module_slots`), Document 4 Section 3 (conditional `jtbd_ref` requirement), `kalder_data_model_s0_s1.py` §10 MODULE_TYPES, MODULE_COMPOSITION_RULES
+> **Depends on:** Document 4 Section 2 (`Content Module` node type, `Experience` node `module_slots`), Document 4 Section 4 (conditional `jtbd_ref` requirement), `kalder_data_model.py` §10 MODULE_TYPES, MODULE_COMPOSITION_RULES
 
 ---
 
@@ -1025,7 +1052,7 @@ For the full specification of convergence points, Champion distribution mechanic
 
 A module type defines three things simultaneously: the page slot a `Content Module` node occupies within an `Experience` node's `module_slots` array, the personalization axes that slot varies on, and the fallback behavior when a visitor's classification state cannot support the slot's full personalization depth. When Adobe Target assembles a page experience at render time, it selects a `Content Module` node for each occupied module slot independently — each slot is evaluated against its own `intended_axes` profile, not against a single unified visitor state. The result is a page where the hero may be role- and stage-personalized, the benefits section is role-only, and the CTA reflects confidence tier and buying job — three different personalization depths on the same page, each correct for its module type.
 
-The Axis Conditionality Principle established in Section 1.2 applies here at the module type level: a module type varies only on its specified `intended_axes`. A module that specifies `[role, solution_category]` does not "consider" buying job or bg_stage — it has no buying job variant and no stage variant. This is a design decision, not an omission. Multiple module types on the same page may therefore personalize on different axes without inherent conflict, provided the composition rules govern any actual axis overlap. Section 5 specifies what each module type is and how it behaves in composition; Document 5 (Personalization Decisioning Rules) specifies how Adobe Target is configured to implement the selection logic per module type.
+The Axis Conditionality Principle established in Section 1.2 applies here at the module type level: a module type varies only on its specified `intended_axes`. A module that specifies `[role, solution_category]` does not "consider" buying job or bg_stage — it has no buying job variant and no stage variant. This is a design decision, not an omission. Multiple module types on the same page may therefore personalize on different axes without inherent conflict, provided the composition rules govern any actual axis overlap. Section 6 specifies what each module type is and how it behaves in composition; Document 5 (Personalization Decisioning Rules) specifies how Adobe Target is configured to implement the selection logic per module type.
 
 ---
 
@@ -1045,7 +1072,7 @@ The Axis Conditionality Principle established in Section 1.2 applies here at the
 - `buying_job`: The hero establishes situational relevance at the stage level — not at the specific task level. Buying job specificity is delegated to `gated_assets` and `cta`, which carry the buying_job axis. A hero that attempted to vary on buying_job would require 5 roles × 4 stages × 4 buying jobs = up to 80 variants per solution category per hero slot, which is not authoring-sustainable. Stage-level framing is sufficient for hero-level orientation.
 - `confidence_tier`: Hero content is role-and-stage-relevant regardless of how confident the classification is. A MEDIUM-confidence Champion should receive role-appropriate hero framing; withholding it until HIGH confidence would produce a worse experience without serving a governance purpose.
 
-**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 3.
+**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 4.
 
 **Fallback behavior:**
 - Level 1 (HIGH): Full role- and stage-specific hero variant for the visitor's classified role and bg_stage.
@@ -1073,7 +1100,7 @@ The Axis Conditionality Principle established in Section 1.2 applies here at the
 - `bg_stage`: Benefits content does not need to shift based on pipeline stage. The solution's value proposition for a given role is consistent across stages; how that value is contextually framed in the surrounding content (hero, cta) shifts by stage.
 - `confidence_tier`: Benefits render regardless of confidence level. Withholding role-specific benefits from a MEDIUM visitor would degrade the experience without purpose.
 
-**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 3.
+**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 4.
 
 **Fallback behavior:**
 - Level 1 (HIGH): Full role-specific benefits for the visitor's classified role within the solution category.
@@ -1176,10 +1203,10 @@ The Axis Conditionality Principle established in Section 1.2 applies here at the
 **`intended_axes`:** `[role, solution_category, bg_stage]`
 
 **`omitted_axes_rationale`:**
-- `buying_job`: The through-line requirement (Section 4) mandates that `solution_claim` and `message_pillar` are shared across role variants for a given `(solution_category, buying_stage)` pair. The `narrative` module slot enforces this by not varying on buying_job — the core claim is stage-stable for a given role and stage, and buying-job-specific nuance belongs in adjacent slots (`gated_assets`, `cta`).
+- `buying_job`: The through-line requirement (Section 5) mandates that `solution_claim` and `message_pillar` are shared across role variants for a given `(solution_category, buying_stage)` pair. The `narrative` module slot enforces this by not varying on buying_job — the core claim is stage-stable for a given role and stage, and buying-job-specific nuance belongs in adjacent slots (`gated_assets`, `cta`).
 - `confidence_tier`: The narrative claim is relevant regardless of confidence level. A MEDIUM-confidence visitor deserves the same factual claim as a HIGH-confidence one.
 
-**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 3.
+**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 4.
 
 **Fallback behavior:**
 - Level 1 and 2: Role- and stage-specific narrative variant.
@@ -1205,7 +1232,7 @@ The Axis Conditionality Principle established in Section 1.2 applies here at the
 - `buying_job`: Problem framing is pre-buying-job content — it supports the problem_identification stage before buying job inference has been established. Requiring a buying_job variant for this slot would mean the slot is never fully activated at the stage when it is most needed.
 - `confidence_tier`: Problem framing content is role-specific but not specificity-restricted. A MEDIUM-confidence visitor benefits from role-framed problem description as much as a HIGH-confidence one.
 
-**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 3.
+**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 4.
 
 **Fallback behavior:**
 - Level 1 and 2: Role-specific problem framing within the solution category.
@@ -1230,7 +1257,7 @@ The Axis Conditionality Principle established in Section 1.2 applies here at the
 - `buying_job`: Outcome statements are stage-relevant — an Economic Buyer at the engaged stage cares about strategic outcomes; the same EB at the qualified stage cares about validated quantified outcomes. Stage governs outcome emphasis better than buying job.
 - `confidence_tier`: Outcomes are presented regardless of confidence level; they are not more or less appropriate based on classification confidence.
 
-**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 3.
+**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 4.
 
 **Fallback behavior:**
 - Level 1 and 2: Role- and stage-specific outcome statements.
@@ -1281,7 +1308,7 @@ The Axis Conditionality Principle established in Section 1.2 applies here at the
 - `buying_job`: Trust signals are role-specific (Ratifiers need security certifications; Influencers need integration compatibility; Economic Buyers need vendor financial stability) but not buying-job-specific. Role is the selection dimension.
 - `confidence_tier`: Trust signal content is not restricted by confidence tier. A MEDIUM-confidence Ratifier needs compliance documentation as much as a HIGH-confidence one.
 
-**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 3.
+**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 4.
 
 **Fallback behavior:**
 - Level 1 and 2: Role-specific trust signals — security/compliance documentation for Ratifiers; integration partnership signals for Influencers; financial stability and customer retention signals for Economic Buyers.
@@ -1307,7 +1334,7 @@ The Axis Conditionality Principle established in Section 1.2 applies here at the
 - `bg_stage`: Progressive disclosure prompts do not vary by stage. The invitation to self-identify is stage-neutral; the resulting classification improvement affects all subsequent stage-related personalization.
 - `buying_job`: Same reason as role — the module is displayed when buying job is not confirmed. Varying by buying_job would require the module to know what it is trying to discover.
 
-**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 3.
+**`jtbd_ref` requirement:** Optional — `buying_job` is not in `intended_axes`; two-axis fallback applies per Section 4.
 
 **Fallback behavior:**
 - Level 1 (HIGH): Progressive disclosure module not rendered — the visitor is already HIGH-confidence. The slot may be used for a related confirmation or preference capture prompt at the platform engineer's discretion.
@@ -1346,7 +1373,7 @@ The Axis Conditionality Principle established in Section 1.2 applies here at the
 
 #### 5.4.1 The `highest_specificity_wins` Policy
 
-When multiple modules on a single page personalize on overlapping axes, the module with the most specific axis combination takes precedence for the overlapping axis. Specificity is determined by the following axis priority order, reproduced exactly from `MODULE_COMPOSITION_RULES` in `kalder_data_model_s0_s1.py §10`:
+When multiple modules on a single page personalize on overlapping axes, the module with the most specific axis combination takes precedence for the overlapping axis. Specificity is determined by the following axis priority order, reproduced exactly from `MODULE_COMPOSITION_RULES` in `kalder_data_model.py §10`:
 
 1. `buying_job` — most specific; inferred from session behavior
 2. `bg_stage` — stage-level; inferred from account-level engagement
@@ -1402,13 +1429,13 @@ Note on absent module types: Not every page template will include all eleven mod
 
 ---
 
-*End of Section 5. Document 5 (Personalization Decisioning Rules) specifies the Adobe Target activity configuration required to implement the module type `intended_axes` profiles and the `MODULE_COMPOSITION_RULES` conflict resolution policy. Section 7 (Coverage Completeness Architecture) specifies the minimum `Content Module` node count per module type required to activate personalization at each fallback level.*
+*End of Section 5. Document 5 (Personalization Decisioning Rules) specifies the Adobe Target activity configuration required to implement the module type `intended_axes` profiles and the `MODULE_COMPOSITION_RULES` conflict resolution policy. Section 8 (Coverage Completeness Architecture) specifies the minimum `Content Module` node count per module type required to activate personalization at each fallback level.*
 
 ---
 
-## Section 6: Converge Content Rules
+## Section 7: Converge Content Rules
 
-> **Depends on:** Document 4 Section 1 (`Narrative` node, `narrative_ref` field), Document 4 Section 4 (through-line requirement and convergence corollary), Document 1 Section 4 (Role-to-Convergence-Point Matrix)
+> **Depends on:** Document 4 Section 2 (`Narrative` node, `narrative_ref` field), Document 4 Section 5 (through-line requirement and convergence corollary), Document 1 Section 4 (Role-to-Convergence-Point Matrix)
 
 ---
 
@@ -1475,15 +1502,15 @@ Converge content that does not satisfy all three prerequisites must not be gener
 
 ### 6.4 The Narrative Node Structural Constraint
 
-A converge-phase `Content Module` node — whether a `consensus_brief` or an `executive_brief` — carries the same required `narrative_ref` field as diverge-phase `Content Module` nodes (specified in Section 1). It must reference the same `Narrative` node as the diverge-phase `Content Module` nodes for the same `(solution_category, buying_stage)` pair. This is not a schema compliance formality. It is the mechanism that makes the synthesis coherent. The `Narrative` node carries the `solution_claim` and `message_pillar` that every role variant's diverge content was built on. When a converge `Content Module` references that same `Narrative` node, it is anchored to the same factual backbone. The consistency is structural — it was enforced at diverge content authoring time and is inherited at synthesis time.
+A converge-phase `Content Module` node — whether a `consensus_brief` or an `executive_brief` — carries the same required `narrative_ref` field as diverge-phase `Content Module` nodes (specified in Section 2). It must reference the same `Narrative` node as the diverge-phase `Content Module` nodes for the same `(solution_category, buying_stage)` pair. This is not a schema compliance formality. It is the mechanism that makes the synthesis coherent. The `Narrative` node carries the `solution_claim` and `message_pillar` that every role variant's diverge content was built on. When a converge `Content Module` references that same `Narrative` node, it is anchored to the same factual backbone. The consistency is structural — it was enforced at diverge content authoring time and is inherited at synthesis time.
 
-A converge `Content Module` that references a different `Narrative` node than its source diverge modules is not synthesizing from those modules' shared backbone; it is importing a different through-line, which will produce a brief that diverges from the diverge content it is supposed to represent. This condition is a blocking validation error in Sanity. The validation mechanism is the GROQ-based cross-document check specified in Section 1 (Revision 2): the `narrative_ref` on the converge `Content Module` is compared against the `narrative_ref` values on the diverge `Content Module` nodes designated as its generation source. A mismatch on `solution_category`, `buying_stage`, or the referenced `Narrative` document ID prevents publication. The converge module cannot enter `status: approved` until the mismatch is resolved.
+A converge `Content Module` that references a different `Narrative` node than its source diverge modules is not synthesizing from those modules' shared backbone; it is importing a different through-line, which will produce a brief that diverges from the diverge content it is supposed to represent. This condition is a blocking validation error in Sanity. The validation mechanism is the GROQ-based cross-document check specified in Section 2 (Revision 2): the `narrative_ref` on the converge `Content Module` is compared against the `narrative_ref` values on the diverge `Content Module` nodes designated as its generation source. A mismatch on `solution_category`, `buying_stage`, or the referenced `Narrative` document ID prevents publication. The converge module cannot enter `status: approved` until the mismatch is resolved.
 
 ---
 
 ### 6.5 Champion Distribution Pathway
 
-When a converge `Content Module` node enters `status: approved` in Sanity, it is made available to the Champion through a designated content delivery surface — the Kalder Compose interface or equivalent — not published to kalder.com for web serving. The delivery surface exists; its design and the workflow through which Champions access it are specified in Document 8 (Operational Runbook). Section 6 specifies only that the surface must exist and must serve approved converge content to Champions, not to Adobe Target.
+When a converge `Content Module` node enters `status: approved` in Sanity, it is made available to the Champion through a designated content delivery surface — the Kalder Compose interface or equivalent — not published to kalder.com for web serving. The delivery surface exists; its design and the workflow through which Champions access it are specified in Document 8 (Operational Runbook). Section 7 specifies only that the surface must exist and must serve approved converge content to Champions, not to Adobe Target.
 
 From that point, the program has no visibility into or control over distribution. The Champion decides who receives the brief, through what channel, at what moment in their internal alignment process. The document may be forwarded as an email attachment, shared as a document link, presented directly in a meeting, or circulated via internal messaging. The program cannot track this chain.
 
@@ -1507,19 +1534,19 @@ The consent treatment of privately distributed converge content differs from web
 
 ---
 
-*End of Section 6. Section 8 (Kalder Compose Integration) specifies the generate → review → approve → distribute workflow, including the interface through which Champions access approved converge content. Document 6 (Buying Group Journey and Convergence Model) specifies convergence point definitions, trigger conditions, and seller actions. Document 7 (Measurement and Experimentation Framework) specifies the attribution model for converge content effectiveness. Document 9 (Privacy and Consent Architecture) specifies the consent framework governing the data used to generate converge content.*
+*End of Section 6. Section 9 (Kalder Compose Integration) specifies the generate → review → approve → distribute workflow, including the interface through which Champions access approved converge content. Document 6 (Buying Group Journey and Convergence Model) specifies convergence point definitions, trigger conditions, and seller actions. Document 7 (Measurement and Experimentation Framework) specifies the attribution model for converge content effectiveness. Document 9 (Privacy and Consent Architecture) specifies the consent framework governing the data used to generate converge content.*
 
 ---
 
-## Section 7: Coverage Completeness Architecture
+## Section 8: Coverage Completeness Architecture
 
-> **Depends on:** Document 4 Sections 1–5, Document 1 (fallback cascade), `kalder_data_model_s0_s1.py` §H AR-02, §4 CR-08
+> **Depends on:** Document 4 Sections 2, 3, 4, 5, 6, Document 1 (fallback cascade), `kalder_data_model.py` §H AR-02, §4 CR-08
 
 ---
 
 ### 7.1 The Two-Constraint Model: Coverage and Confidence
 
-A HIGH-confidence role classification is a necessary but not sufficient condition for a Level 1 personalization experience. Content availability is the second, independent constraint. Both must be satisfied simultaneously: the visitor must have a sufficiently high role confidence score, and the content graph must contain approved `Content Module` nodes for the relevant `(solution_category, role, buying_stage)` combination. When the first constraint is satisfied but the second is not, the personalization system does not serve an unmatched Level 1 experience — it routes the visitor to the highest fallback level for which both constraints are met. Section 7 specifies what "approved content inventory exists" means operationally for each fallback level.
+A HIGH-confidence role classification is a necessary but not sufficient condition for a Level 1 personalization experience. Content availability is the second, independent constraint. Both must be satisfied simultaneously: the visitor must have a sufficiently high role confidence score, and the content graph must contain approved `Content Module` nodes for the relevant `(solution_category, role, buying_stage)` combination. When the first constraint is satisfied but the second is not, the personalization system does not serve an unmatched Level 1 experience — it routes the visitor to the highest fallback level for which both constraints are met. Section 8 specifies what "approved content inventory exists" means operationally for each fallback level.
 
 Until those conditions are met, the `pending_solution_fallback` behavior activates for the relevant solution category, applying a MEDIUM confidence ceiling regardless of the visitor's actual behavioral score and routing them to Level 3 or below.
 
@@ -1560,11 +1587,11 @@ Level 3 serves solution-category content with no role differentiation. The cover
 - **`hero` module**: 1 approved solution-category-level `Content Module` node. The Level 3 hero presents the solution category's general value proposition. No role specificity required; `buying_stage: any` is acceptable at this level.
 - **`benefits` module**: 1 approved solution-category-level node. Role field unset or set to a neutral default.
 - **`narrative` module**: 1 approved solution-category-level node, referencing an approved `Narrative` node for the solution category. The `Narrative` node's `solution_claim` and `message_pillar` anchor the Level 3 experience.
-- **`cta` module**: 4 approved solution-category-level nodes — one per `buying_job` value (`problem_identification`, `solution_exploration`, `requirements_building`, `supplier_selection`). The `cta` module requires `buying_job` in its `intended_axes` per Section 5; Level 3 CTA nodes require `jtbd_ref` even at this level to avoid null-serve on the CTA slot.
+- **`cta` module**: 4 approved solution-category-level nodes — one per `buying_job` value (`problem_identification`, `solution_exploration`, `requirements_building`, `supplier_selection`). The `cta` module requires `buying_job` in its `intended_axes` per Section 6; Level 3 CTA nodes require `jtbd_ref` even at this level to avoid null-serve on the CTA slot.
 - **`gated_assets` slot**: Minimum 3 approved `Asset` nodes with `gating: ungated` for the solution category, spanning at least 2 distinct `buying_job` values. Ungated assets only at Level 3 — gated assets require a minimum role confidence threshold that Level 3 visitors do not satisfy.
 - **`problem_framing` module**: 1 approved solution-category-level node.
 - **`jtbd_ref` requirement**: Required only for `cta` (4 nodes per buying_job). All other Level 3 modules do not require `jtbd_ref`; two-axis fallback applies.
-- **Converge content prerequisite**: Not applicable at Level 3. Converge content prerequisites are specified in Section 6.
+- **Converge content prerequisite**: Not applicable at Level 3. Converge content prerequisites are specified in Section 7.
 
 Total minimum node count for Level 3 activation: 8 `Content Module` nodes + 3 `Asset` nodes + 1 `Narrative` node. This is a commissioning-sprint-sized scope, not a multi-quarter build.
 
@@ -1580,7 +1607,7 @@ Level 2 serves role-influenced content. Nodes meeting the Level 2 threshold carr
 - **`hero`**: 5 nodes — 1 per role (`champion`, `economic_buyer`, `influencer`, `user`, `ratifier`) — for at minimum 2 buying stages (`engaged` and `prioritized`, which map to the acquisition cohort where Level 2 is most common). Full 4-stage coverage is recommended but not required for initial Level 2 activation.
 - **`benefits`**: 5 nodes — 1 per role — for the same minimum 2 buying stages.
 - **`narrative`**: 5 nodes — 1 per role — for the same minimum 2 buying stages, each referencing an approved stage-matched `Narrative` node.
-- **`cta`**: 5 roles × 4 buying_jobs = 20 nodes minimum (the `cta` module requires `buying_job` axis per Section 5 regardless of fallback level; role specificity is required at Level 2). Coverage for the 2 minimum buying stages means 20 nodes for `engaged` and `prioritized` combined = 40 nodes for full 2-stage coverage.
+- **`cta`**: 5 roles × 4 buying_jobs = 20 nodes minimum (the `cta` module requires `buying_job` axis per Section 6 regardless of fallback level; role specificity is required at Level 2). Coverage for the 2 minimum buying stages means 20 nodes for `engaged` and `prioritized` combined = 40 nodes for full 2-stage coverage.
 - **`problem_framing`**: 5 nodes — 1 per role — for the minimum 2 buying stages.
 - **`trust_signals`**: 5 nodes — 1 per role — for the minimum 2 buying stages.
 
@@ -1614,7 +1641,7 @@ Level 1 serves fully role-specific content with three-axis capability for applic
 - **`outcomes`**: 1 approved role × stage-specific node.
 - **`trust_signals`**: 1 approved role × stage-specific node.
 
-**`jtbd_ref` requirement at Level 1**: Required for `cta`, `gated_assets`, `proof`, and `use_cases` — all module types with `buying_job` in `intended_axes` per Section 5. Three-axis coverage means approved variants exist per `buying_job` value for these module types.
+**`jtbd_ref` requirement at Level 1**: Required for `cta`, `gated_assets`, `proof`, and `use_cases` — all module types with `buying_job` in `intended_axes` per Section 6. Three-axis coverage means approved variants exist per `buying_job` value for these module types.
 
 **`coverage_status` reaches `complete`** when all five roles × all four `buying_stage` values have met the Level 1 threshold — meaning 20 `(role, buying_stage)` pairs are each fully provisioned. Until that full 20-pair threshold is met, the solution category is in a transitional state between `partial` and `complete`, activating Level 1 for provisioned pairs and Level 2 or Level 3 for unprovisioned pairs within the same category.
 
@@ -1630,7 +1657,7 @@ The coverage tracking pipeline (Document 8 implementation dependency) monitors t
 
 - **`pending_solution_fallback` event count** per `solution_key` per 7-day rolling window. Sourced from the logging requirement in `§4 SCORING_RULES pending_solution_fallback`. This metric measures the rate at which the fallback is activating — a proxy for the number of visitors being underserved by missing content coverage. Tracked at `solution_category` granularity.
 
-- **`coverage_status` per `(solution_category, role, buying_stage)` tuple.** Computed by `validate_coverage_consistency()` and the coverage tracking pipeline on each Sanity content graph state change — triggered when any node enters or exits `status: approved`. This is the tuple-level metric that the granular Level 1 activation model depends on. Exposed via the `solution_category_coverage_status` attribute in `CLIENT_ATTRIBUTE_MAP` (§CA), registered in Section 1.
+- **`coverage_status` per `(solution_category, role, buying_stage)` tuple.** Computed by `validate_coverage_consistency()` and the coverage tracking pipeline on each Sanity content graph state change — triggered when any node enters or exits `status: approved`. This is the tuple-level metric that the granular Level 1 activation model depends on. Exposed via the `solution_category_coverage_status` attribute in `CLIENT_ATTRIBUTE_MAP` (§CA), registered in Section 2.
 
 - **Approved node count per module type per `(solution_category, role, buying_stage)`.** The input metric for coverage threshold evaluation. A tuple with `coverage_status: partial` but a specific module type missing from its approved inventory is a gap that the escalation alert payload must surface.
 
@@ -1737,19 +1764,19 @@ Full `coverage_status: complete` requires all 20 `(role, buying_stage)` pairs to
 
 ---
 
-*End of Section 7. Document 8 (Operational Runbook) specifies the coverage tracking pipeline implementation — including the Sanity webhook that triggers `coverage_status` recomputation, the format of gap summaries in escalation payloads, and the Champion content delivery surface referenced in Section 6. Document 5 (Personalization Decisioning Rules) specifies how Adobe Target implements the coverage-gated fallback level routing for each module type.*
+*End of Section 7. Document 8 (Operational Runbook) specifies the coverage tracking pipeline implementation — including the Sanity webhook that triggers `coverage_status` recomputation, the format of gap summaries in escalation payloads, and the Champion content delivery surface referenced in Section 7. Document 5 (Personalization Decisioning Rules) specifies how Adobe Target implements the coverage-gated fallback level routing for each module type.*
 
 ---
 
-## Section 8: Kalder Compose Integration
+## Section 9: Kalder Compose Integration
 
-> **Depends on:** Document 4 Sections 1–7, `kalder_data_model_s0_s1.py` §H AR-02, §4 CR-08, `kalder_martech_reference_architecture.md`
+> **Depends on:** Document 4 Sections 2, 3, 4, 5, 6, 7, 8, `kalder_data_model.py` §H AR-02, §4 CR-08, `kalder_martech_reference_architecture.md`
 
 ---
 
 ### 8.1 Workflow Overview
 
-The Kalder Compose integration workflow governs how content enters the Sanity content graph. It begins with the identification of a coverage gap — a missing `(solution_category, role, buying_stage)` combination required by the Section 7 thresholds — proceeds through AI-assisted generation, human review, Sanity publication, and Adobe Target offer synchronization, and concludes with an updated content graph state that the personalization program serves from. A node that has not completed the full workflow cannot be served. A node that completes the workflow enters the content graph as a permanent, versioned record; it does not expire or rotate automatically.
+The Kalder Compose integration workflow governs how content enters the Sanity content graph. It begins with the identification of a coverage gap — a missing `(solution_category, role, buying_stage)` combination required by the Section 8 thresholds — proceeds through AI-assisted generation, human review, Sanity publication, and Adobe Target offer synchronization, and concludes with an updated content graph state that the personalization program serves from. A node that has not completed the full workflow cannot be served. A node that completes the workflow enters the content graph as a permanent, versioned record; it does not expire or rotate automatically.
 
 The workflow has four phases: **Generate** (Kalder Compose produces a draft node from a structured generation context), **Review** (human reviewers apply named quality gates), **Approve** (Sanity validation functions enforce schema and cross-document integrity), and **Publish/Sync** (the approved node is written to the Adobe Target offer catalog and coverage status is recomputed).
 
@@ -1767,7 +1794,7 @@ Before Kalder Compose can be invoked for `Content Module` generation for a given
 
 2. **`Audience` node prerequisite.** An approved `Audience` node must exist for the `(solution_category, role)` pair. If not, the workflow routes to `Audience` node commissioning. `Audience` node authoring is human-authored and typically completes in one to two days per solution category.
 
-3. **`JTBD` node prerequisite.** For `Content Module` nodes of module types where `jtbd_ref` is required per Section 5, an approved `JTBD` node must exist for the target `jtbd_code` and `solution_category`. If not, `JTBD` node commissioning is required before `Content Module` generation.
+3. **`JTBD` node prerequisite.** For `Content Module` nodes of module types where `jtbd_ref` is required per Section 6, an approved `JTBD` node must exist for the target `jtbd_code` and `solution_category`. If not, `JTBD` node commissioning is required before `Content Module` generation.
 
 4. **`supporting_claims` seeding prerequisite.** The governing `Narrative` node's `supporting_claims` array must contain at least 5 entries before `Content Module` commissioning proceeds. If the array has fewer than 5 entries, the workflow invokes Kalder Compose in `supporting_claims` seeding mode: Compose generates a candidate pool of 8–12 role-differentiated supporting claims derived from the `Narrative` node's `solution_claim` and `message_pillar`. The content strategist reviews the pool, curates it to a minimum of 5 entries, and updates the `Narrative` node's `supporting_claims` array before `Content Module` generation begins.
 
@@ -1787,7 +1814,7 @@ Before Kalder Compose can be invoked for `Content Module` generation for a given
 
 **Approval step.** The content strategy lead sets `status: approved`. No Sanity cross-document validation fires on `Narrative` node approval; the `Narrative` is the reference document, not the referencing document.
 
-**Versioning rule (Section 1 Revision 3).** Only one `Narrative` node per `(solution_category, buying_stage)` pair may be in `status: approved` at any time. When a `solution_claim` or `message_pillar` amendment is required, the content strategist creates a new `Narrative` draft for the amended through-line and advances it through review. The current `approved` version remains active until all dependent `Content Module` nodes have been re-approved against the new version. Retiring the current `approved` version before dependent modules are re-approved will block the dependent modules' own `approved` status — the cross-document validation function (Section 8.6, Function 1) will fail for any module whose `narrative_ref` points to a retired or `under_review` `Narrative`.
+**Versioning rule (Section 2 Revision 3).** Only one `Narrative` node per `(solution_category, buying_stage)` pair may be in `status: approved` at any time. When a `solution_claim` or `message_pillar` amendment is required, the content strategist creates a new `Narrative` draft for the amended through-line and advances it through review. The current `approved` version remains active until all dependent `Content Module` nodes have been re-approved against the new version. Retiring the current `approved` version before dependent modules are re-approved will block the dependent modules' own `approved` status — the cross-document validation function (Section 8.6, Function 1) will fail for any module whose `narrative_ref` points to a retired or `under_review` `Narrative`.
 
 ---
 
@@ -1797,7 +1824,7 @@ Before Kalder Compose can be invoked for `Content Module` generation for a given
 
 **Phase 1 — Generate**
 
-Kalder Compose is invoked with a structured generation context containing: `module_type`, `role`, `solution_category`, `buying_stage`, `jtbd_code` (if applicable per Section 5 `intended_axes`), and the governing `Narrative` node's `solution_claim`, `message_pillar`, and `supporting_claims` array. The `supporting_claims` array is the permitted secondary claim pool; Compose is instructed to draw from it and not introduce claims outside it.
+Kalder Compose is invoked with a structured generation context containing: `module_type`, `role`, `solution_category`, `buying_stage`, `jtbd_code` (if applicable per Section 6 `intended_axes`), and the governing `Narrative` node's `solution_claim`, `message_pillar`, and `supporting_claims` array. The `supporting_claims` array is the permitted secondary claim pool; Compose is instructed to draw from it and not introduce claims outside it.
 
 Compose outputs a draft `content_body` and populates the following fields in the Sanity draft record: `module_type`, `role`, `solution_category`, `buying_stage`, `phase`, `narrative_ref` (set to the governing `Narrative` node's document ID), `jtbd_ref` (if applicable), `label`, `content_body`.
 
@@ -1812,7 +1839,7 @@ The review queue surfaces the node's `module_type` so reviewers can identify lon
 **Stage R1 — Factual accuracy review** *(long-form track only)*
 Does the `content_body` contain any claim that cannot be substantiated by the referenced `Narrative` node's `solution_claim`, `message_pillar`, `supporting_claims`, or a linked `Proof` node? Claims of the form "reduces time-to-deployment by X%" or "achieves Y metric within Z months" must trace to a specific `Proof` node or a `supporting_claims` entry. Unsubstantiated quantitative claims return the node to `status: draft` for revision. The reviewer flags the specific claim and the required substantiation source.
 
-**Stage R2 — Through-line review** *(named step from Section 4, both tracks)*
+**Stage R2 — Through-line review** *(named step from Section 5, both tracks)*
 Two checklist items:
 
 *(a) Claim inventory check.* Does the `content_body` introduce any claim not derivable from the referenced `Narrative` node's `solution_claim`, `message_pillar`, or `supporting_claims` array? If yes: the unapproved claim must either be removed from `content_body`, or escalated to the content strategist as a candidate for addition to the `Narrative` node's `supporting_claims` array. The node returns to `status: draft` in either case until the claim is resolved.
@@ -1822,7 +1849,7 @@ Two checklist items:
 **Supporting claims empty-array condition (named workflow branch).** If the referenced `Narrative` node's `supporting_claims` array is empty — a named condition in early program operation — the reviewer applies the "without extension" constraint: the `content_body` may include supporting claims that directly instantiate the `solution_claim` or `message_pillar` in more specific or role-contextualized language, but may not introduce capability dimensions not present in `solution_claim` or `message_pillar`. Any secondary claim introducing a new capability dimension is impermissible until the `supporting_claims` array is populated. The reviewer flags the `Narrative` node for `supporting_claims` expansion and notes this condition in the review record before advancing the module to `under_review`. This branch is named: **"Narrative supporting_claims empty — content_body restricted to solution_claim/message_pillar instantiation; Narrative flagged for expansion."**
 
 **Stage R3 — Tagging completeness review** *(both tracks)*
-The reviewer populates `confidence_tier_minimum` per the three-tier decision rule from Section 3.3 — this is a human reviewer assignment, not a Compose-generated field. The reviewer also confirms `phase` is correctly set: `diverge` for modules intended for Adobe Target serving; `converge` for modules intended for Champion distribution. For all other required tag fields per Section 3 (`role`, `solution_category`, `buying_stage`, `jtbd_code` if applicable), the reviewer confirms that Compose-populated values are correct and complete.
+The reviewer populates `confidence_tier_minimum` per the three-tier decision rule from Section 3.3 — this is a human reviewer assignment, not a Compose-generated field. The reviewer also confirms `phase` is correctly set: `diverge` for modules intended for Adobe Target serving; `converge` for modules intended for Champion distribution. For all other required tag fields per Section 4 (`role`, `solution_category`, `buying_stage`, `jtbd_code` if applicable), the reviewer confirms that Compose-populated values are correct and complete.
 
 **Stage R4 — Brand voice review** *(both tracks, abbreviated for short-form)*
 Standard editorial quality check: grammar, tone, brand vocabulary. This stage does not overlap with or substitute for R1 or R2. A module may fail R4 after passing R1 and R2. Conversely, passing R4 does not imply R1 or R2 have been applied.
@@ -1857,7 +1884,7 @@ Coverage status recomputation is triggered on the same `status: approved` event 
 
 `Proof` nodes with `proof_type: quantitative_outcome` or `proof_type: peer_case` may be authored by Kalder Compose with human curation: Compose generates a draft `claim` from the `Narrative` node's `solution_claim` and available evidence, and the content strategist verifies factual accuracy and source attribution. `Proof` nodes with `proof_type: customer_reference` or `proof_type: analyst_validation` are authored directly by the content strategist, not by Compose.
 
-**Legal review condition (Section 1 Revision 6 — named workflow condition).** `Proof` nodes with `proof_type: customer_reference` require legal review before entering `status: approved`. This condition activates a named workflow branch: **"Proof node in legal review — Content Module approved without proof reference; proof reference added when legal review completes; Content Module re-enters under_review only to add the reference."**
+**Legal review condition (Section 2 Revision 6 — named workflow condition).** `Proof` nodes with `proof_type: customer_reference` require legal review before entering `status: approved`. This condition activates a named workflow branch: **"Proof node in legal review — Content Module approved without proof reference; proof reference added when legal review completes; Content Module re-enters under_review only to add the reference."**
 
 Workflow steps for this branch:
 1. The `Proof` node enters `status: under_review` pending legal review.
@@ -1920,7 +1947,7 @@ The design and UX specification of the Kalder Compose delivery interface is a La
 5. Roll up to the solution-category-level effective `coverage_status` per the `COVERAGE_STATUS_HIERARCHY` minimum-rank rule: the solution category's effective status is the minimum rank across all `(role, buying_stage)` tuples required for the category.
 6. Write the solution-category effective `coverage_status` to the `solution_category_coverage_status` AEP attribute in `CLIENT_ATTRIBUTE_MAP` (§CA).
 
-**Tuple-level monitoring vs. `CLIENT_ATTRIBUTE_MAP` (D8-Flag-12 resolution).** The `solution_category_coverage_status` AEP attribute registered in Section 1 represents the effective solution-category-level rollup — a single value per solution category, surfaced to Adobe Target. This attribute is already registered; no new `CLIENT_ATTRIBUTE_MAP` entries are required. Tuple-level coverage status — per `(solution_category, role, buying_stage)` — is tracked in Sanity node `coverage_status` fields and surfaced via the operational dashboard by querying Sanity directly. Adobe Target does not require tuple-level coverage status as an AEP attribute: per-tuple coverage gating in Target is implemented via the offer catalog itself — a tuple without sufficient approved offers simply has no offers available for Target to serve, and the fallback cascade handles the absence. No additional AEP attribute registrations are needed.
+**Tuple-level monitoring vs. `CLIENT_ATTRIBUTE_MAP` (D8-Flag-12 resolution).** The `solution_category_coverage_status` AEP attribute registered in Section 2 represents the effective solution-category-level rollup — a single value per solution category, surfaced to Adobe Target. This attribute is already registered; no new `CLIENT_ATTRIBUTE_MAP` entries are required. Tuple-level coverage status — per `(solution_category, role, buying_stage)` — is tracked in Sanity node `coverage_status` fields and surfaced via the operational dashboard by querying Sanity directly. Adobe Target does not require tuple-level coverage status as an AEP attribute: per-tuple coverage gating in Target is implemented via the offer catalog itself — a tuple without sufficient approved offers simply has no offers available for Target to serve, and the fallback cascade handles the absence. No additional AEP attribute registrations are needed.
 
 **Level 3 ungated `Asset` threshold query (D8-Flag-09 resolution).** When evaluating the Level 3 threshold for a solution category, the pipeline queries `Asset` nodes filtered by: `solution_category` matching, `gating: ungated`, `status: approved`. From the result set, the pipeline counts distinct values of the `buying_job` field. The qualifying condition for Level 3 asset coverage is: result set count ≥ 3 AND distinct `buying_job` count ≥ 2. A solution category with three ungated assets all tagged `buying_job: supplier_selection` does not satisfy the Level 3 threshold, because the distinct `buying_job` count is 1, not 2. The distinct `buying_job` count is the operative metric; total asset count is a secondary check.
 
@@ -1981,4 +2008,20 @@ Acceptance criterion: all three functions complete within 2 seconds per node und
 
 ---
 
-*End of Section 8, and end of Document 4: Content Model and Taxonomy. Document 5 (Personalization Decisioning Rules) specifies Adobe Target activity configuration. Document 8 (Operational Runbook) specifies the Sanity webhook implementation, the Sanity-to-Target synchronization pipeline implementation, the coverage tracking pipeline operational procedures, and the organizational roles that execute this workflow.*
+*End of Section 9, and end of Document 4: Content Model and Taxonomy. Document 5 (Personalization Decisioning Rules) specifies Adobe Target activity configuration. Document 8 (Operational Runbook) specifies the Sanity webhook implementation, the Sanity-to-Target synchronization pipeline implementation, the coverage tracking pipeline operational procedures, and the organizational roles that execute this workflow.*
+
+---
+
+## Cross-Reference Table
+
+| Document | Relationship | Specific Dependency |
+|---|---|---|
+| `kalder_data_model.py` | Document 4 depends on this | `§2 ROLES` (role keys used in content tagging), `§3 CONFIDENCE_TIERS` (confidence_tier_minimum field on Asset and Content Module nodes), `§4 FALLBACK_CASCADE` (fallback_level field, `pending_solution_fallback`, coverage gate logic — CR-08), `§5 COVERAGE_STATUS` (four-state hierarchy, per-tuple gate), `§9 CONTENT_TYPE_TAXONOMY` (31 content types, phase field semantics), `§10 MODULE_TYPES` and `MODULE_COMPOSITION_RULES` (intended_axes per module, axis priority order), `§16 CONTENT_GRAPH_NODE_TYPES` (ten node type schemas), `§17 BUYING_STAGES` (buying_stage enum values), `§H AR-02 COVERAGE_STATUS_HIERARCHY` (inheritance rules, `validate_coverage_consistency()`), `§CA CR-09 CLIENT_ATTRIBUTE_MAP` (AEP attribute registration) |
+| Document 1 — Buying Group Role Architecture | Document 4 depends on this | Five role definitions, behavioral signatures, and content preference profiles that govern content tagging requirements, role-specific variant production scope, and diverge/converge phase classification |
+| Document 2 — Signal Definition and Confidence Model | Document 4 depends on this | Buying job confidence model (KNOWN/INFERRED/UNKNOWN) and `BUYING_JOB_INFERENCE_SIGNALS` that govern conditional `jtbd_ref` requirements on Asset nodes and three-axis activation conditions |
+| Document 3 — Audience and Segmentation Architecture | Document 4 depends on this | Campaign cohort definitions (Section 2.3) and `tal_new_logo_eligible` suppression flag that govern channel-level content distribution scope |
+| Document 5 — Personalization Decisioning Rules | Depends on Document 4 | Module type reference table (Section 6), offer catalog structure, coverage status hierarchy (Section 8), per-tuple coverage gate, and v1 launch coverage state (Section 8.6) that govern Constraint B in the two-constraint decisioning model |
+| Document 6 — Buying Group Journey and Convergence Model | Depends on Document 4 | Converge content types (`executive_brief`, `consensus_brief`) and through-line requirement that Document 6's convergence point specifications reference for content generation and circulation rules |
+| Document 7 — Measurement and Experimentation Framework | Depends on Document 4 | Coverage completeness architecture (Section 8) and the `pending_solution_fallback` event log that define coverage gap monitoring metrics and commissioning prioritization signals |
+| Document 8 — Operational Runbook | Depends on Document 4 | Content commissioning workflow (Section 9), Sanity validation function set (Section 9.6), and Sanity-to-Target synchronization payload specification that Document 8 implements operationally |
+| Document 9 — Privacy and Consent Architecture | Document 4 depends on this | Consent-state conditions that determine which content distribution channels and gating levels are permissible for a given visitor consent state |

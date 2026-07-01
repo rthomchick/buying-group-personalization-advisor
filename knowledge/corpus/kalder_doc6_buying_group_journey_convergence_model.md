@@ -1,28 +1,55 @@
 # Document 6 — Buying Group Journey and Convergence Model
 
-**Kalder Personalization Corpus | Version: Approved | Sections 1–7 Complete**
+**Kalder Personalization Corpus | Version: Locked Draft | Sections 1–7 Complete**
 
 ---
 
 ## Table of Contents
 
-- Section 1: The Four Buying Group Stages
-- Section 2: The Double-Diamond Phase Structure
-- Section 3: Progressive Disclosure UX Specification
-- Section 4: The Six Convergence Points
-- Section 5: The JTBD Code Library
-  - 5.1 How to Use This Library
-  - 5.2 Customer Engagement JTBD Library
-  - 5.3 IT Operations JTBD Library
-  - 5.4 Risk & Compliance JTBD Library
-  - 5.5 Employee Experience JTBD Library
-  - 5.6 AI Platform JTBD Library
-- Section 6: The Buying Job Inference Model
-- Section 7: Sales Activation Integration
+- Section 1: Document Scope and Canonical Status
+- Section 2: The Four Buying Group Stages
+- Section 3: The Double-Diamond Phase Structure
+- Section 4: Progressive Disclosure UX Specification
+- Section 5: The Six Convergence Points
+- Section 6: The JTBD Code Library
+  - 6.1 How to Use This Library
+  - 6.2 Customer Engagement JTBD Library
+  - 6.3 IT Operations JTBD Library
+  - 6.4 Risk & Compliance JTBD Library
+  - 6.5 Employee Experience JTBD Library
+  - 6.6 AI Platform JTBD Library
+- Section 7: The Buying Job Inference Model
+- Section 8: Sales Activation Integration
 
 ---
 
-## Section 1: The Four Buying Group Stages
+## Section 1 — Document Scope and Canonical Status
+
+Document 6 is the single authoritative source for the buying group stage model, the double-diamond phase structure, the progressive disclosure UX specification, the six convergence points, the JTBD code library, the buying job inference model, and the sales activation integration specification in the Kalder Buying Group Personalization Program. It is the document that bridges the strategic framework — what are buyers doing, and where are they in their journey? — with the operational content and sales activation layer. No other corpus document re-defines buying group stages, re-specifies convergence points, or extends the JTBD code library.
+
+Three adjacent decisions are explicitly out of scope here. The role definitions that anchor the double-diamond model and the JTBD code library are owned by Document 1 (Buying Group Role Architecture). The signal scoring and buying job confidence model that feed into stage classification and JTBD inference are owned by Document 2 (Signal Definition and Confidence Model). The operational implementation of sales activation alert delivery, CRM handoff, and Outreach sequence execution is owned by Document 8 (Operational Runbook).
+
+The stage definitions, convergence point specifications, and JTBD codes in this document are the human-readable authority from which content authors, demand gen practitioners, and sales teams operate. The machine-readable canonical sources are `kalder_data_model.py §17 JTBD_CODES`, `§18 BUYING_GROUP_CONVERGENCE_POINTS`, and `§SA SALES_ACTIVATION_CONFIG`. Any discrepancy between this document's definitions and the data model is a defect — the data model governs entity definitions and enum values; this document governs their strategic meaning and operational application.
+
+**What this document owns:** The four buying group stages (Section 2), double-diamond phase structure (Section 3), progressive disclosure UX specification (Section 4), six convergence points (Section 5), JTBD code library (Section 6), buying job inference model (Section 7), and sales activation integration (Section 8).
+
+**Delegation — what this document does not re-specify:**
+- Buying group role definitions, behavioral signatures, and confidence tier thresholds → Document 1
+- Signal weight matrix, seven-step scoring sequence, and buying job confidence model → Document 2
+- Audience segmentation, AEP audience gates, and campaign cohort activation → Document 3
+- Content node schemas, module types, and converge content commissioning rules → Document 4
+- Runtime experience selection logic, fallback cascade routing, and Adobe Target activity configuration → Document 5
+- Lift measurement, convergence point velocity metrics, and experimentation framework → Document 7
+- Operational CRM handoff, Outreach sequence implementation, and alert delivery routing → Document 8
+- Consent-state gating conditions affecting progressive disclosure activation → Document 9
+
+**Coverage status note.** The JTBD code library in Section 6 carries coverage status per category. Customer Engagement is source-validated (26 codes, coverage_status: complete per §17). IT & Operations, Risk & Compliance, Employee Experience, and AI Platform carry partial or constructed coverage at v1. Coverage status is specified per-entry in Section 6 and in `kalder_data_model.py §17`.
+
+**Section numbering note.** Prose cross-references within this document have been reconciled to current heading numbers (cross-reference cleanup pass, 2026-06-21). Heading numbers are authoritative.
+
+---
+
+## Section 2: The Four Buying Group Stages
 
 ---
 
@@ -34,7 +61,7 @@ This framing has a direct consequence for how practitioners should use stage inf
 
 The relationship between stages and cohorts follows directly from this buyer-centric logic. Stages are facts about the buyer's state; cohorts are the program's decisions about activation. Both engaged and prioritized accounts are in the acquisition cohort — they receive the same broad treatment type — but they represent meaningfully different buyer states, and the program preserves that distinction for content depth selection and measurement. Qualified accounts split into two cohorts depending on how advanced the Salesforce opportunity is. Stage and cohort are not synonymous, and the mapping between them is not one-to-one. Document 3, Section 2 specifies the stage-to-cohort architecture in full; this section provides the strategic context for understanding why it is designed the way it is.
 
-Each stage also has a phase character drawn from the double-diamond model: diverge (individual role evaluation) or converge (group alignment). The phase character of a stage determines what content the buying group needs and what behavior the program is trying to support. At a diverge-phase stage, the program's job is to serve content that advances each role's independent evaluation. At a converge-phase stage, the program's job shifts to content that enables group alignment — consensus briefs, executive briefs, alignment tools. The double-diamond mechanics are specified in Section 2; the stage descriptions below identify which phase character applies at each stage and what that means for content strategy.
+Each stage also has a phase character drawn from the double-diamond model: diverge (individual role evaluation) or converge (group alignment). The phase character of a stage determines what content the buying group needs and what behavior the program is trying to support. At a diverge-phase stage, the program's job is to serve content that advances each role's independent evaluation. At a converge-phase stage, the program's job shifts to content that enables group alignment — consensus briefs, executive briefs, alignment tools. The double-diamond mechanics are specified in Section 3; the stage descriptions below identify which phase character applies at each stage and what that means for content strategy.
 
 The four stages map to Forrester's B2B Revenue Waterfall equivalents. That mapping is not cosmetic — each stage boundary corresponds to a genuinely observable and meaningful change in the buying group's behavior. The targeted-to-engaged transition requires a real first engagement from a distinct, resolved contact. The engaged-to-prioritized transition requires either multi-member engagement or an explicit intent signal. The prioritized-to-qualified transition requires a Salesforce opportunity. Each transition is detectable from behavioral and CRM data, not from seller interpretation.
 
@@ -78,7 +105,7 @@ The two paths into prioritized produce different buying group states, and the pr
 
 The hand-raiser path — a form fill, demo request, or contact submission from any contact — is a different kind of signal. It is high-intent: someone at this account has voluntarily declared interest in direct engagement. But a hand-raiser account may have only one identified contact. The buying group may be in its earliest stages of formation, or the hand-raiser may be a Champion who is far ahead of their colleagues internally. The program should not assume group completeness at a hand-raiser account. Broadening buying group coverage — reaching additional members who have not yet engaged with kalder.com — remains an active objective even after the hand-raiser trigger fires. The SDR team picking up a hand-raiser account should treat it as a high-intent lead from one person within a potentially incomplete group, not as a confirmed multi-stakeholder evaluation.
 
-Within the account's experience, the prioritized stage serves role-specific content at greater depth than engaged: requirements framing content, use case validation content, early solution comparison material. Champions in prioritized are in requirements-building mode; Economic Buyers are in early problem validation and ROI framing. The program serves each contact at the depth their role confidence and solution category allow. Section 4 specifies the convergence points that prioritized accounts are approaching; Section 2 specifies the double-diamond mechanics that govern the phase transition within the stage.
+Within the account's experience, the prioritized stage serves role-specific content at greater depth than engaged: requirements framing content, use case validation content, early solution comparison material. Champions in prioritized are in requirements-building mode; Economic Buyers are in early problem validation and ROI framing. The program serves each contact at the depth their role confidence and solution category allow. Section 5 specifies the convergence points that prioritized accounts are approaching; Section 3 specifies the double-diamond mechanics that govern the phase transition within the stage.
 
 The phase character is primarily converge. The transition that ends prioritized is the creation of a Salesforce opportunity record — the AE has logged a qualified opportunity — which transitions the account to qualified regardless of its prior behavioral stage.
 
@@ -102,17 +129,17 @@ The phase character is converge throughout qualified. Progression early-to-matur
 
 Accounts move forward through stages, but they do not always move in a straight line and they do not stay at a higher stage once they reach it automatically. Stage re-evaluation is continuous — the stage updates when underlying conditions change, not on a schedule. The rolling windows that govern stage transitions mean that signals decay. An account whose identified contacts have stopped engaging with kalder.com will see its engagement signal count fall as events age out of the 180-day window. Its stage attribute may remain technically current, but its behavioral pattern will increasingly resemble a targeted account. Practitioners who notice this pattern — a nominally engaged or prioritized account whose contacts have gone quiet — should treat it as a signal that the buying group's situation has changed, not as stale data.
 
-The double-diamond model can also recurse within a stage. A buying group that fails to clear a convergence point — Problem Validation stalls because the Economic Buyer is disengaged, or Requirements Framing stalls because the Champion and Influencer disagree on evaluation criteria — may return to diverge-phase content consumption patterns without technically changing stages. The account remains prioritized in the program's records while the buying group's behavior looks more like engaged. This is not a data anomaly; it is the normal pattern of real enterprise evaluations, which rarely advance cleanly and often revisit earlier-phase behavior at a later stage. Section 2 specifies the double-diamond mechanics that govern these phase regressions within stages. Content practitioners and AEs should respond to what the behavioral signals are showing, not to what the stage label suggests should be happening.
+The double-diamond model can also recurse within a stage. A buying group that fails to clear a convergence point — Problem Validation stalls because the Economic Buyer is disengaged, or Requirements Framing stalls because the Champion and Influencer disagree on evaluation criteria — may return to diverge-phase content consumption patterns without technically changing stages. The account remains prioritized in the program's records while the buying group's behavior looks more like engaged. This is not a data anomaly; it is the normal pattern of real enterprise evaluations, which rarely advance cleanly and often revisit earlier-phase behavior at a later stage. Section 3 specifies the double-diamond mechanics that govern these phase regressions within stages. Content practitioners and AEs should respond to what the behavioral signals are showing, not to what the stage label suggests should be happening.
 
 Stage velocity — the time between stage entry and stage exit — is a meaningful program metric that Document 7 (Measurement and Experimentation Framework) will specify in full. What matters here is that convergence points are not binary events: a buying group does not arrive at prioritized at 9:00 AM and exit to qualified by 3:00 PM. Groups spend time in the approach to each convergence point, and the time spent is informative. A program designed only to detect stage transitions will miss the signal that a buying group is stalled in the approach to a transition it should have already made.
 
 ---
 
-*End of Section 1. Section 2 specifies the double-diamond diverge/converge mechanics and their relationship to the stage model. Section 3 specifies the stage and convergence point data model. Section 4 specifies each convergence point in practitioner-facing detail. Document 3, Section 2 contains the full operational stage definitions, AEP entry conditions, and stage transition logic that this section describes in strategic terms.*
+*End of Section 1. Section 3 specifies the double-diamond diverge/converge mechanics and their relationship to the stage model. Section 3 specifies the stage and convergence point data model. Section 5 specifies each convergence point in practitioner-facing detail. Document 3, Section 2 contains the full operational stage definitions, AEP entry conditions, and stage transition logic that this section describes in strategic terms.*
 
 ---
 
-## Section 2: The Double-Diamond Phase Structure
+## Section 3: The Double-Diamond Phase Structure
 
 ---
 
@@ -126,7 +153,7 @@ The second half of the diamond is the converge phase. Having completed their ind
 
 The shape is a diamond because a single stage is not a straight line. The stage begins with each role's individual evaluation paths fanning outward — more content being consumed, more signal accumulating, more distinct evaluation agendas running in parallel. Then the paths narrow as the group works toward alignment at the convergence point. The diamond closes at the convergence point. Then it opens again at the next stage, and the pattern repeats. In practice, the model is less tidy than two clean diamonds suggest. Buying groups stall, recurse, and change composition. A convergence attempt that fails returns the group to diverge-phase patterns within the same stage. The double-diamond is a useful model precisely because it names the two modes of buying group activity — individual and collective — and helps the program understand what it needs to serve at each.
 
-This section specifies the internal architecture of each phase: what the program serves, through what delivery mechanism, and why the design is what it is. Section 1 described the four stages that contain this structure. Section 4 describes the six convergence points that terminate the converge phase at each stage. This section connects them.
+This section specifies the internal architecture of each phase: what the program serves, through what delivery mechanism, and why the design is what it is. Section 2 described the four stages that contain this structure. Section 5 describes the six convergence points that terminate the converge phase at each stage. This section connects them.
 
 ---
 
@@ -174,7 +201,7 @@ An important corollary: the converge phase does not mean all contacts at the acc
 
 The double-diamond is not a single pattern that the buying group completes once. It repeats at each stage. At targeted, the group is in problem-identification diverge — each role, to the extent the group exists at all, is asking whether this problem category is real and worth solving. At engaged, the group is in solution-exploration diverge, transitioning toward the early converge work that produces Problem Validation and Requirements Framing. At prioritized, the group is primarily in converge, completing solution validation and approaching Business Value Alignment. At qualified, the group is in converge through the final convergence points — Risk & Compliance Validation and Final Commitment — completing the alignment work that makes a signed agreement possible.
 
-What changes across each repetition is not just the content types but the stakes. A buying group that fails to clear Problem Validation returns to diverge-phase content patterns and takes a partial-reset loop-back — the evaluation resets a few steps but does not collapse. A buying group that fails to clear Risk & Compliance Validation may take a full-reset loop-back, returning to an earlier stage after Champion and Economic Buyer have already invested months of evaluation work. The severity of a failed convergence attempt increases as the journey advances, which means the quality of converge-enabling content at later stages matters more, not less. [Cross-reference: Section 4 for named loop-back severity by convergence point.]
+What changes across each repetition is not just the content types but the stakes. A buying group that fails to clear Problem Validation returns to diverge-phase content patterns and takes a partial-reset loop-back — the evaluation resets a few steps but does not collapse. A buying group that fails to clear Risk & Compliance Validation may take a full-reset loop-back, returning to an earlier stage after Champion and Economic Buyer have already invested months of evaluation work. The severity of a failed convergence attempt increases as the journey advances, which means the quality of converge-enabling content at later stages matters more, not less. [Cross-reference: Section 5 for named loop-back severity by convergence point.]
 
 When a buying group fails to clear a convergence point, its behavioral signals on kalder.com begin to shift back toward diverge-phase patterns within the same stage. Individual role evaluation resumes. Signal density across the account drops. Content consumption returns to earlier-stage patterns. The account's stage does not technically regress — it remains at the stage that produced the convergence point alert — but the buying group's behavior looks like an earlier phase within that stage. The program's response is not a state change, because no state change is required: Adobe Target has been serving diverge-phase content to individual contacts throughout the converge phase, and it continues to do so. Kalder Compose's converge content becomes less relevant during a phase regression, because the Champion is no longer actively coordinating a group that is ready to align. Practitioners and AEs should respond to what the behavioral signals show, not to what the stage label implies about where the group should be.
 
@@ -192,11 +219,11 @@ The enforcement of this classification is structural. Converge-phase Content Mod
 
 ---
 
-*End of Section 2. Section 3 specifies the stage and convergence point data model entities. Section 4 specifies each convergence point in practitioner-facing detail, including the observable entry and exit criteria that correspond to the phase transitions described in this section.*
+*End of Section 2. The stage and convergence point data model entities are specified in `kalder_data_model.py` (§17 JTBD_CODES, §18 BUYING_GROUP_CONVERGENCE_POINTS); Section 3 develops their phase-structure application in practitioner terms. Section 5 specifies each convergence point in practitioner-facing detail, including the observable entry and exit criteria that correspond to the phase transitions described in this section.*
 
 ---
 
-## Section 3: Progressive Disclosure UX Specification
+## Section 4: Progressive Disclosure UX Specification
 
 ---
 
@@ -425,11 +452,11 @@ This evaluation order is authoritative. Reversing it (reading `solution_category
 
 ---
 
-*End of Section 3. Section 4 (Convergence Point Specifications) and the remainder of Document 6 proceed from this foundation. The D8-Flag-07 commission scope question is resolved in Section 3.5: 6 Content Module nodes minimum (5 solution-category-specific plus 1 cross-category) are required for complete Level 4 `progressive_disclosure` coverage at v1 launch. Platform engineers should cross-reference Document 5, Sections 3.11, 8.4, 8.5, and 8.6 for the commission checklist and Target activity specifications that govern this module type. The `progressive_disclosure` commission block in Document 4 Section 8.4 lifts upon council approval of this section.*
+*End of Section 3. Section 5 (Convergence Point Specifications) and the remainder of Document 6 proceed from this foundation. The D8-Flag-07 commission scope question is resolved in Section 3.5: 6 Content Module nodes minimum (5 solution-category-specific plus 1 cross-category) are required for complete Level 4 `progressive_disclosure` coverage at v1 launch. Platform engineers should cross-reference Document 5, Sections 3.11, 8.4, 8.5, and 8.6 for the commission checklist and Target activity specifications that govern this module type. The `progressive_disclosure` commission block in Document 4 Section 8.4 lifts upon council approval of this section.*
 
 ---
 
-## Section 4: The Six Convergence Points
+## Section 5: The Six Convergence Points
 
 ---
 
@@ -901,13 +928,13 @@ What to do: **Escalate to AE manager or VP of Sales immediately.** This is a ful
 
 ---
 
-## Section 5: The JTBD Code Library
+## Section 6: The JTBD Code Library
 
 ---
 
 ### 5.1 How to Use This Library
 
-Section 5 is a lookup reference for all 131 JTBD codes organized by solution category and buying job group. It is not an explanation of the buying job inference model — that is Section 6 — and it is not a specification of content tagging rules — that is Document 4. It is a commissioning reference: the resource a content strategist opens when they need to know which JTBD code to assign to a content brief, what buying job group that code belongs to, and what behavioral signals characterize a visitor in that job.
+Section 6 is a lookup reference for all 131 JTBD codes organized by solution category and buying job group. It is not an explanation of the buying job inference model — that is Section 7 — and it is not a specification of content tagging rules — that is Document 4. It is a commissioning reference: the resource a content strategist opens when they need to know which JTBD code to assign to a content brief, what buying job group that code belongs to, and what behavioral signals characterize a visitor in that job.
 
 Codes are organized in five solution category subsections (5.2 through 5.6), one per category. Within each subsection, codes are grouped under four buying job subheadings in the same order throughout: problem_identification, solution_exploration, requirements_building, supplier_selection. Within each group, codes appear in ascending sequence order.
 
@@ -928,7 +955,7 @@ Codes are organized in five solution category subsections (5.2 through 5.6), one
 
 **CR-07 constraint.** The `category_explainer` content type is a strong indicator for `problem_identification`, not `solution_exploration`. This classification changed in data model v0.2.0 (CR-07). Any code with `buying_job: solution_exploration` must not list `category_explainer` as a behavioral signal indicator. Content authors verifying their signal indicator selections against this library should observe this constraint when checking solution_exploration entries. [Cross-reference: Document 2, Section 7.3, CR-07 cascade note.]
 
-**Cross-references.** For the buying job inference model explanation — how KNOWN, INFERRED, and UNKNOWN states work, and how PROBABLE_JOB_PRIORS is applied — see Section 6. For the full BUYING_JOB_INFERENCE_SIGNALS table (strong indicators, weak indicators, counter-indicators by buying job group) — see Document 2, Section 7.3.
+**Cross-references.** For the buying job inference model explanation — how KNOWN, INFERRED, and UNKNOWN states work, and how PROBABLE_JOB_PRIORS is applied — see Section 7. For the full BUYING_JOB_INFERENCE_SIGNALS table (strong indicators, weak indicators, counter-indicators by buying job group) — see Document 2, Section 7.3.
 
 ---
 
@@ -1252,7 +1279,7 @@ Behavioral signal indicators: howto_training content views; use_case_page views;
 
 ---
 
-## Section 5.3 IT Operations JTBD Library
+## Section 6.3 IT Operations JTBD Library
 
 *Source: §17 JTBD_CODES, it_operations section. 27 codes total. Coverage statuses as specified in §17 (partial or constructed — no complete codes in this category at v1).*
 
@@ -1588,7 +1615,7 @@ Behavioral signal indicators: howto_training content views; use_case_page views
 
 ---
 
-## Section 5.4 Risk & Compliance JTBD Library
+## Section 6.4 Risk & Compliance JTBD Library
 
 *Source: §17 JTBD_CODES, risk_compliance section. 26 codes total. All codes at coverage_status: constructed per §17. Note: the RC Ratifier participates across three buying jobs (PI, RB, SS) — more continuous involvement than in any other solution category.*
 
@@ -1915,7 +1942,7 @@ Behavioral signal indicators: howto_training content views; use_case_page views
 
 ---
 
-## Section 5.5 Employee Experience JTBD Library
+## Section 6.5 Employee Experience JTBD Library
 
 *Source: §17 JTBD_CODES, employee_experience section. 25 codes total. All codes at coverage_status: constructed per §17. Note: this category has only 2 requirements_building codes — both Influencer — the smallest RB group in the corpus. The Champion in EX is typically a Head of People Experience, VP of HR Technology, or Chief People Officer; the Ratifier's governance focus is employee data privacy and labor law compliance, not information security architecture.*
 
@@ -2227,7 +2254,7 @@ Behavioral signal indicators: howto_training content views; use_case_page views
 
 ---
 
-## Section 5.6 AI Platform JTBD Library
+## Section 6.6 AI Platform JTBD Library
 
 *Source: §17 JTBD_CODES, ai_platform section. 27 codes total. All codes at coverage_status: constructed per §17. The ai_platform Influencer is an ML engineer, MLOps lead, or enterprise architect evaluating model serving infrastructure and data pipeline fit — structurally more independent from the Champion than Influencers in other categories. The Ratifier's primary governance concern is responsible AI posture: model transparency, bias controls, and AI ethics compliance alongside data sovereignty.*
 
@@ -2551,7 +2578,7 @@ Behavioral signal indicators: howto_training content views; use_case_page views
 
 **Section 5.6 structural notes for council review:**
 
-1. **All 27 code strings match §17 exactly.** No codes added or omitted. This is the final Section 5 batch; all five solution category libraries are now drafted.
+1. **All 27 code strings match §17 exactly.** No codes added or omitted. This is the final Section 6 batch; all five solution category libraries are now drafted.
 2. **Constraint 1 observed — AI-ACQ-CH-SE-1.** competitive_comparison (SS counter-indicator for SE) and technical_documentation (RB strong indicator, SE counter-indicator) both excluded. product_solution_overview + use_case_page used.
 3. **Constraint 2 observed — AI-ACQ-CH-SE-2.** technical_documentation excluded (SE counter-indicator). use_case_page + product_tour used; both SE strong indicators.
 4. **Constraint 3 observed — AI-ACQ-EB-SE-1.** competitive_comparison (SE counter-indicator) and category_explainer (PI strong indicator under CR-07) excluded. product_solution_overview + analyst_report used; analyst_report retained from §17 as it is not an SE counter-indicator.
@@ -2569,7 +2596,7 @@ Behavioral signal indicators: howto_training content views; use_case_page views
 
 ---
 
-**Section 5 corpus-wide completion note.** With Section 5.6 complete, all five solution category JTBD libraries are drafted:
+**Section 6 corpus-wide completion note.** With Section 5.6 complete, all five solution category JTBD libraries are drafted:
 
 | Section | Category | Code count | Probable_job_prior: true |
 |---|---|---|---|
@@ -2580,11 +2607,11 @@ Behavioral signal indicators: howto_training content views; use_case_page views
 | 5.6 | ai_platform | 27 | 21 |
 | **Total** | | **131** | **99** |
 
-Total code count of 131 matches §17's stated library size. Section 5 is ready for full council lock review per the batch review process specified in the section brief.
+Total code count of 131 matches §17's stated library size. Section 6 is ready for full council lock review per the batch review process specified in the section brief.
 
 ---
 
-## Section 6: The Buying Job Inference Model
+## Section 7: The Buying Job Inference Model
 
 ---
 
@@ -2604,7 +2631,7 @@ Three-axis personalization — role × stage × buying job — is the ceiling of
 
 A visitor reaches KNOWN buying job confidence by responding to a progressive disclosure prompt and explicitly declaring their current evaluation context. This is zero-party data — the visitor stated it directly, and that statement carries more information than any behavioral pattern could infer. KNOWN is the highest-quality buying job signal the program can collect.
 
-The activation condition for KNOWN has one constraint: the visitor's role confidence must be MEDIUM or HIGH. The program does not surface a buying job prompt to a visitor whose role is uncertain — asking someone whose classification is LOW or UNKNOWN what phase of their evaluation they are in assumes a buying group context that hasn't been established. Section 3 of this document specifies the progressive disclosure design, timing, and copy standards.
+The activation condition for KNOWN has one constraint: the visitor's role confidence must be MEDIUM or HIGH. The program does not surface a buying job prompt to a visitor whose role is uncertain — asking someone whose classification is LOW or UNKNOWN what phase of their evaluation they are in assumes a buying group context that hasn't been established. Section 4 of this document specifies the progressive disclosure design, timing, and copy standards.
 
 When a visitor reaches KNOWN state, three-axis personalization activates: the program selects content matched to their role, their pipeline stage, and their declared buying job. KNOWN is the only state that activates three-axis at MEDIUM role confidence. The design rationale is precise: zero-party self-identification is a Tier 2 data source — a direct statement from the visitor that compensates for the uncertainty in a behavioral role inference at MEDIUM confidence. A visitor who says "I'm currently building requirements for an IT operations evaluation" has provided higher-quality buying job information than any behavioral pattern could produce, regardless of whether their role classification is MEDIUM or HIGH. The declaration replaces inference; the inference uncertainty no longer applies.
 
@@ -2670,7 +2697,7 @@ The full table, locked from Document 2, Section 7.4:
 
 Three design choices in this table deserve explicit explanation.
 
-**The Ratifier None values at targeted and engaged.** PROBABLE_JOB_PRIORS returns None for the Ratifier role at targeted and engaged stages. This is not a missing data case — it is a designed behavior. Ratifiers do not participate in early-stage buying activity. Asking "what buying job is this Ratifier working on?" at targeted or engaged is a premature question; the Ratifier's role in the buying group does not activate until the evaluation has progressed to requirements framing. The program has a specified response to a None return: the null-prior fallback rules from Document 5, Section 2.5 govern content selection for affected module types. Those rules are fully specified there and cross-referenced here; Section 6 does not re-specify them.
+**The Ratifier None values at targeted and engaged.** PROBABLE_JOB_PRIORS returns None for the Ratifier role at targeted and engaged stages. This is not a missing data case — it is a designed behavior. Ratifiers do not participate in early-stage buying activity. Asking "what buying job is this Ratifier working on?" at targeted or engaged is a premature question; the Ratifier's role in the buying group does not activate until the evaluation has progressed to requirements framing. The program has a specified response to a None return: the null-prior fallback rules from Document 5, Section 2.5 govern content selection for affected module types. Those rules are fully specified there and cross-referenced here; Section 7 does not re-specify them.
 
 **The Influencer and User cap at requirements_building.** Unlike Champion and Economic Buyer, whose priors advance to supplier_selection at the qualified stage, Influencer and User priors cap at requirements_building even when the buying group has reached final vendor selection. This reflects how these roles actually function at late stages. Influencers and Users are not primary participants in the final vendor selection decision and the commitment process — those belong to Champion, Economic Buyer, and Ratifier. At the qualified stage, the Influencer's primary contribution is confirming that the requirements they shaped are met by the vendor under evaluation. The User's primary contribution is confirming that adoption and workflow fit have been validated. These are requirements-confirmation jobs, not independent supplier selection jobs. The prior reflects this role-appropriate ceiling; it is a representation of how enterprise buying groups actually work, not a limitation on the program's ability to serve Influencers and Users.
 
@@ -2712,23 +2739,23 @@ At LOW or UNKNOWN role confidence, buying job confidence is not evaluated at all
 
 The holdback group's structural exclusion from KNOWN buying job state is a named measurement asymmetry in the program's holdback design. Progressive disclosure never fires for holdback visitors; they never encounter a buying job prompt and therefore never produce a declared buying job. The buying_job_confirmed attribute is never set for holdback contacts. A holdback visitor at HIGH role confidence can reach INFERRED buying job state through behavioral inference — if their content consumption crosses the two-strong-indicator threshold within the 30-day window. But they cannot reach KNOWN state, regardless of how engaged they are. A holdback visitor at MEDIUM role confidence cannot reach three-axis personalization at all: KNOWN is structurally unavailable (no progressive disclosure fires), and INFERRED is excluded at MEDIUM by the asymmetry rule. MEDIUM holdback visitors are permanently in the two-axis + prior state for the duration of the program.
 
-The four module types that participate in three-axis personalization are the call-to-action, gated assets, proof, and use cases slots. For these slots, the treatment group can receive buying-job-specific content that holdback visitors structurally cannot receive — even when the treatment and holdback contacts have comparable role and stage classifications. This asymmetry is not a system error. It is an intended consequence of the holdback design and must be accounted for in Document 7's lift measurement methodology. An unadjusted comparison of click rates or conversion rates on these four module types between holdback and treatment populations will understate treatment performance, because the treatment group benefits from buying-job specificity that holdback visitors cannot access. Document 7 owns the specific methodology for adjusting lift comparisons on three-axis slots; Section 6 establishes the asymmetry as a named condition that methodology must address.
+The four module types that participate in three-axis personalization are the call-to-action, gated assets, proof, and use cases slots. For these slots, the treatment group can receive buying-job-specific content that holdback visitors structurally cannot receive — even when the treatment and holdback contacts have comparable role and stage classifications. This asymmetry is not a system error. It is an intended consequence of the holdback design and must be accounted for in Document 7's lift measurement methodology. An unadjusted comparison of click rates or conversion rates on these four module types between holdback and treatment populations will understate treatment performance, because the treatment group benefits from buying-job specificity that holdback visitors cannot access. Document 7 owns the specific methodology for adjusting lift comparisons on three-axis slots; Section 7 establishes the asymmetry as a named condition that methodology must address.
 
-UNKNOWN is the correct measurement baseline for evaluating the buying job inference model's contribution. The incremental lift of KNOWN state over UNKNOWN state measures the value of zero-party buying job declaration. The incremental lift of INFERRED state over UNKNOWN state measures the value of behavioral buying job inference. UNKNOWN state is not a separate control condition — it IS two-axis + prior, which is the standard operating state for most visitors. Measurement analysts structuring buying job model evaluation should treat UNKNOWN as the baseline and measure KNOWN and INFERRED as incremental above it, on the three-axis module types where buying job specificity is applied. Document 7 owns the measurement design; Section 6 establishes the baseline framing.
-
----
-
-*End of Section 6. The full BUYING_JOB_INFERENCE_SIGNALS table, PROBABLE_JOB_PRIORS nested dict, and AEP attribute specifications are in Document 2, Section 7 and the data model (§4). The progressive disclosure design that produces KNOWN state is in Section 3 of this document. The null-prior fallback rules for Ratifier at targeted and engaged stages are in Document 5, Section 2.5.*
+UNKNOWN is the correct measurement baseline for evaluating the buying job inference model's contribution. The incremental lift of KNOWN state over UNKNOWN state measures the value of zero-party buying job declaration. The incremental lift of INFERRED state over UNKNOWN state measures the value of behavioral buying job inference. UNKNOWN state is not a separate control condition — it IS two-axis + prior, which is the standard operating state for most visitors. Measurement analysts structuring buying job model evaluation should treat UNKNOWN as the baseline and measure KNOWN and INFERRED as incremental above it, on the three-axis module types where buying job specificity is applied. Document 7 owns the measurement design; Section 7 establishes the baseline framing.
 
 ---
 
-## Section 7: Sales Activation Integration
+*End of Section 7. The full BUYING_JOB_INFERENCE_SIGNALS table, PROBABLE_JOB_PRIORS nested dict, and AEP attribute specifications are in Document 2, Section 7 and the data model (§4). The progressive disclosure design that produces KNOWN state is in Section 4 of this document. The null-prior fallback rules for Ratifier at targeted and engaged stages are in Document 5, Section 2.5.*
+
+---
+
+## Section 8: Sales Activation Integration
 
 ---
 
 ### 7.1 What Sales Activation Integration Is and Is Not
 
-This section specifies three things: the alert payload the program produces when a buying group approaches a convergence point, the two contact-level gates that must clear before an Outreach sequence fires, and the split between fields the program owns canonically and fields clients configure at onboarding. It does not cover the AEP → Salesforce → Outreach routing implementation — that is Document 8. It does not define what a convergence point is or what happens at each one — that is Section 4. It does not specify the content assets referenced in recommended actions — those are in Document 4 and Section 5.
+This section specifies three things: the alert payload the program produces when a buying group approaches a convergence point, the two contact-level gates that must clear before an Outreach sequence fires, and the split between fields the program owns canonically and fields clients configure at onboarding. It does not cover the AEP → Salesforce → Outreach routing implementation — that is Document 8. It does not define what a convergence point is or what happens at each one — that is Section 5. It does not specify the content assets referenced in recommended actions — those are in Document 4 and Section 6.
 
 The distinction that governs everything else in this section: convergence point alerts are the program's intelligence output, not status updates. They encode what the buying intelligence layer has detected — role confidence states, buying job inference shifts, signal density patterns — and convert that detection into a specific action the BDR or AE should take. The recommended_action field is the most important field in the alert payload precisely because it makes the difference between an alert that a practitioner acts on and one that becomes noise. An alert that says "Champion and Economic Buyer are approaching business value alignment" is a status update. An alert that says "EB is building or stress-testing the business case — provide a pre-built ROI model with inputs populated for their industry and company size" [§SA SALES_ACTIVATION_CONFIG] is an intelligence output. The program produces the second kind.
 
@@ -2754,7 +2781,7 @@ The delivery channels for alerts are `crm_task` and `slack_sdr_channel` — both
 
 **On the recommended_action field.** This field does not describe what the program detected. It tells the BDR or AE what to do next. The recommended_action text for each convergence point is locked in §SA SALES_ACTIVATION_CONFIG and represents the buying group model's interpretation of that specific buying moment translated into practitioner action. When Problem Validation is approaching, the field instructs the BDR to share a benchmark report or named-account story — not to pitch features, because the group is still in diverge phase and solution content is premature at that moment [§SA problem_validation.alert_payload.recommended_action]. When Risk & Compliance Validation is approaching, the field instructs the AE to proactively provide the SOC 2 report, DPA template, and Trust Center summary — because the most common failure mode at this convergence point is reactive, not proactive, Ratifier engagement [§SA risk_compliance_validation.alert_payload.recommended_action]. Modifying this text at onboarding to match a client's preferred tone or vocabulary removes the action specificity that makes the alert valuable. The canonical text must be delivered as written.
 
-**On the blocker_risk field.** This field names the risk conditions most likely to stall the buying group at this convergence point. It is drawn from the common blockers in §18 BUYING_GROUP_CONVERGENCE_POINTS and the blocker_risk field in §SA SALES_ACTIVATION_CONFIG. When the program detects signals consistent with a blocker being active — for example, a capital_review_board signal appearing alongside risk_compliance_validation approach patterns — the blocker_risk field names it. When no blocker signals have fired, the field names the blockers the BDR or AE should watch for proactively. Problem Validation alerts name misalignment_on_problem and buying_group_turnover; Final Commitment alerts name buying_group_turnover, contract_updates_required, and purchasing_rules_overrule_group_decision. [Cross-reference Section 4 for the full practitioner treatment of each blocker at each convergence point.]
+**On the blocker_risk field.** This field names the risk conditions most likely to stall the buying group at this convergence point. It is drawn from the common blockers in §18 BUYING_GROUP_CONVERGENCE_POINTS and the blocker_risk field in §SA SALES_ACTIVATION_CONFIG. When the program detects signals consistent with a blocker being active — for example, a capital_review_board signal appearing alongside risk_compliance_validation approach patterns — the blocker_risk field names it. When no blocker signals have fired, the field names the blockers the BDR or AE should watch for proactively. Problem Validation alerts name misalignment_on_problem and buying_group_turnover; Final Commitment alerts name buying_group_turnover, contract_updates_required, and purchasing_rules_overrule_group_decision. [Cross-reference Section 5 for the full practitioner treatment of each blocker at each convergence point.]
 
 ---
 
@@ -2768,7 +2795,7 @@ The program fires sequences on signal, not on coincidence. A contact at MEDIUM+ 
 
 What it looks like when a contact fails Gate 1: the account is in the right cohort, a convergence point alert has fired for the account, but the specific contact carries confidence_tier: LOW. No sequence fires for that contact. This is correct behavior — the program is protecting the BDR from acting on a weak signal.
 
-What to do: check the contact's AEP profile for confidence_tier. If LOW, check whether a progressive disclosure prompt is eligible for this contact — Section 3 specifies the prompt activation conditions by confidence tier and fallback level. A progressive disclosure response that produces a zero-party role declaration will upgrade the contact to MEDIUM+ through the Tier 2 pathway [Document 2, Section 9.4], making them eligible for sequence activation on their next qualifying visit.
+What to do: check the contact's AEP profile for confidence_tier. If LOW, check whether a progressive disclosure prompt is eligible for this contact — Section 4 specifies the prompt activation conditions by confidence tier and fallback level. A progressive disclosure response that produces a zero-party role declaration will upgrade the contact to MEDIUM+ through the Tier 2 pathway [Document 2, Section 9.4], making them eligible for sequence activation on their next qualifying visit.
 
 **Gate 2 — differential_insufficient must be False.**
 
@@ -2834,4 +2861,20 @@ The following items are unresolved at the time of Document 6 Section 7 lock. Doc
 
 ---
 
-*End of Section 7. This is the final section of Document 6. Document 6 is ready for full council lock review. Document 8 (Operational Runbook) is the next document in the corpus dependency chain. Document 8's first task is to resolve PENDING-SA-1 through PENDING-SA-4, which block production implementation of the sales activation layer.*
+*End of Section 8. This is the final section of Document 6. Document 6 is ready for full council lock review. Document 8 (Operational Runbook) is the next document in the corpus dependency chain. Document 8's first task is to resolve PENDING-SA-1 through PENDING-SA-4, which block production implementation of the sales activation layer.*
+
+---
+
+## Cross-Reference Table
+
+| Document | Relationship | Specific Dependency |
+|---|---|---|
+| `kalder_data_model.py` | Document 6 depends on this | `§5 COVERAGE_STATUS` (coverage_status per JTBD code entry), `§17 JTBD_CODES` (canonical code strings, buying_job assignments, coverage_status values), `§18 BUYING_GROUP_CONVERGENCE_POINTS` (six convergence point definitions, trigger conditions, severity levels), `§SA SALES_ACTIVATION_CONFIG` (machine-readable trigger_condition and alert_payload specifications for all six convergence points) |
+| Document 1 — Buying Group Role Architecture | Document 6 depends on this | Five role definitions and convergence point participation map that anchor the stage model, JTBD code library structure, and double-diamond phase assignments per role |
+| Document 2 — Signal Definition and Confidence Model | Document 6 depends on this | Buying job confidence model (KNOWN/INFERRED/UNKNOWN), `BUYING_JOB_INFERENCE_SIGNALS`, and `PROBABLE_JOB_PRIORS` that govern JTBD inference and the buying job inference model in Section 7 |
+| Document 3 — Audience and Segmentation Architecture | Depends on Document 6 | Stage definitions and convergence point proximity signals that inform campaign cohort assignment logic and channel activation thresholds |
+| Document 4 — Content Model and Taxonomy | Depends on Document 6 | Convergence point definitions and double-diamond phase structure that govern converge content type generation rules (`executive_brief`, `consensus_brief`) and through-line requirement enforcement |
+| Document 5 — Personalization Decisioning Rules | Depends on Document 6 | Progressive disclosure UX specifications (Section 4 — prompt copy, correction paths, placement rules, Level 2/3/4 variants) and convergence point definitions that Section 4 and Section 8 of Document 5 reference |
+| Document 7 — Measurement and Experimentation Framework | Depends on Document 6 | Stage model and convergence point velocity metrics that define measurement dimensions; holdback-and-sales-activation asymmetry noted in Section 8.7 that Document 7 must account for in activation rate analysis |
+| Document 8 — Operational Runbook | Depends on Document 6 | Sales activation integration specification (Section 8), convergence point alert payload structure, and PENDING-SA-1 through PENDING-SA-4 open items that Document 8 must resolve for production implementation |
+| Document 9 — Privacy and Consent Architecture | Document 6 depends on this | Consent-state gating conditions that determine when progressive disclosure prompts may render and what role identification data may be collected and stored |

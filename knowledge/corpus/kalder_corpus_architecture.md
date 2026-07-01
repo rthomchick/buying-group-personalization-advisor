@@ -1,6 +1,6 @@
 # Kalder Personalization Hub — Corpus Architecture
 **Prepared by:** Buying Group Personalization Advisory Council
-**Status:** Approved — greenfield prescription for seven-document corpus replacement
+**Status:** Approved — greenfield corpus prescription
 **Last updated:** June 2026
 
 ---
@@ -11,7 +11,7 @@ This corpus is written for two audiences simultaneously: practitioners who read 
 
 Every document in this corpus must:
 
-- Reference canonical entity names as defined in `kalder_data_model_s0_s1.py` — no paraphrasing of solution names, role labels, metric codes, or signal identifiers
+- Reference canonical entity names as defined in `kalder_data_model.py` — no paraphrasing of solution names, role labels, metric codes, or signal identifiers
 - Open with a scope statement that explicitly defines what the document covers and what it delegates to other documents
 - Close with a cross-reference table pointing to the documents that depend on it and the documents it depends on
 - Use consistent section headers across documents so retrieval systems can locate equivalent sections across the corpus without semantic disambiguation
@@ -34,7 +34,7 @@ Every document in this corpus must:
 - Relationship between Role Confidence and Buying Job Confidence — how they interact, how they're computed independently, and when three-axis personalization activates
 - Role-to-convergence-point mapping — which roles gate which convergence points
 
-**Depends on:** `kalder_data_model_s0_s1.py` (§2, §3, §12, §13)
+**Depends on:** `kalder_data_model.py` (§2, §3, §12, §13)
 **Required by:** All eight remaining documents
 
 ---
@@ -54,7 +54,7 @@ Every document in this corpus must:
 - Buying Job Confidence model — KNOWN / INFERRED / UNKNOWN states, inference signals, and the JTBD prior hierarchy
 - Fallback cascade — the five-level degradation path when classification signals are absent or insufficient
 
-**Depends on:** Buying Group Role Architecture (#1), `kalder_data_model_s0_s1.py` (§3, §4, §7, §8, §12, §13, §P)
+**Depends on:** Buying Group Role Architecture (#1), `kalder_data_model.py` (§3, §4, §7, §8, §12, §13, §P)
 **Required by:** Audience and Segmentation Architecture (#3), Personalization Decisioning Rules (#5), Measurement and Experimentation Framework (#7)
 
 ---
@@ -74,7 +74,7 @@ Every document in this corpus must:
 - Geographic segmentation — AMS / EMEA / APJ treatment differences and regional campaign manager ownership
 - Exclusion and suppression logic — TAL status filter for post-sale surfaces, career and investor relations page suppression
 
-**Depends on:** Buying Group Role Architecture (#1), Signal Definition and Confidence Model (#2), `kalder_data_model_s0_s1.py` (§5, §6, §14)
+**Depends on:** Buying Group Role Architecture (#1), Signal Definition and Confidence Model (#2), `kalder_data_model.py` (§5, §6, §14)
 **Required by:** Content Model and Taxonomy (#4), Personalization Decisioning Rules (#5), Measurement and Experimentation Framework (#7)
 
 ---
@@ -94,7 +94,7 @@ Every document in this corpus must:
 - Converge content rules — Consensus Briefs and other converge content types are generated after approved diverge content, never independently; they are distributed internally by Champions, not served via Adobe Target
 - Kalder Compose integration — how the generate → review → approve → publish workflow populates Sanity nodes; the role of human review as the quality gate
 
-**Depends on:** Buying Group Role Architecture (#1), Buying Group Journey and Convergence Model (#6), `kalder_data_model_s0_s1.py` (§9, §10, §16, §17)
+**Depends on:** Buying Group Role Architecture (#1), Buying Group Journey and Convergence Model (#6), `kalder_data_model.py` (§9, §10, §16, §17)
 **Required by:** Personalization Decisioning Rules (#5), Operational Runbook (#8)
 
 ---
@@ -115,7 +115,7 @@ Every document in this corpus must:
 - Edge cases and suppression rules — post-sale surfaces, careers pages, investor relations, multi-solution visitors
 - `pending_solution_fallback` behavior — what happens when a visitor's solution interest maps to a pending coverage entry
 
-**Depends on:** Buying Group Role Architecture (#1), Signal Definition and Confidence Model (#2), Audience and Segmentation Architecture (#3), Content Model and Taxonomy (#4), `kalder_data_model_s0_s1.py` (§3, §4, §10, §12, §20)
+**Depends on:** Buying Group Role Architecture (#1), Signal Definition and Confidence Model (#2), Audience and Segmentation Architecture (#3), Content Model and Taxonomy (#4), `kalder_data_model.py` (§3, §4, §10, §12, §20)
 **Required by:** Operational Runbook (#8), Measurement and Experimentation Framework (#7)
 
 ---
@@ -134,7 +134,7 @@ Every document in this corpus must:
 - Buying job inference model — how behavioral patterns map to JTBD codes, and how JTBD confidence state is determined
 - Sales activation integration — how convergence point proximity triggers BDR / AE alerts, what the canonical alert payload contains, and which fields are client-configured at onboarding
 
-**Depends on:** Buying Group Role Architecture (#1), Signal Definition and Confidence Model (#2), `kalder_data_model_s0_s1.py` (§5, §17, §18, §SA)
+**Depends on:** Buying Group Role Architecture (#1), Signal Definition and Confidence Model (#2), `kalder_data_model.py` (§5, §17, §18, §SA)
 **Required by:** Content Model and Taxonomy (#4), Personalization Decisioning Rules (#5), Measurement and Experimentation Framework (#7), Operational Runbook (#8)
 
 ---
@@ -154,7 +154,7 @@ Every document in this corpus must:
 - Reporting cadence — what is reviewed weekly (T3 operational), monthly (T2 program), and quarterly (T1 business outcomes + T3-07 accuracy validation)
 - Known measurement limitations — the survivor bias problem, novelty effects in early deployment, Simpson's paradox risk in segment-level analysis
 
-**Depends on:** All five preceding documents, `kalder_data_model_s0_s1.py` (§11, §14)
+**Depends on:** All five preceding documents, `kalder_data_model.py` (§11, §14)
 **Required by:** Operational Runbook (#8)
 
 ---
@@ -195,7 +195,7 @@ Every document in this corpus must:
 - Deletion and anonymization path — how a visitor's signal history is deleted on consent withdrawal or DSR, including cascade behavior across Segment, AEP, Snowflake, and Salesforce
 - Third-party enrichment governance — Demandbase and 6sense data processing scope, DPA status, and the activation gate (Track 2 legal review must complete before firmographic bonus and intent enrichment signals activate)
 
-**Depends on:** Signal Definition and Confidence Model (#2), `kalder_data_model_s0_s1.py` (§P, §8)
+**Depends on:** Signal Definition and Confidence Model (#2), `kalder_data_model.py` (§P, §8)
 **Required by:** Signal Definition and Confidence Model (#2, cross-reference), Operational Runbook (#8)
 
 ---
@@ -217,21 +217,3 @@ The dependency chain determines authoring order. Each document can only be writt
    (parallel track, unblocked after #2)
    └─► 9. Privacy and Consent Architecture
 ```
-
----
-
-## What Changed from the Original Seven
-
-| Original document | Status | Disposition |
-|---|---|---|
-| Signal Definition | Retained | Restructured as #2 — tighter scope, machine-readable specification format |
-| Segmentation Framework | Retained | Restructured as #3 — separated from role architecture |
-| Content Tagging Framework | Merged | Combined with Fragment Architecture into #4 — Sanity model makes the split unnecessary |
-| Fragment Architecture | Merged | Combined with Content Tagging into #4 |
-| Personalization Playbook | Split | Decisioning rules → #5; operational guidance → #8 |
-| Measurement Plan | Retained | Restructured as #7 — largely intact, T3-07 methodology updated |
-| BG Personalization Vision & Strategy | Deprecated as primary source | Write as a stakeholder alignment artifact; do not index as a knowledge-base document — framing language conflicts with precise definitions in the nine above |
-| *(new)* Buying Group Role Architecture | New standalone | Role definitions were distributed across multiple original documents; extracted and made canonical |
-| *(new)* Buying Group Journey and Convergence Model | New standalone | Journey model was implied across multiple documents; made explicit as the most-retrieved RAG context |
-| *(new)* Personalization Decisioning Rules | New standalone | Did not exist as a standalone; extracted from playbook and signal definition |
-| *(new)* Privacy and Consent Architecture | New standalone | Was a section of the data model; promoted to standalone for enterprise buyer review and change management |

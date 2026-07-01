@@ -1,5 +1,36 @@
 # Document 7: Measurement and Experimentation Framework
-## Section 1: Why This Measurement Architecture
+
+**Kalder Personalization Corpus | Version: Locked Draft | Sections 1–7 Complete**
+**Depends on:** Document 1 (Buying Group Role Architecture), Document 2 (Signal Definition and Confidence Model), Document 3 (Audience and Segmentation Architecture), Document 4 (Content Model and Taxonomy), Document 5 (Personalization Decisioning Rules), Document 6 (Buying Group Journey and Convergence Model), `kalder_data_model.py` §3, §11, §14
+**Required by:** Document 8 (Operational Runbook)
+
+---
+
+## Section 1 — Document Scope and Canonical Status
+
+Document 7 is the single authoritative source for the program's measurement architecture, metric hierarchy, experimentation standards, attribution model, known limitations, reporting cadence, and holdback design in the Kalder Buying Group Personalization Program. It owns the 24 metrics organized into three tiers (T1 Program Outcomes, T2 Buying Group Health, T3 Personalization Performance), the statistical methodology governing lift calculations, and the operational reporting procedures that keep measurements actionable. No other corpus document re-specifies metric definitions, re-designs the holdback structure, or extends the experimentation standards.
+
+Five adjacent decisions are explicitly out of scope here. The role definitions and confidence tier thresholds that measurement must track but not redefine are owned by Document 1 (Buying Group Role Architecture). The scoring pipeline outputs that become measurement inputs (confidence tier, classification accuracy) are owned by Document 2 (Signal Definition and Confidence Model). The audience segment definitions and cohort architecture that form the measurement's population structure are owned by Document 3 (Audience and Segmentation Architecture). The content coverage completeness architecture and `pending_solution_fallback` event log that this document measures against are owned by Document 4 (Content Model and Taxonomy). The holdback group specification, fallback level routing outcomes, and progressive disclosure periodization boundary this document references are owned by Document 5 (Personalization Decisioning Rules) and Document 6 (Buying Group Journey and Convergence Model) respectively.
+
+The metric definitions and statistical methodology in this document are the human-readable authority from which Snowflake reporting queries, Looker dashboard specifications, and quarterly review templates are derived. The canonical machine-readable entity definitions are in `kalder_data_model.py §11 METRIC_DEFINITIONS` and `§14 ENGAGEMENT_THRESHOLDS`. Any discrepancy between this document's metric specifications and the data model is a defect — the data model governs entity definitions; this document governs their diagnostic interpretation and operational application.
+
+**What this document owns:** The rationale for the measurement architecture (Section 2), metric hierarchy and all 24 metric definitions (Section 3), experimentation standards and statistical thresholds (Section 4), attribution model and Champion Attribution Gap resolution (Section 5), known measurement limitations and mitigations (Section 6), reporting cadence and escalation protocol (Section 7), and holdback design and lift measurement methodology (Section 8).
+
+**Delegation — what this document does not re-specify:**
+- Buying group role definitions and behavioral signatures that measurements track → Document 1
+- Signal scoring pipeline, confidence tier thresholds, and classification sequence → Document 2
+- Audience segment definitions, cohort entry conditions, and TAL governance → Document 3
+- Content coverage completeness hierarchy and `pending_solution_fallback` event log → Document 4
+- Holdback group specification, fallback level routing, and Adobe Target activity configuration → Document 5
+- Buying group stage model, convergence point velocity definition, and progressive disclosure periodization boundary → Document 6
+- Operational implementation of reporting pipelines, dashboard build-out, and incident response for measurement failures → Document 8
+- Consent-state conditions that affect data availability for measurement and analysis → Document 9
+
+**Section numbering note.** Prose cross-references within this document have been reconciled to current heading numbers (cross-reference cleanup pass, 2026-06-21). Heading numbers are authoritative.
+
+---
+
+## Section 2: Why This Measurement Architecture
 
 ---
 
@@ -15,7 +46,7 @@ Call this the **Champion Attribution Gap**: the systematic under-crediting of ea
 
 The program addresses this by aggregating outcomes at the account level, not the contact level. Credit is assigned to the buying group's collective journey — from initial account identification (`targeted`) through engagement (`engaged`), prioritization (`prioritized`), and qualification (`qualified`). A Champion's case study downloads and an Economic Buyer's demo request are both contributions to the same account-level progression event. When a cohort of accounts advances from `engaged` to `prioritized` at a higher rate than a holdback cohort, that advancement reflects the combined effect of the program's engagement with every buying group member who contributed to it.
 
-This resolves the attribution question for measuring the program's effect on group-level outcomes. It does not eliminate all confounding. Accounts that progress may have had stronger pre-existing intent. The TAL may be skewed toward late-stage buyers. Selection bias is real. These limitations are addressed in the statistical methodology in Section 5; they are acknowledged here so that the account-level aggregation model is understood for what it is — a necessary improvement over last-touch, not a complete causal identification strategy.
+This resolves the attribution question for measuring the program's effect on group-level outcomes. It does not eliminate all confounding. Accounts that progress may have had stronger pre-existing intent. The TAL may be skewed toward late-stage buyers. Selection bias is real. These limitations are addressed in the statistical methodology in Section 6; they are acknowledged here so that the account-level aggregation model is understood for what it is — a necessary improvement over last-touch, not a complete causal identification strategy.
 
 ---
 
@@ -43,7 +74,7 @@ Document 7 organizes the program's 24 metrics into three tiers. The tiers are no
 
 **T3 — Personalization Performance** sits closest to the execution layer. T3 metrics are sourced from Adobe Target, Segment event data, and Snowflake, reviewed weekly and monthly, and owned by Analytics and Content Operations teams. The question T3 answers is: is the experience engine delivering personalized content that converts engaged visitors at a higher rate than non-personalized fallbacks? T3 includes session-to-engagement conversion rates by confidence tier, progressive disclosure completion rates by role, and content module performance by buying stage.
 
-The tiers are independent. Strong T3 lift does not guarantee T2 stage progression. Strong T2 signals do not guarantee T1 outcomes. This independence is not a design flaw; it is the diagnostic structure the architecture requires. When T1 outcomes miss targets, the failure does not lie in the same place every time, and the tier architecture enables the program to tell them apart. A T1 miss with strong T2 signals points toward a late-stage sales problem: the buying group is engaged and progressing through the pipeline, but the sales motion or competitive environment is preventing deals from closing. The measurement program has nothing to offer there except the evidence that the problem is downstream of marketing's contribution. A T1 miss with weak T2 signals and strong T3 lift points toward a coverage problem: the experience engine is personalizing effectively for the visitors it reaches, but it is not reaching enough of the buying group to produce the stage progression the program requires. Section 6 specifies the full diagnostic protocol and escalation cadences; what the tier architecture establishes is the structural precondition for that diagnosis to be possible at all.
+The tiers are independent. Strong T3 lift does not guarantee T2 stage progression. Strong T2 signals do not guarantee T1 outcomes. This independence is not a design flaw; it is the diagnostic structure the architecture requires. When T1 outcomes miss targets, the failure does not lie in the same place every time, and the tier architecture enables the program to tell them apart. A T1 miss with strong T2 signals points toward a late-stage sales problem: the buying group is engaged and progressing through the pipeline, but the sales motion or competitive environment is preventing deals from closing. The measurement program has nothing to offer there except the evidence that the problem is downstream of marketing's contribution. A T1 miss with weak T2 signals and strong T3 lift points toward a coverage problem: the experience engine is personalizing effectively for the visitors it reaches, but it is not reaching enough of the buying group to produce the stage progression the program requires. Section 7 specifies the full diagnostic protocol and escalation cadences; what the tier architecture establishes is the structural precondition for that diagnosis to be possible at all.
 
 ---
 
@@ -67,7 +98,7 @@ One governance implication follows from this structure. When T2-01 and T3-02 div
 
 ---
 
-## Section 2: Metric Hierarchy
+## Section 3: Metric Hierarchy
 
 ---
 
@@ -399,7 +430,7 @@ Fourteen of the 24 metrics in this section carry a target of "Pending baseline."
 
 ---
 
-## Section 3: Experimentation Standards
+## Section 4: Experimentation Standards
 
 ---
 
@@ -471,13 +502,13 @@ Four conventions govern all Adobe Target activities in the program. Violations p
 
 ---
 
-## Section 4: Attribution Model
+## Section 5: Attribution Model
 
 ---
 
 ### 4.1 Why Last-Touch Attribution Fails (Summary for Section 4 Context)
 
-Last-touch attribution assigns 100% of conversion credit to the final trackable event before a deal closes. In buying groups, this systematically erases upstream role contributions — the Champion's content journey, the Influencer's requirements validation, the Ratifier's compliance review — from the attribution record, producing an investment model that chronically under-funds the content that makes conversions possible. This program therefore attributes credit to the buying group's collective journey and assigns primary outcomes at the account level, not to the converting contact's last action. Section 1 contains the full argument; Section 4 specifies the mechanics that operationalize it.
+Last-touch attribution assigns 100% of conversion credit to the final trackable event before a deal closes. In buying groups, this systematically erases upstream role contributions — the Champion's content journey, the Influencer's requirements validation, the Ratifier's compliance review — from the attribution record, producing an investment model that chronically under-funds the content that makes conversions possible. This program therefore attributes credit to the buying group's collective journey and assigns primary outcomes at the account level, not to the converting contact's last action. Section 2 contains the full argument; Section 5 specifies the mechanics that operationalize it.
 
 ---
 
@@ -539,11 +570,11 @@ Four module types in the personalization engine participate in three-axis (role 
 
 The attribution consequence is directional and systematic: an unadjusted lift comparison on these four module types between holdback and treatment populations will understate treatment performance. The treatment group receives buying-job-specific content on `cta`, `gated_assets`, `proof`, and `use_cases` slots that holdback visitors cannot access, creating a structural asymmetry in what the two groups receive — not a probabilistic difference that averages out with sufficient sample, but a permanent ceiling imposed by the holdback design itself.
 
-Any T3-02 or T3-04 analysis that includes these four module types without applying the Section 7 adjustment methodology must be labeled as unadjusted and may not be used in investment recommendations or program performance claims. Section 7 of this document specifies the adjustment methodology. Section 4 establishes the attribution constraint that makes adjustment necessary; Section 7 provides the correction.
+Any T3-02 or T3-04 analysis that includes these four module types without applying the Section 8 adjustment methodology must be labeled as unadjusted and may not be used in investment recommendations or program performance claims. Section 8 of this document specifies the adjustment methodology. Section 5 establishes the attribution constraint that makes adjustment necessary; Section 8 provides the correction.
 
 ---
 
-## Section 5: Known Measurement Limitations and Mitigations
+## Section 6: Known Measurement Limitations and Mitigations
 
 ---
 
@@ -621,7 +652,7 @@ The quarterly T3-07 report must include variant-specific response rates alongsid
 
 ---
 
-## Section 6: Reporting Cadence
+## Section 7: Reporting Cadence
 
 ---
 
@@ -631,7 +662,7 @@ The program operates on three reporting cadences because its audiences ask funda
 
 The three cadences are not independent. The weekly operational record is the input data source for the monthly T2 computation. The monthly T2 computation feeds the quarterly T1 assessment. Gaps or failures at the weekly level propagate forward: a missing weekly Check 7 snapshot produces an incomplete T2-06 computation; a T2-08 failure detected in the quarterly cycle traces back to holdback distribution data that must be present in the weekly record.
 
-The weekly T3 operational monitoring check procedures are specified in Document 8 Section 5. Section 6.2 of this document specifies the outputs and record-keeping requirements produced by those checks, without duplicating the check procedures themselves. Document 8 Section 5.4 designates monthly and quarterly cadences as owned by the Analytics and Data Science Lead and governed by Document 7. Section 6 is the governing specification.
+The weekly T3 operational monitoring check procedures are specified in Document 8 Section 5. Section 6.2 of this document specifies the outputs and record-keeping requirements produced by those checks, without duplicating the check procedures themselves. Document 8 Section 5.4 designates monthly and quarterly cadences as owned by the Analytics and Data Science Lead and governed by Document 7. Section 7 is the governing specification.
 
 ---
 
@@ -731,19 +762,19 @@ Three named scenarios govern how the program responds when the tier metrics dive
 
 ---
 
-## Section 7: Holdback Design and Lift Measurement Methodology
+## Section 8: Holdback Design and Lift Measurement Methodology
 
 ---
 
 ### 7.1 Holdback Group in Lift Calculations: Operating Reference
 
-Section 7 builds on the holdback design specified in Section 3 (holdback group as control condition, assignment mechanism, four cohort groups, T2-08 validity gate) and the majority-rule attribution specified in Section 4 (account-level holdback classification, quarter-start freeze). Both sections are incorporated by reference; Section 7 does not re-specify their contents. Section 7's contribution is the lift calculation methodology applied to that design.
+Section 8 builds on the holdback design specified in Section 4 (holdback group as control condition, assignment mechanism, four cohort groups, T2-08 validity gate) and the majority-rule attribution specified in Section 5 (account-level holdback classification, quarter-start freeze). Both sections are incorporated by reference; Section 8 does not re-specify their contents. Section 8's contribution is the lift calculation methodology applied to that design.
 
 **Cohort-level aggregation.** Cohort-level lift is computed independently for each of the four cohort holdback groups: `holdback_education`, `holdback_acquisition`, `holdback_progression_early`, and `holdback_progression_win_now`. Aggregate lift across cohorts is a weighted average of cohort-level lift estimates, weighted by the number of accounts in each cohort at the start of the measurement quarter. The weighted average and the cohort-level breakdown must both appear in every lift report: the cohort breakdown identifies where lift is concentrated; the weighted average is the program-level summary. Reporting the weighted average without the cohort breakdown conceals which pipeline segments are driving program performance.
 
-**T2-08 validity gate.** Section 7 lift calculations for a given quarter are only valid when T2-08 (Holdback Parity Check) has passed for that quarter per Section 6.4 Step 2. If T2-08 fails, all Section 7 lift calculations for that quarter are suspended per Section 6.5. No lift report produced under Section 7 methodology may be distributed for a quarter where T2-08 has not been confirmed passing.
+**T2-08 validity gate.** Section 8 lift calculations for a given quarter are only valid when T2-08 (Holdback Parity Check) has passed for that quarter per Section 6.4 Step 2. If T2-08 fails, all Section 8 lift calculations for that quarter are suspended per Section 6.5. No lift report produced under Section 8 methodology may be distributed for a quarter where T2-08 has not been confirmed passing.
 
-**Sales activation asymmetry.** Holdback visitors who reach MEDIUM+ role confidence through behavioral signal accumulation are eligible for Outreach sequence activation per Document 6 Section 7.7. This creates a named asymmetry in the holdback design: holdback visitors are not receiving web personalization, but some may be receiving sales-side activation. When interpreting T1 and T2 outcome lift — particularly in the `progression_early_to_mature` and `progression_win_now` cohorts where sales activation is most consequential for deal advancement — the Analytics Lead must note in the quarterly report whether any holdback accounts received Outreach activation during the measurement period. These accounts are partially treated, not pure controls. This does not invalidate the holdback design or the lift calculation; it is a known characteristic that limits the interpretation of T1 and T2 lift as "pure web personalization lift." Sales activation configuration is specified in Document 6 and Document 8; Section 7 names the asymmetry and its interpretive consequence.
+**Sales activation asymmetry.** Holdback visitors who reach MEDIUM+ role confidence through behavioral signal accumulation are eligible for Outreach sequence activation per Document 6 Section 7.7. This creates a named asymmetry in the holdback design: holdback visitors are not receiving web personalization, but some may be receiving sales-side activation. When interpreting T1 and T2 outcome lift — particularly in the `progression_early_to_mature` and `progression_win_now` cohorts where sales activation is most consequential for deal advancement — the Analytics Lead must note in the quarterly report whether any holdback accounts received Outreach activation during the measurement period. These accounts are partially treated, not pure controls. This does not invalidate the holdback design or the lift calculation; it is a known characteristic that limits the interpretation of T1 and T2 lift as "pure web personalization lift." Sales activation configuration is specified in Document 6 and Document 8; Section 8 names the asymmetry and its interpretive consequence.
 
 ---
 
@@ -838,4 +869,19 @@ Section 5.4 established the Document 6 Section 3 approval date as the measuremen
 
 **For a quarter that spans the boundary.** If the Document 6 Section 3 approval date falls within a measurement quarter, the Analytics Lead constructs a split measurement window. The post-approval window (approval date to quarter-end) is used for T2-05 and T3-07 holdback lift calculations. The pre-approval window data is preserved and may be reported as context — specifically, as the program's baseline classification rate before progressive disclosure was active — but must not be included in the holdback lift figures for these metrics. The split must be documented in the quarterly report with the approval date, the length of each window, and the account or impression counts in the post-approval window used for the calculation. A post-approval window shorter than 30 days produces insufficient sample for reliable accuracy estimation; the Analytics Lead must flag the T3-07 result as "Boundary quarter — post-approval window insufficient. Estimate is directional only."
 
-**For all other metrics and module types.** The periodization boundary does not affect Section 7 lift calculations for non-progressive-disclosure module types. T3-02 lift on `hero`, `benefits`, `cta`, `gated_assets`, `proof`, `use_cases`, `narrative`, `problem_framing`, `outcomes`, and `trust_signals` is not subject to the periodization boundary. These module types were commissionable and active before Document 6 Section 3 approval; their holdback versus treatment comparison is clean across the full quarter window regardless of where the boundary falls.
+**For all other metrics and module types.** The periodization boundary does not affect Section 8 lift calculations for non-progressive-disclosure module types. T3-02 lift on `hero`, `benefits`, `cta`, `gated_assets`, `proof`, `use_cases`, `narrative`, `problem_framing`, `outcomes`, and `trust_signals` is not subject to the periodization boundary. These module types were commissionable and active before Document 6 Section 3 approval; their holdback versus treatment comparison is clean across the full quarter window regardless of where the boundary falls.
+---
+
+## Cross-Reference Table
+
+| Document | Relationship | Specific Dependency |
+|---|---|---|
+| `kalder_data_model.py` | Document 7 depends on this | `§3 CONFIDENCE_TIERS` (confidence tier thresholds used in T3 session-to-engagement breakdowns), `§11 METRIC_DEFINITIONS` (canonical metric IDs, formulas, and thresholds for all 24 T1/T2/T3 metrics), `§14 ENGAGEMENT_THRESHOLDS` (Engagement Score tier boundaries used in T2 buying group health metrics) |
+| Document 1 — Buying Group Role Architecture | Document 7 depends on this | Role definitions that govern T3 role-content affinity analysis (T3-04) and the role coverage metric (T2-02); behavioral signatures that distinguish classification model failure from content design failure |
+| Document 2 — Signal Definition and Confidence Model | Document 7 depends on this | Confidence tier scoring outputs that define T3 personalization performance breakdowns; classification accuracy definition that governs T3-07 (progressive disclosure accuracy experiment) |
+| Document 3 — Audience and Segmentation Architecture | Document 7 depends on this | Cohort architecture (education, acquisition, progression cohorts and holdback subdivisions) that defines the population structure for all T1 and T2 lift calculations; segment definitions that govern T2-08 holdback parity check |
+| Document 4 — Content Model and Taxonomy | Document 7 depends on this | Coverage completeness architecture and `pending_solution_fallback` event log that define T2-06 (coverage gap resolution rate) and govern compound holdback state analysis |
+| Document 5 — Personalization Decisioning Rules | Document 7 depends on this | Holdback group specification (Section 8), fallback level routing outcomes that define T3 measurement segment taxonomy, and the 5%–20% holdback adjustment governance referenced in Section 8 |
+| Document 6 — Buying Group Journey and Convergence Model | Document 7 depends on this | Stage model that defines cohort progression rate (T2-01 OEC), convergence point velocity metrics, and the Document 6 Section 3 approval date that establishes the progressive disclosure periodization boundary in Section 8 |
+| Document 8 — Operational Runbook | Depends on Document 7 | Reporting cadence (Section 7), escalation protocol, and measurement pipeline implementation that Document 8 operationalizes; T2-08 failure response procedure that Document 8 must implement as an incident type |
+| Document 9 — Privacy and Consent Architecture | Document 7 depends on this | Consent-state conditions that determine which visitor populations are available for measurement and what data may be retained for longitudinal cohort analysis |

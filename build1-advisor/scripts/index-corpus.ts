@@ -41,8 +41,15 @@ function loadEnv(): { pineconeApiKey: string; indexName: string; openaiApiKey: s
   return { pineconeApiKey: pineconeApiKey!, indexName: indexName!, openaiApiKey: openaiApiKey! };
 }
 
-const KNOWLEDGE_DIR = path.resolve(__dirname, "../../knowledge");
-const CORPUS_FILENAME_PATTERN = /^kalder_doc(\d+)_.+\.md$/;
+// Corpus docs live under knowledge/corpus/ (moved there in the 2026-06-21
+// cleanup; this script previously pointed at knowledge/ itself, which no
+// longer holds the doc files directly).
+const KNOWLEDGE_DIR = path.resolve(__dirname, "../../knowledge/corpus");
+// Case-insensitive on the "kalder" prefix: the corpus has one filename
+// (doc9) with a capital K, which is a deliberate corpus characteristic per
+// the corpus owner, not a typo for this script to "fix" by renaming.
+const CORPUS_FILENAME_PATTERN = /^kalder_doc(\d+)_.+\.md$/i;
+const EXPECTED_DOCUMENT_IDS = Array.from({ length: 9 }, (_, i) => `doc${i + 1}`);
 
 type RawChunk = {
   sectionTitle: string;
@@ -65,10 +72,22 @@ function listCorpusFiles(): { filename: string; documentId: string; filePath: st
     })
     .sort((a, b) => Number(a.documentId.slice(3)) - Number(b.documentId.slice(3)));
 
-  if (files.length !== 9) {
+  // Verify the exact set of expected document IDs is present, rather than a
+  // bare count — this catches a missing/duplicated doc by name instead of
+  // just "found N", and doesn't break if the corpus grows past 9 documents
+  // of some other naming shape that happens to also match the pattern.
+  const foundIds = new Set(files.map((f) => f.documentId));
+  const missingIds = EXPECTED_DOCUMENT_IDS.filter((id) => !foundIds.has(id));
+  const duplicateIds = files
+    .map((f) => f.documentId)
+    .filter((id, i, arr) => arr.indexOf(id) !== i);
+
+  if (missingIds.length > 0 || duplicateIds.length > 0) {
     throw new Error(
-      `Expected 9 corpus documents under ${KNOWLEDGE_DIR}, found ${files.length}: ` +
-        files.map((f) => f.filename).join(", "),
+      `Corpus document check failed under ${KNOWLEDGE_DIR}. ` +
+        `Found: ${files.map((f) => f.filename).join(", ") || "(none)"}. ` +
+        (missingIds.length > 0 ? `Missing: ${missingIds.join(", ")}. ` : "") +
+        (duplicateIds.length > 0 ? `Duplicated document id(s): ${duplicateIds.join(", ")}.` : ""),
     );
   }
 

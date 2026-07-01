@@ -3,7 +3,7 @@
 **Document:** 1 of 9 — Kalder Personalization Hub Corpus
 **Status:** Approved
 **Last updated:** June 2026
-**Depends on:** `kalder_data_model_s0_s1.py`
+**Depends on:** `kalder_data_model.py`
 **Required by:** All eight remaining corpus documents
 
 ---
@@ -14,17 +14,17 @@ This document is the single authoritative source for buying group role definitio
 
 Three decisions that are adjacent to role architecture are explicitly out of scope here. Signal weights and confidence scoring thresholds are owned by Document 2 (Signal Definition and Confidence Model). Content recommendations by role are owned by Document 4 (Content Model and Taxonomy). The logic governing how a classified visitor is matched to a specific experience is owned by Document 5 (Personalization Decisioning Rules).
 
-The role definitions in this document are the human-readable companion to `kalder_data_model_s0_s1.py §2 ROLES`, which is the machine-readable canonical source. Practitioners read this document; retrieval systems and classification logic read the data model. Both must agree. Any discrepancy between this document and the data model is a defect — the data model governs.
+The role definitions in this document are the human-readable companion to `kalder_data_model.py §2 ROLES`, which is the machine-readable canonical source. Practitioners read this document; retrieval systems and classification logic read the data model. Both must agree. Any discrepancy between this document and the data model is a defect — the data model governs.
 
 This document defines buying group roles as the program classifies them from available signals, not as they exist in full across a buying group. At any given time, most buying group activity is invisible to the program. The full treatment of classification methodology, including what the program can and cannot observe, is in Section 4.
 
-**Coverage status disclosure.** Customer Engagement role definitions are source-validated against Forrester JTBD research and the CRM Buying Group Planning deck (November 2025). Role definitions for IT & Operations, Employee Experience, Risk & Compliance, and AI Platform are constructed from analyst frameworks and buying group type descriptions. The `coverage_status` field on each entry in `kalder_data_model_s0_s1.py §1c SOLUTIONS` and `§1d SOLUTION_CATEGORIES` distinguishes source-validated from constructed entries. Constructed entries are high-quality synthesis, not fabrications, but they carry a lower evidentiary basis than the Customer Engagement definitions and should be treated accordingly when configuring confidence thresholds and content routing rules.
+**Coverage status disclosure.** Customer Engagement role definitions are source-validated against Forrester JTBD research and the CRM Buying Group Planning deck (November 2025). Role definitions for IT & Operations, Employee Experience, Risk & Compliance, and AI Platform are constructed from analyst frameworks and buying group type descriptions. The `coverage_status` field on each entry in `kalder_data_model.py §1c SOLUTIONS` and `§1d SOLUTION_CATEGORIES` distinguishes source-validated from constructed entries. Constructed entries are high-quality synthesis, not fabrications, but they carry a lower evidentiary basis than the Customer Engagement definitions and should be treated accordingly when configuring confidence thresholds and content routing rules.
 
 ---
 
 ## The Context-Dependency Principle
 
-Role is a property of a contact in a specific solution context, not a property of a contact. As encoded in `kalder_data_model_s0_s1.py §2 ROLES`: "Role assignment is solution-specific, not person-fixed." The same individual may participate in multiple concurrent buying groups at the same account, occupying different roles in each. A classification system that ignores context and resolves a single role per contact will produce incorrect classifications — and incorrect personalization — every time those contexts diverge.
+Role is a property of a contact in a specific solution context, not a property of a contact. As encoded in `kalder_data_model.py §2 ROLES`: "Role assignment is solution-specific, not person-fixed." The same individual may participate in multiple concurrent buying groups at the same account, occupying different roles in each. A classification system that ignores context and resolves a single role per contact will produce incorrect classifications — and incorrect personalization — every time those contexts diverge.
 
 At v1 launch, "solution context" resolves to solution category, not to individual solution or product. The five categories defined in `§1d SOLUTION_CATEGORIES` (IT & Operations, Customer Engagement, Employee Experience, Risk & Compliance, AI Platform) are the operative units of classification. The active solution category context for any given page visit is determined by the `solution_category` assignment on each website surface in `§20 WEBSITE SURFACE TAXONOMY`. A visitor on a Customer Engagement solution page and the same visitor on an IT & Operations solution page are evaluated independently, against different title maps and different JTBD profiles.
 
@@ -208,7 +208,7 @@ The ML classifier does not cover Ratifier at v1 launch; labeled training data is
 
 ### The Three-Tier Data Authority Hierarchy
 
-Role classification draws from three data sources, in strict authority order. The full specification is in `kalder_data_model_s0_s1.py §13 DATA_SOURCE_AUTHORITY_HIERARCHY`.
+Role classification draws from three data sources, in strict authority order. The full specification is in `kalder_data_model.py §13 DATA_SOURCE_AUTHORITY_HIERARCHY`.
 
 **Tier 1 — CRM-confirmed ML classifier output.** The ML classifier, built and operated by Kalder's Data & Analytics team on Snowflake, is trained on labeled closed-won Salesforce contacts: title × function × solution category × behavioral pattern → role label with confidence score. Output from the ML classifier, when matched to a CRM-confirmed contact, produces HIGH confidence. The primary limitation is coverage: the ML classifier covers Champion, Economic Buyer, and Influencer at v1 launch; User and Ratifier are pending.
 
@@ -242,7 +242,7 @@ Three predictable noise cases must be mitigated before scoring runs. Each requir
 
 **Post-sale noise.** Active customer accounts produce behavioral signals — product documentation access, feature page views, support knowledge base visits — that are identical to pre-purchase evaluation signals. Left unfiltered, these inflate role confidence scores for contacts who are not in an active buying group. The mitigation is an account-level CRM customer status suppression filter combined with the TAL filter, applied before behavioral signal scoring. This is an account-level filter, not a contact-level filter: all contacts associated with an active customer account are excluded from pre-purchase classification scoring regardless of their individual behavioral profile.
 
-**InfoSec Influencer / Ratifier disambiguation.** Security Trust Center visits carry a Ratifier weight of 22 — the highest single-signal weight in `CROSS_ROLE_WEIGHTS`. The same surface also attracts InfoSec-oriented Influencers conducting security architecture evaluation, producing identical raw scores for two distinct roles. The mitigation is the `CONDITIONAL_WEIGHT_MODIFIERS` `infosec_influencer_disambiguation` rule in `kalder_data_model_s0_s1.py`: when `security_trust_center_visit` co-occurs with `integration_catalog_view` or `technical_docs_deep` in the same session, Ratifier weight adjusts from 22 to 10 and Influencer weight adjusts from 5 to 15.
+**InfoSec Influencer / Ratifier disambiguation.** Security Trust Center visits carry a Ratifier weight of 22 — the highest single-signal weight in `CROSS_ROLE_WEIGHTS`. The same surface also attracts InfoSec-oriented Influencers conducting security architecture evaluation, producing identical raw scores for two distinct roles. The mitigation is the `CONDITIONAL_WEIGHT_MODIFIERS` `infosec_influencer_disambiguation` rule in `kalder_data_model.py`: when `security_trust_center_visit` co-occurs with `integration_catalog_view` or `technical_docs_deep` in the same session, Ratifier weight adjusts from 22 to 10 and Influencer weight adjusts from 5 to 15.
 
 **Multi-solution visitors.** Contacts who navigate across multiple solution categories within or across sessions produce signal profiles that resist single-role classification. Attempting cross-category role reconciliation produces scores that are meaningless because role is context-dependent. The mitigation is the principle established in Section 2: score independently per `(contact_id, solution_category)` composite key. No cross-category reconciliation is performed. Each classification is valid within its solution category context; they are not merged or averaged.
 
@@ -254,7 +254,7 @@ Consent architecture governing cross-session behavioral inference — including 
 
 ### The Four Confidence Tiers
 
-The program uses four role confidence tiers, each representing a distinct level of classification certainty and unlocking a corresponding depth of personalization. Score thresholds and activation conditions are defined in `kalder_data_model_s0_s1.py §3 CONFIDENCE_TIERS`.
+The program uses four role confidence tiers, each representing a distinct level of classification certainty and unlocking a corresponding depth of personalization. Score thresholds and activation conditions are defined in `kalder_data_model.py §3 CONFIDENCE_TIERS`.
 
 **HIGH (score ≥ 80).** Full role-specific personalization. Adobe Target serves role-targeted content variants across all personalization axes. CTAs are direct and role-specific — demo requests for Champions, ROI models for Economic Buyers, integration documentation for Influencers. Triggered by CRM-confirmed ML classifier output, or by zero-party self-identification combined with behavioral confirmation, or by a behavioral score that meets the HIGH threshold after firmographic bonus application. Content coverage requirement: role-specific variants required at every personalization surface for this tier.
 
@@ -295,11 +295,11 @@ Role Confidence and Buying Job Confidence are two independent constructs that in
 
 **Role Confidence** is a numeric score on a 0–100 scale. It determines which personalization tier a visitor is in, which fallback level applies, and which CTA treatment the visitor receives. It is computed from cumulative behavioral signal scoring (`§7 CROSS_ROLE_WEIGHTS`, decayed by `§8 DECAY_MULTIPLIERS`), firmographic confirmation bonus application, zero-party self-identification, and ML classifier output. The machine-readable specification is `§3 CONFIDENCE_TIERS`.
 
-**Buying Job Confidence** has three states: KNOWN, INFERRED, and UNKNOWN. It determines whether two-axis or three-axis content selection activates. KNOWN means the visitor has explicitly identified their buying job via a progressive disclosure prompt. INFERRED means the visitor's behavioral pattern matches a buying job signal profile with sufficient signal strength. UNKNOWN is the default when role confidence is insufficient for buying job inference, or when no distinctive job-level behavioral pattern has been observed. The machine-readable specification is `BUYING_JOB_CONFIDENCE` in `kalder_data_model_s0_s1.py`.
+**Buying Job Confidence** has three states: KNOWN, INFERRED, and UNKNOWN. It determines whether two-axis or three-axis content selection activates. KNOWN means the visitor has explicitly identified their buying job via a progressive disclosure prompt. INFERRED means the visitor's behavioral pattern matches a buying job signal profile with sufficient signal strength. UNKNOWN is the default when role confidence is insufficient for buying job inference, or when no distinctive job-level behavioral pattern has been observed. The machine-readable specification is `BUYING_JOB_CONFIDENCE` in `kalder_data_model.py`.
 
 A visitor may simultaneously hold HIGH Role Confidence and UNKNOWN Buying Job Confidence. Both states are valid and independent. HIGH role confidence does not imply buying job certainty; it simply means the system knows who the visitor is with high confidence.
 
-When Buying Job Confidence is UNKNOWN, the system does not omit the buying job dimension from content selection — it falls back to `PROBABLE_JOB_PRIORS`, a role × stage lookup table in `kalder_data_model_s0_s1.py`. For each combination of role and buying group stage, `PROBABLE_JOB_PRIORS` returns the most statistically probable buying job based on where contacts in that role-stage combination typically are in their evaluation. This is a content selection prior, not a classification claim. The system is not asserting that the visitor is engaged in a particular buying job; it is selecting the most defensible content given what is known about role and stage, in the absence of observed buying job signal.
+When Buying Job Confidence is UNKNOWN, the system does not omit the buying job dimension from content selection — it falls back to `PROBABLE_JOB_PRIORS`, a role × stage lookup table in `kalder_data_model.py`. For each combination of role and buying group stage, `PROBABLE_JOB_PRIORS` returns the most statistically probable buying job based on where contacts in that role-stage combination typically are in their evaluation. This is a content selection prior, not a classification claim. The system is not asserting that the visitor is engaged in a particular buying job; it is selecting the most defensible content given what is known about role and stage, in the absence of observed buying job signal.
 
 ---
 
@@ -307,7 +307,7 @@ When Buying Job Confidence is UNKNOWN, the system does not omit the buying job d
 
 ### The Five Fallback Levels
 
-The fallback cascade is a designed hierarchy of personalization states. Every visitor receives the experience the program has sufficient data to serve — there is no state in which the program has nothing to offer. The five levels are defined in `kalder_data_model_s0_s1.py §4 FALLBACK_CASCADE`.
+The fallback cascade is a designed hierarchy of personalization states. Every visitor receives the experience the program has sufficient data to serve — there is no state in which the program has nothing to offer. The five levels are defined in `kalder_data_model.py §4 FALLBACK_CASCADE`.
 
 **Level 1 — Role-specific, HIGH confidence.** Trigger: role confidence score ≥ 80 for a classified role in the active solution category context. Experience: full role-targeted content variants, selected per the active personalization axes (two-axis or three-axis per Section 5 rules). CTA tone: direct and role-specific (demo request, ROI model, integration documentation — matched to inferred role). Minimum content inventory: role-specific variants required at all active personalization surfaces for each covered solution category. Level 1 corresponds to the HIGH confidence tier defined in Section 5.
 
@@ -448,7 +448,7 @@ The Ratifier in this category has category-specific scrutiny concerns that do no
 
 ### Glossary
 
-**Buying job confidence** — the three-state construct (KNOWN, INFERRED, UNKNOWN) derived from `BUYING_JOB_CONFIDENCE` in `kalder_data_model_s0_s1.py` that determines whether two-axis (role × stage) or three-axis (role × stage × buying job) personalization activates; computed independently from role confidence.
+**Buying job confidence** — the three-state construct (KNOWN, INFERRED, UNKNOWN) derived from `BUYING_JOB_CONFIDENCE` in `kalder_data_model.py` that determines whether two-axis (role × stage) or three-axis (role × stage × buying job) personalization activates; computed independently from role confidence.
 
 **Confidence tier** — one of four classification certainty levels (HIGH ≥ 80, MEDIUM 50–79, LOW 25–49, UNKNOWN < 25) defined in `§3 CONFIDENCE_TIERS` that gates the depth and type of personalization the program is permitted to serve.
 
@@ -486,7 +486,7 @@ The Ratifier in this category has category-specific scrutiny concerns that do no
 
 | Document | Relationship | Specific Dependency |
 |---|---|---|
-| `kalder_data_model_s0_s1.py` | Document 1 depends on this | Canonical role definitions (§2), confidence tier thresholds (§3), fallback cascade levels (§4), signal weight matrix (§7), decay multipliers (§8), classification scoring rules (§12), data source authority hierarchy (§13), title-to-role map (§19) |
+| `kalder_data_model.py` | Document 1 depends on this | Canonical role definitions (§2), confidence tier thresholds (§3), fallback cascade levels (§4), signal weight matrix (§7), decay multipliers (§8), classification scoring rules (§12), data source authority hierarchy (§13), title-to-role map (§19) |
 | Document 2 — Signal Definition and Confidence Model | Depends on Document 1 | Five role definitions and confidence tier model that determine which signal weight thresholds apply per role and how cumulative scores map to classification tiers |
 | Document 3 — Audience and Segmentation Architecture | Depends on Document 1 | Role definitions and confidence tier activation gates that determine which contacts qualify for each segment tier and which channels activate at each level |
 | Document 4 — Content Model and Taxonomy | Depends on Document 1 | Role definitions, behavioral signatures, and content preference profiles that govern content tagging requirements, role-specific variant production scope, and diverge/converge phase classification |

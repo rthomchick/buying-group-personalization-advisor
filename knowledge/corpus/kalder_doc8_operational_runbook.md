@@ -72,7 +72,7 @@ Cross-functional decisions — including go-live authorization for new solution 
 
 > **Document position:** Document 8, Section 2 — first operational output of the Operational Runbook
 > **Locking prerequisite for:** Sections 3 (Target activity configuration), 4 (Marketo connector), 5 (Outreach routing), 6 (coverage monitoring), and all subsequent Document 8 sections
-> **Depends on:** `kalder_data_model_s0_s1.py` §CA v0.2.0; Documents 2–6 (full corpus)
+> **Depends on:** `kalder_data_model.py` §CA v0.2.0; Documents 2–6 (full corpus)
 > **Resolves:** PENDING-SA-3 (primary_solution_interest §CA registration), PENDING-D6-Sync council determination (role_classification_zero_party §CA registration)
 
 ---
@@ -143,7 +143,7 @@ Contact-plane attributes are keyed to the `(contact_id, solution_category)` comp
 | `visitor_consent_state` | Enum (string) | `full` / `functional_only` / `declined` | Consent management platform via AEP (consent events are ingested by AEP and written to the visitor profile) | Pre-pipeline gate — evaluated before any signal collection or scoring executes; not a standard mbox parameter; read by the AEP pipeline before any event forwarding to the scoring engine. Evaluated before any other §CA attribute; this is the first gate in the signal pipeline. Document 9 (Privacy and Consent Architecture) governs consent collection implementation; §CA governs the attribute's behavioral consequences in the scoring and activation pipeline. | If null or absent, treat as `declined` — no signal collection, no scoring, Level 5 experience. Do not default to `functional_only` on null. The absence of a consent record is not a permissive state. | Yes — client configures the consent management platform integration and confirms which consent events map to each of the three states (`full`, `functional_only`, `declined`) at onboarding |
 | `buying_job_confirmed` | Enum (string) | `problem_identification` / `solution_exploration` / `requirements_building` / `supplier_selection` / `null` | Zero-party declaration via progressive disclosure prompt response; written by Segment event pipeline via AEP Edge Network streaming ingestion | Visitor profile attribute lookup at session start | If null, KNOWN state is not active; scoring falls back to Tier 3 behavioral inference; `buying_job_inferred` governs | No — written by Segment event pipeline on progressive disclosure response; write path is zero-party by definition |
 | `buying_job_inferred` | Enum (string) | `problem_identification` / `solution_exploration` / `requirements_building` / `supplier_selection` / `null` | Tier 3 behavioral inference via AEP scoring pipeline (signal weight aggregation per Document 2, Section 7) | Visitor profile attribute lookup at session start | If null, INFERRED state is not active; three-axis content selection falls back to two-axis (no buying job axis); per-module-type deterministic fallback rules apply per Document 5, Section 2.5 | No — computed by AEP scoring pipeline |
-| `role_confidence_score` | Integer | 0–100; set to 100 when Tier 1 ML classifier governs | Tier 3 behavioral scoring engine (`§12 SCORING_RULES` in `kalder_data_model_s0_s1.py`) | Visitor profile attribute lookup; used by scoring pipeline; Target does not read raw score — reads `confidence_tier` derived from score | If null, `confidence_tier` defaults to `UNKNOWN`; scoring pipeline has not yet run for this composite key | No — computed by AEP scoring pipeline |
+| `role_confidence_score` | Integer | 0–100; set to 100 when Tier 1 ML classifier governs | Tier 3 behavioral scoring engine (`§12 SCORING_RULES` in `kalder_data_model.py`) | Visitor profile attribute lookup; used by scoring pipeline; Target does not read raw score — reads `confidence_tier` derived from score | If null, `confidence_tier` defaults to `UNKNOWN`; scoring pipeline has not yet run for this composite key | No — computed by AEP scoring pipeline |
 | `role_classification` | Enum (string) | `champion` / `economic_buyer` / `influencer` / `user` / `ratifier` / `default` | Composite: Tier 1 ML classifier, Tier 2 zero-party self-identification, or Tier 3 behavioral scoring per authority adjudication rules in Document 2, Section 9 | Visitor profile attribute lookup at session start | If null or `default`, Level 3 or below applies; role-specific content is not served; `default` is the valid pre-classification value, not an error state | No — computed by AEP scoring pipeline |
 | `confidence_tier` | Enum (string) | `HIGH` / `MEDIUM` / `LOW` / `UNKNOWN` | AEP scoring pipeline (`§3 CONFIDENCE_TIERS` tier assignment after full scoring sequence per Document 2, Section 5) | Visitor profile attribute lookup at session start; primary routing input for Target fallback level selection | If null, treated as `UNKNOWN`; Level 3 or below applies; pre-pipeline gate has not yet evaluated this contact | No — computed by AEP scoring pipeline |
 | `fallback_level` | Integer | 1 / 2 / 3 / 4 / 5 | AEP scoring pipeline (derived from `confidence_tier` + solution interest signal per Document 2, Section 8.8 routing sequence; real-time recomputation triggered by `role_classification_zero_party` write events for the affected composite key) | Visitor profile attribute lookup at session start; primary Target experience routing input | If null, Target defaults to Level 5 brand experience; scoring pipeline has not yet assigned a fallback level for this composite key | No — computed by AEP scoring pipeline |
@@ -412,7 +412,7 @@ On every `status: approved` transition, Sanity emits an event. The sync pipeline
 **`phase: converge` pre-write exclusion check (D8-Flag-04).** Before writing any node to the Target offer catalog, the pipeline evaluates the node's `phase` field. If `phase: converge`, the node is excluded from the offer write and the following log entry is created: `"Node [id] excluded from Target offer catalog: phase: converge."` This check is synchronous and executes before any offer write, regardless of how the node's `Experience` node relationships are configured.
 
 > **ENFORCEMENT CONFIRMATION — phase: converge exclusion**
-> The `phase: converge` pre-write check is enforced by the sync pipeline, not by Target activity configuration. This is a single-point enforcement: the sync pipeline is the sole mechanism. No Target activity rule is required to duplicate it. A future pipeline change that removes the pre-write check is the only way this exclusion can be breached — which is why weekly catalog integrity audits (below) are required. This design resolves D8-Flag-04.
+> The `phase: converge` pre-write check is enforced by the sync pipeline, not by Target activity configuration. This is a single-point enforcement: the sync pipeline is the sole mechanism. No Target activity rule is required to duplicate it. A future pipeline change that removes the pre-write check is the only way this exclusion can be breached — which is why weekly catalog integrity audits (below) are required. This is a permanent operational dependency, not a launch gate: it does not resolve after go-live, it recurs for the life of the program. If the weekly audit is not performed, a breach of the pre-write check would go undetected, and diverge-only Content Module nodes carrying phase: converge could be served to converge-stage accounts without detection (Commissioning Step 11). This design resolves D8-Flag-04.
 
 **Coverage status recomputation.** The same `status: approved` event triggers the coverage tracking pipeline (Document 4, Section 8.5 — D8-Flag-02). The pipeline:
 
@@ -775,7 +775,7 @@ The eight checks below are executed weekly. Check 1 is the Content Ops Lead's re
 **Data source:** AEP account profiles where `tal_last_refreshed_at` (§CA, Section 2.2.1) exceeds 72 hours from the time of query, queried via operational dashboard. Compare stale account count to the prior week's count.
 **Normal result:** Stale account count is zero or within the historical trend baseline established in the first four weeks of production operation. Week-over-week count is stable.
 **Escalation condition:** Two distinct conditions:
-- **(a)** Single-week spike: stale count exceeds the threshold defined in Section 12 (Incident Response).
+- **(a)** Single-week spike: stale count exceeds the threshold defined in Section 12.7 (TAL Data Staleness Spike).
 - **(b)** Trend condition: stale count rises week-over-week for three consecutive weekly reviews, regardless of whether the Section 12 threshold has been reached.
 **Escalation action:**
 - For (a): Initiate Section 12 incident response immediately. Escalate to Platform Engineer for Kafka pipeline investigation in parallel.
@@ -1849,6 +1849,37 @@ Record opened (timestamp):
 **Resolution:** All affected Salesforce fields confirmed showing the full canonical §SA `recommended_action` text. Character limit validation confirmed passing.
 
 **Post-Incident Review:** How the error survived Section 11.6 Condition 5 and Section 6.1 onboarding verification. Character limit validation step reviewed and strengthened if needed.
+
+---
+
+### 12.7 TAL Data Staleness Spike
+
+**Severity:** High to Critical depending on scope.
+
+**Detection:** Section 5 Check 5 escalation condition (a) — single-week stale account count (accounts where `tal_last_refreshed_at` exceeds 72 hours per Document 3, Section 1.2) exceeds 5% of active TAL accounts, with a 25-account absolute floor (the threshold does not fire below 25 stale accounts regardless of TAL size).
+
+**Immediate Response:**
+
+1. Platform Engineer checks the Kafka pipeline carrying Salesforce CRM record updates into AEP (Document 3, Section 1.2 refresh path). Compare the volume of successful sync events against the expected refresh cadence — near real-time for status changes, daily batch for firmographic attribute updates.
+
+   **Sub-type A — Kafka pipeline failure:** Sync events are not completing, or `tal_last_refreshed_at` is not being written on successful sync. Check the Kafka pipeline job status and the Salesforce CRM connector health. Proceed from Step 2 with Sub-type A in the record.
+
+   **Sub-type B — Salesforce-side failure:** The Kafka pipeline is processing normally but the source CRM records are not updating. Check Salesforce account record modification timestamps for the affected accounts to confirm whether the staleness originates upstream of the pipeline. Proceed from Step 2 with Sub-type B in the record.
+
+2. Regardless of sub-type: Platform Engineer notifies the Marketing Ops Engineer of the affected account scope and estimated proportion of TAL impacted.
+
+3. Platform Engineer and Data Engineer jointly attempt pipeline restoration. Time limit: 2 hours from Step 1 before external escalation.
+
+4. If restoration is not achieved within 2 hours, escalate per path below.
+
+**Escalation Path:** Data Engineer → Platform Engineer → AEP platform support if isolation fails within 2 hours. (Salesforce platform support if Sub-type B is confirmed and the failure is isolated to the CRM source rather than the Kafka pipeline.)
+
+**Resolution:** Stale account count returns below the Section 5 Check 5 threshold on two consecutive weekly reviews. If the threshold is recalibrated while this incident is open, resolution is evaluated against the threshold value in effect at the time the incident record was opened, not any recalibrated value.
+
+**Post-Incident Review:** Root cause documented. Section 5 Check 5 threshold and floor reviewed to assess whether earlier detection was possible.
+
+> **CALIBRATION NOTE — initial hypothesis, not a fixed value**
+> The 5% / 25-account threshold is a starting hypothesis set without baseline production data, parallel to the calibration procedure in Document 4, Section 7.4.2. It must be reviewed against the first four weeks of production monitoring data referenced in Section 5 Check 5's normal-result baseline. If the observed baseline stale-account rate differs materially from the assumption underlying this threshold, the value and floor must be recalibrated before the threshold is treated as final. Until recalibration, the 5% / 25-account value applies.
 
 ---
 

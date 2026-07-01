@@ -1,22 +1,22 @@
 # Signal Definition and Confidence Model
  
 **Document:** 2 of 9 — Kalder Personalization Hub Corpus
-**Status:** Approved
+**Status:** Draft
 **Last updated:** June 2026
-**Depends on:** Buying Group Role Architecture (#1), `kalder_data_model_s0_s1.py` (§3, §4, §7, §8, §12, §13)
+**Depends on:** Buying Group Role Architecture (#1), `kalder_data_model.py` (§3, §4, §7, §8, §12, §13)
 **Required by:** Audience and Segmentation Architecture (#3), Personalization Decisioning Rules (#5), Measurement and Experimentation Framework (#7)
  
 ---
  
 ## Section 1 — Document Scope and Canonical Status
  
-This document is the authoritative specification of the behavioral signals that drive Tier 3 role classification in the Kalder Personalization Hub. It covers the complete 19-signal inventory from `CROSS_ROLE_WEIGHTS` [data model §7], the per-role weight assigned to each signal, and the engagement thresholds that constitute a qualifying signal observation. It is the human-readable companion to `kalder_data_model_s0_s1.py` sections §3, §4, §7, §8, §12, and §13. Practitioners read this document; downstream systems — the ML classifier, scoring engine, and AEP attribute layer — read the data model. Any discrepancy between this document and the data model is a defect; the data model governs.
+This document is the authoritative specification of the behavioral signals that drive Tier 3 role classification in the Kalder Personalization Hub. It covers the complete 20-signal inventory from `CROSS_ROLE_WEIGHTS` [data model §7], the per-role weight assigned to each signal, and the engagement thresholds that constitute a qualifying signal observation. It is the human-readable companion to `kalder_data_model.py` sections §3, §4, §7, §8, §12, and §13. Practitioners read this document; downstream systems — the ML classifier, scoring engine, and AEP attribute layer — read the data model. Any discrepancy between this document and the data model is a defect; the data model governs.
  
-Three topics adjacent to signal definition are explicitly out of scope here and delegated to other documents. The scoring sequence — the step-by-step computation that transforms raw signal observations into a cumulative role confidence score, including the firmographic bonus guard rail and minimum role differential check — is fully specified in Document 5 (Personalization Decisioning Rules) and `kalder_data_model_s0_s1.py §12 CLASSIFICATION_SCORING_RULES`. Signal recency decay multipliers define how scores are weighted over time; those multipliers govern how the engine interprets signal age, not what each signal means, and they are specified in `kalder_data_model_s0_s1.py §8` and given their human-readable treatment in Section 3 of this document (Signal Recency and Decay Model). Operational monitoring of signal health — detecting decay anomalies, signal volume drops, and threshold drift over time — is covered in Document 8 (Operational Runbook). Consent classification — the legal basis for collecting and processing each signal, PII involvement, cross-site status, and geographic consent rules — is governed by Document 9 (Privacy and Consent Architecture). When a practitioner has a question about whether a signal requires explicit user consent in a given geography, that answer lives in Document 9, not here.
+Three topics adjacent to signal definition are explicitly out of scope here and delegated to other documents. The scoring sequence — the step-by-step computation that transforms raw signal observations into a cumulative role confidence score, including the firmographic bonus guard rail and minimum role differential check — is fully specified in Document 5 (Personalization Decisioning Rules) and `kalder_data_model.py §12 CLASSIFICATION_SCORING_RULES`. Signal recency decay multipliers define how scores are weighted over time; those multipliers govern how the engine interprets signal age, not what each signal means, and they are specified in `kalder_data_model.py §8` and given their human-readable treatment in Section 3 of this document (Signal Recency and Decay Model). Operational monitoring of signal health — detecting decay anomalies, signal volume drops, and threshold drift over time — is covered in Document 8 (Operational Runbook). Consent classification — the legal basis for collecting and processing each signal, PII involvement, cross-site status, and geographic consent rules — is governed by Document 9 (Privacy and Consent Architecture). When a practitioner has a question about whether a signal requires explicit user consent in a given geography, that answer lives in Document 9, not here.
  
-Signal weights govern Tier 3 behavioral inference exclusively. They do not affect Tier 1 classification, which is produced by the CRM-confirmed ML classifier prediction from Snowflake and yields HIGH confidence by definition. They do not affect Tier 2 classification, which is produced by zero-party self-identification via progressive disclosure forms and yields HIGH confidence when combined with behavioral confirmation. The three-tier data authority hierarchy is defined in `kalder_data_model_s0_s1.py §13 DATA_SOURCE_AUTHORITY_HIERARCHY` and described in Document 1 (Buying Group Role Architecture). No part of this document redefines, extends, or overrides that hierarchy.
+Signal weights govern Tier 3 behavioral inference exclusively. They do not affect Tier 1 classification, which is produced by the CRM-confirmed ML classifier prediction from Snowflake and yields HIGH confidence by definition. They do not affect Tier 2 classification, which is produced by zero-party self-identification via progressive disclosure forms and yields HIGH confidence when combined with behavioral confirmation. The three-tier data authority hierarchy is defined in `kalder_data_model.py §13 DATA_SOURCE_AUTHORITY_HIERARCHY` and described in Document 1 (Buying Group Role Architecture). No part of this document redefines, extends, or overrides that hierarchy.
  
-The five role keys used throughout this document — `champion`, `economic_buyer`, `influencer`, `user`, `ratifier` — are inherited from Document 1 and their canonical definitions are encoded in `kalder_data_model_s0_s1.py §2 ROLES`. The confidence tier thresholds — HIGH (score ≥ 80), MEDIUM (50–79), LOW (25–49), UNKNOWN (< 25) — are inherited from `kalder_data_model_s0_s1.py §3 CONFIDENCE_TIERS`. Neither the role definitions nor the confidence tier thresholds are redefined here.
+The five role keys used throughout this document — `champion`, `economic_buyer`, `influencer`, `user`, `ratifier` — are inherited from Document 1 and their canonical definitions are encoded in `kalder_data_model.py §2 ROLES`. The confidence tier thresholds — HIGH (score ≥ 80), MEDIUM (50–79), LOW (25–49), UNKNOWN (< 25) — are inherited from `kalder_data_model.py §3 CONFIDENCE_TIERS`. Neither the role definitions nor the confidence tier thresholds are redefined here.
  
 The signal weights in §7 CROSS_ROLE_WEIGHTS carry a v0.6.4 provenance note. They are testable hypotheses derived from analyst frameworks and pilot engagement data, not validated empirical parameters. This document reflects that status throughout: every weight value is labeled as a hypothesis. Practitioners must not treat weights as ground truth when making configuration decisions; they should validate weights against CRM-confirmed role data as it accumulates and apply change requests through the data model versioning process.
  
@@ -28,7 +28,7 @@ This document specifies how behavioral scores are computed from signal observati
  
 ### 2.1 Overview
  
-The signal inventory contains the 19 behavioral signals that constitute the complete input set for Tier 3 role classification. These 19 signals are the only behavioral inputs to the scoring engine; no signal outside this inventory contributes to role confidence scoring. All 19 signals are defined in `kalder_data_model_s0_s1.py §7 CROSS_ROLE_WEIGHTS`, which is the sole authoritative source for signal keys, labels, and per-role weight values [data model §7].
+The signal inventory contains the 20 behavioral signals that constitute the complete input set for Tier 3 role classification. These 20 signals are the only behavioral inputs to the scoring engine; no signal outside this inventory contributes to role confidence scoring. All 20 signals are defined in `kalder_data_model.py §7 CROSS_ROLE_WEIGHTS`, which is the sole authoritative source for signal keys, labels, and per-role weight values [data model §7].
  
 Signal scoring runs on a composite key of `(contact_id, solution_category)`. A given contact may have different role confidence scores across different solution categories simultaneously; scores do not aggregate or transfer across categories. This is a direct expression of the context-dependency principle established in Document 1: role is a property of a contact in a specific solution context, not a global property of a contact.
  
@@ -38,7 +38,7 @@ A qualifying signal observation is not a raw page event. Each signal has a defin
  
 ### 2.2 Signal Weight Reference Table
  
-The following table presents all 19 signals with their per-role weights across all five buying group roles. Read each row as the full cross-role weight profile for that signal. Column headers use role key abbreviations: CH = `champion`, EB = `economic_buyer`, INF = `influencer`, USR = `user`, RAT = `ratifier`.
+The following table presents all 20 signals with their per-role weights across all five buying group roles. Read each row as the full cross-role weight profile for that signal. Column headers use role key abbreviations: CH = `champion`, EB = `economic_buyer`, INF = `influencer`, USR = `user`, RAT = `ratifier`.
  
 | Signal Key | Label | CH | EB | INF | USR | RAT |
 |---|---|---|---|---|---|---|
@@ -61,6 +61,7 @@ The following table presents all 19 signals with their per-role weights across a
 | `diagnostic_assessment` | Diagnostic assessment / interactive quiz | 15 | 8 | 5 | 3 | 0 |
 | `integration_catalog_view` | Integration catalog or API reference view | 3 | 0 | 15 | 5 | 3 |
 | `security_trust_center_visit` | Security and Trust Center page visit | 5 | 5 | 5 | 0 | 22 |
+| `category_explainer_view` | Category explainer page view (60s+ dwell) | 6 | 4 | 2 | 0 | 0 |
  
 All weight values in this table are testable hypotheses derived from analyst frameworks and pilot engagement data [data model §7]. They are not validated empirical parameters and must be treated as such when making configuration decisions.
  
@@ -112,7 +113,7 @@ The primary validation mechanism is metric T2-06 (Role Classification Accuracy) 
  
 **Label:** 3+ solution areas explored (90-day window)
  
-**Definition:** This signal fires when a contact visits pages across three or more distinct solution category URL spaces within a rolling 90-day window. A qualifying observation requires that the three URL spaces map to distinct solution categories as defined in `kalder_data_model_s0_s1.py §1d SOLUTION_CATEGORIES`; visiting multiple pages within a single solution category does not qualify. The 90-day window is computed on a rolling basis from the current session.
+**Definition:** This signal fires when a contact visits pages across three or more distinct solution category URL spaces within a rolling 90-day window. A qualifying observation requires that the three URL spaces map to distinct solution categories as defined in `kalder_data_model.py §1d SOLUTION_CATEGORIES`; visiting multiple pages within a single solution category does not qualify. The 90-day window is computed on a rolling basis from the current session.
  
 **Behavioral hypothesis:** A Champion who is mapping the full scope of a transformation initiative — not just evaluating one solution — will naturally traverse multiple solution areas as they build the organizational case for a broader engagement. This breadth-of-exploration pattern signals someone with strategic portfolio responsibility, not a single-solution evaluator. The positive weights for `champion` (15) and `economic_buyer` (3) reflect this pattern. The negative weights for `influencer` (−5), `user` (−8), and `ratifier` (−10) encode a counter-hypothesis that is equally important: technical Influencers, Users, and Ratifiers are specialists. An Influencer is evaluating integration fit for a specific solution; a User is assessing workflow impact for their job; a Ratifier is reviewing compliance for a defined procurement scope. Multi-solution browsing is not how specialists behave — it actively contradicts the focused evaluation pattern those roles exhibit. A contact who fires `multi_solution_exploration` while also accumulating Ratifier signals should receive a lower Ratifier confidence score, because the combination suggests misclassification rather than a multi-role individual.
  
@@ -328,7 +329,7 @@ The four decay windows are explicitly aligned to the ML classifier's 180-day eng
  
 ### 3.2 Decay Window Table
  
-The following table presents all four decay windows in order from most recent to oldest. Multiplier values are authoritative from `kalder_data_model_s0_s1.py §8 DECAY_MULTIPLIERS` [data model §8].
+The following table presents all four decay windows in order from most recent to oldest. Multiplier values are authoritative from `kalder_data_model.py §8 DECAY_MULTIPLIERS` [data model §8].
  
 | Window Key | Label | Multiplier | Description | Alignment Note |
 |---|---|---|---|---|
@@ -467,7 +468,7 @@ Section 5 specifies the complete scoring computation: the transformation from de
  
 The output of this section — a classified role and a confidence tier — is the input to Section 9 (Data Source Authority Hierarchy), which governs how Tier 3 behavioral scores are combined with Tier 1 ML classifier output and Tier 2 zero-party identification data to produce a final composite classification. Step 7 checks whether higher-authority data is absent (producing the MEDIUM ceiling when it is); Section 9 specifies the full three-tier hierarchy, the conflict resolution rules when Tier 1 and Tier 3 disagree, and the composite classification logic. Section 5 establishes what Tier 3 alone produces; Section 9 establishes how that output is adjudicated against the other tiers. From there, the composite classification is the input to Document 5 (Personalization Decisioning Rules), which specifies what experience a visitor receives at each confidence tier for each role. The division of responsibility is precise: this document specifies the rules by which scores are computed and tiers are assigned; Document 5 specifies the decisioning behavior that follows from those assignments.
  
-All rule values cited in Section 5.2 are authoritative from `kalder_data_model_s0_s1.py §12 SCORING_RULES` [data model §12].
+All rule values cited in Section 5.2 are authoritative from `kalder_data_model.py §12 SCORING_RULES` [data model §12].
  
 ---
  
@@ -649,7 +650,7 @@ The base weights in `CROSS_ROLE_WEIGHTS` [data model §7] represent the single-s
  
 Conditional weight modifiers resolve this ambiguity at scoring time. When specific co-occurrence patterns emerge within a session, the base weights for the triggering signal are adjusted before the Section 5 scoring sequence executes. Modifiers are pre-scoring weight transformations: they change the per-role weights that enter the decay multiplication and cumulative score aggregation steps. They do not adjust cumulative scores after the fact.
  
-All modifier entries in this section are defined in `kalder_data_model_s0_s1.py §7a CONDITIONAL_WEIGHT_MODIFIERS` [data model §7a], which is the sole authoritative source for modifier trigger conditions, co-occurrence scope, and delta values. This document is the human-readable companion to that structure; it provides the behavioral rationale and practitioner guidance that the data model structure encodes as keys and values.
+All modifier entries in this section are defined in `kalder_data_model.py §7a CONDITIONAL_WEIGHT_MODIFIERS` [data model §7a], which is the sole authoritative source for modifier trigger conditions, co-occurrence scope, and delta values. This document is the human-readable companion to that structure; it provides the behavioral rationale and practitioner guidance that the data model structure encodes as keys and values.
  
 The core design principle: modifiers exist because session context resolves role ambiguity that single-signal weights and title inference cannot. A contact with a security-adjacent job title — Head of IT Security, CISO, Senior Security Architect — could be a Ratifier conducting compliance validation or an InfoSec Influencer conducting architecture evaluation. Title data alone cannot distinguish these patterns; both roles hold similar titles. Behavioral co-occurrence within a session provides the contextual signal that title inference lacks. A visitor who views the Security and Trust Center and immediately navigates to the integration catalog is exhibiting an architecture-evaluation pattern. A visitor who views the Security and Trust Center alone, without adjacent technical exploration, is exhibiting a compliance-validation pattern. The modifier captures this distinction.
  
@@ -750,7 +751,7 @@ The `CONDITIONAL_WEIGHT_MODIFIERS` structure [data model §7a] is extensible. Ne
  
 (c) **Proposed delta values with validation plan.** Delta values are hypotheses. The proposed deltas must be accompanied by a plan to validate them against metric T2-06 (Role Classification Accuracy) [data model §11], specifically testing whether the modifier improves classification accuracy for the affected roles compared to baseline single-signal weights.
  
-(d) **Data model entry in `CONDITIONAL_WEIGHT_MODIFIERS` before the corpus document cites it.** The data model is the canonical source; the corpus document is the human-readable companion. A modifier that exists only in the corpus document has no authoritative specification. The `kalder_data_model_s0_s1.py §7a` entry must exist before any corpus document can cite the modifier.
+(d) **Data model entry in `CONDITIONAL_WEIGHT_MODIFIERS` before the corpus document cites it.** The data model is the canonical source; the corpus document is the human-readable companion. A modifier that exists only in the corpus document has no authoritative specification. The `kalder_data_model.py §7a` entry must exist before any corpus document can cite the modifier.
  
 New modifier additions do not require a full Document 2 revision cycle. They require a targeted Section 6 amendment (adding subsections 6.N for each new entry following the pattern of 6.4 and 6.5), an updated Section 6.3 reference table row, and a data model version bump per the semver policy in `MODEL_VERSION` [data model §M].
  
@@ -760,7 +761,7 @@ New modifier additions do not require a full Document 2 revision cycle. They req
  
 Two pending items from earlier sections of this document are formally closed by the data model v0.2.0 `CONDITIONAL_WEIGHT_MODIFIERS` structure and CR-05 decay specification.
  
-**Resolution 1 — Section 2.3 pending citations (three flags).** The three `[PENDING: CONDITIONAL_WEIGHT_MODIFIERS structure must be added to kalder_data_model_s0_s1.py §7 before this citation can be resolved]` flags appearing on the `integration_catalog_view`, `security_trust_center_visit`, and `security_whitepaper_download` signal definitions in Section 2.3 are resolved by the `CONDITIONAL_WEIGHT_MODIFIERS` structure now formalized at [data model §7a CONDITIONAL_WEIGHT_MODIFIERS]. Those signal definitions should be read with citations updated to `[data model §7a CONDITIONAL_WEIGHT_MODIFIERS]`, with the following entry key distinctions: `integration_catalog_view` and `security_trust_center_visit` both cite `infosec_influencer_disambiguation` (trigger signal: `security_trust_center_visit`); `security_whitepaper_download` cites `infosec_influencer_disambiguation_whitepaper` (trigger signal: `security_whitepaper_download`). The two signals do not resolve to the same modifier entry. The `[PENDING]` flags will be removed in the Section 2 final publication pass and the citation format corrected to the appropriate entry key throughout.
+**Resolution 1 — Section 2.3 pending citations (three flags).** The three `[PENDING: CONDITIONAL_WEIGHT_MODIFIERS structure must be added to kalder_data_model.py §7 before this citation can be resolved]` flags appearing on the `integration_catalog_view`, `security_trust_center_visit`, and `security_whitepaper_download` signal definitions in Section 2.3 are resolved by the `CONDITIONAL_WEIGHT_MODIFIERS` structure now formalized at [data model §7a CONDITIONAL_WEIGHT_MODIFIERS]. Those signal definitions should be read with citations updated to `[data model §7a CONDITIONAL_WEIGHT_MODIFIERS]`, with the following entry key distinctions: `integration_catalog_view` and `security_trust_center_visit` both cite `infosec_influencer_disambiguation` (trigger signal: `security_trust_center_visit`); `security_whitepaper_download` cites `infosec_influencer_disambiguation_whitepaper` (trigger signal: `security_whitepaper_download`). The two signals do not resolve to the same modifier entry. The `[PENDING]` flags will be removed in the Section 2 final publication pass and the citation format corrected to the appropriate entry key throughout.
  
 **Resolution 2 — Section 3.5 anonymous visitor decay (one flag).** The `[PENDING: identity resolution decay behavior must be confirmed in Segment event pipeline implementation — Document 8]` flag in Section 3.5 is resolved by data model v0.2.0 CR-05, which specifies the following rules [data model §8 CR-05]: (a) anonymous visitors with 181–365 day signal history receive an `anonymous_visitor_long_decay` multiplier of 0.2×, preserving weak signal continuity for return visitors not yet identified; (b) at the moment of identity resolution — whether via progressive disclosure or CRM match — historical signals in the 181–365 day window are rescored using identified-visitor rules, which apply `over_180_days: 0.0×`; (c) the `anonymous_visitor_long_decay` multiplier does not persist after identification, preventing pre-identification weak signals from inflating the identified-visitor role score. The implementation requirement — that the Segment event pipeline preserve original observation timestamps when stitching pre-resolution events to the resolved `contact_id` — remains a Document 8 operational specification item but is no longer a blocking data model gap. The `[PENDING]` flag in Section 3.5 will be removed in the final publication pass.
  
@@ -923,7 +924,7 @@ Section 8 specifies the trigger conditions and experience character at each casc
  
 ### 8.2 Cascade Level Reference Table
  
-The following table presents all five levels of the fallback cascade. Trigger conditions are authoritative from `kalder_data_model_s0_s1.py §4 FALLBACK_CASCADE` [data model §4]. CTA tone values are from `kalder_data_model_s0_s1.py §3 CONFIDENCE_TIERS` [data model §3].
+The following table presents all five levels of the fallback cascade. Trigger conditions are authoritative from `kalder_data_model.py §4 FALLBACK_CASCADE` [data model §4]. CTA tone values are from `kalder_data_model.py §3 CONFIDENCE_TIERS` [data model §3].
  
 | Level | Name | Trigger Condition | Experience Character | CTA Tone | Buying Job Axis | Document 5 Reference |
 |---|---|---|---|---|---|---|
@@ -1030,13 +1031,13 @@ The following decision sequence describes how a visitor's classification state m
  
 Section 5 Step 7 established the behavioral-only MEDIUM confidence ceiling and specified that the scoring engine checks for Tier 1 and Tier 2 data availability before assigning a confidence tier. That check has a simple binary outcome in Step 7: higher-authority data is either present or absent. Section 9 specifies the full picture — how the three data tiers are structured, what authority each carries, how they combine when multiple tiers have produced classifications for the same `(contact_id, solution_category)` key, and how disagreements between tiers are handled.
  
-Section 9 is the human-readable companion to `kalder_data_model_s0_s1.py §13 DATA_SOURCE_AUTHORITY_HIERARCHY` [data model §13]. It is also the section that formally closes the scoring pipeline loop: the composite classification output specified in Section 9.7 is the exact set of attributes that Document 5 (Personalization Decisioning Rules) and the sales activation layer consume as inputs. Everything specified in Sections 2 through 8 of this document contributes to producing that output.
+Section 9 is the human-readable companion to `kalder_data_model.py §13 DATA_SOURCE_AUTHORITY_HIERARCHY` [data model §13]. It is also the section that formally closes the scoring pipeline loop: the composite classification output specified in Section 9.7 is the exact set of attributes that Document 5 (Personalization Decisioning Rules) and the sales activation layer consume as inputs. Everything specified in Sections 2 through 8 of this document contributes to producing that output.
  
 ---
  
 ### 9.2 Three-Tier Hierarchy Table
  
-The following table presents all three data tiers in rank order. Values are authoritative from `kalder_data_model_s0_s1.py §13 DATA_SOURCE_AUTHORITY_HIERARCHY` [data model §13].
+The following table presents all three data tiers in rank order. Values are authoritative from `kalder_data_model.py §13 DATA_SOURCE_AUTHORITY_HIERARCHY` [data model §13].
  
 | Rank | Source | Confidence Authority | Confidence Output | v1 Role Coverage | Decay / Re-confirmation |
 |---|---|---|---|---|---|
@@ -1150,9 +1151,9 @@ The **consent gating that determines which signals may be collected and which at
  
 ### 10.1 Overview
  
-Section 10 provides the signal-level consent classification for all 19 behavioral signals in `CROSS_ROLE_WEIGHTS` plus the `demandbase_firmographic_match` enrichment signal. It is the human-readable companion to `kalder_data_model_v0_2_0.md §P SIGNAL_CONSENT_REQUIREMENTS` [data model §P]. Practitioners implementing the scoring pipeline, legal and compliance reviewers auditing signal collection practices, and enterprise clients evaluating data governance requirements are the primary audience for this section.
+Section 10 provides the signal-level consent classification for all 20 behavioral signals in `CROSS_ROLE_WEIGHTS` plus the `demandbase_firmographic_match` enrichment signal. It is the human-readable companion to `kalder_data_model_v0_2_0.md §P SIGNAL_CONSENT_REQUIREMENTS` [data model §P]. Practitioners implementing the scoring pipeline, legal and compliance reviewers auditing signal collection practices, and enterprise clients evaluating data governance requirements are the primary audience for this section.
  
-**Two-track structure:** Track 1 Legitimate Interest Assessment (LIA) is complete for all 19 first-party behavioral signals. All 19 are classified under the `LI_FIRST_PARTY` template — `legitimate_interest` lawful basis, no PII, no cross-site tracking, not suppressed under GDPR without explicit consent, not affected by CCPA opt-out. Track 2 legal review is pending for `demandbase_firmographic_match`, the Demandbase reverse-IP firmographic enrichment signal. Until Track 2 completes, the firmographic confirmation bonus pathway in `classify_visitor()` is suppressed for Demandbase-sourced data, and the scoring pipeline operates without the title-match enhancement.
+**Two-track structure:** Track 1 Legitimate Interest Assessment (LIA) is complete for all 20 first-party behavioral signals. All 20 are classified under the `LI_FIRST_PARTY` template — `legitimate_interest` lawful basis, no PII, no cross-site tracking, not suppressed under GDPR without explicit consent, not affected by CCPA opt-out. Track 2 legal review is pending for `demandbase_firmographic_match`, the Demandbase reverse-IP firmographic enrichment signal. Until Track 2 completes, the firmographic confirmation bonus pathway in `classify_visitor()` is suppressed for Demandbase-sourced data, and the scoring pipeline operates without the title-match enhancement.
  
 **Default classification rule:** Any signal key not present in `SIGNAL_CONSENT_REQUIREMENTS` defaults to `functional_only` treatment — signals classified as `explicit_consent_required` are suppressed under this default [data model §P `PENDING_CONSENT_CLASSIFICATION_DEFAULT`]. This default applies permanently as a safety net for new signals added to the inventory after v0.2.0. It is not a temporary placeholder; it is a structural safeguard that ensures unclassified signals cannot activate without legal review.
  
@@ -1166,8 +1167,8 @@ The `VISITOR_CONSENT_STATES` structure [data model §P] defines three states tha
  
 | State | Description | Effect on Signal Collection | Effect on Scoring |
 |---|---|---|---|
-| `full` | Visitor has provided full consent or consent is not required for all signal classes | All classified signals may be collected | All 19 behavioral signals and `demandbase_firmographic_match` (if Track 2 completes) may contribute to scoring |
-| `functional_only` | Visitor has limited consent to functional/legitimate interest signals only | Only signals classified as `legitimate_interest` may be collected; `explicit_consent_required` signals are suppressed; cross-site tracking and third-party enrichment are disabled | All 19 first-party behavioral signals may contribute to scoring; `demandbase_firmographic_match` is suppressed and the firmographic bonus pathway does not execute |
+| `full` | Visitor has provided full consent or consent is not required for all signal classes | All classified signals may be collected | All 20 behavioral signals and `demandbase_firmographic_match` (if Track 2 completes) may contribute to scoring |
+| `functional_only` | Visitor has limited consent to functional/legitimate interest signals only | Only signals classified as `legitimate_interest` may be collected; `explicit_consent_required` signals are suppressed; cross-site tracking and third-party enrichment are disabled | All 20 first-party behavioral signals may contribute to scoring; `demandbase_firmographic_match` is suppressed and the firmographic bonus pathway does not execute |
 | `declined` | Visitor has declined consent or opted out | No behavioral signals may be collected | No scoring executes; visitor receives the unpersonalized (Level 5) experience regardless of TAL status or any prior scoring history |
  
 **Operational sequence — evaluated before any signal collection or scoring logic executes:**
@@ -1181,7 +1182,7 @@ The `VISITOR_CONSENT_STATES` structure [data model §P] defines three states tha
  
 ### 10.3 Signal Consent Classification Table
  
-The following table presents the authoritative consent classification for all 19 `CROSS_ROLE_WEIGHTS` behavioral signals and the `demandbase_firmographic_match` enrichment signal. All values are from `SIGNAL_CONSENT_REQUIREMENTS` [data model §P]. No classification values are inferred or estimated.
+The following table presents the authoritative consent classification for all 20 `CROSS_ROLE_WEIGHTS` behavioral signals and the `demandbase_firmographic_match` enrichment signal. All values are from `SIGNAL_CONSENT_REQUIREMENTS` [data model §P]. No classification values are inferred or estimated.
  
 | Signal Key | Lawful Basis | PII Involved | Cross-Site | GDPR Suppressed Without Consent | CCPA Opt-Out Affects | Track Status |
 |---|---|---|---|---|---|---|
@@ -1204,9 +1205,10 @@ The following table presents the authoritative consent classification for all 19
 | `diagnostic_assessment` | `legitimate_interest` | False | False | False | False | Track 1 complete |
 | `integration_catalog_view` | `legitimate_interest` | False | False | False | False | Track 1 complete |
 | `security_trust_center_visit` | `legitimate_interest` | False | False | False | False | Track 1 complete |
+| `category_explainer_view` | `legitimate_interest` | False | False | False | False | Track 1 complete |
 | `demandbase_firmographic_match` | `explicit_consent_required` | True | True | True | True | Track 2 — pending legal review |
  
-**Note 1:** All 19 behavioral signal classifications reflect Track 1 LIA completion. The legitimate interest basis applies to behavioral signals collected on kalder.com owned web properties. LIA documentation must be completed and retained as required by applicable jurisdiction. See Document 9 (Privacy and Consent Architecture) for LIA documentation governance.
+**Note 1:** All 20 behavioral signal classifications reflect Track 1 LIA completion. The legitimate interest basis applies to behavioral signals collected on kalder.com owned web properties. LIA documentation must be completed and retained as required by applicable jurisdiction. See Document 9 (Privacy and Consent Architecture) for LIA documentation governance.
  
 **Note 2:** `demandbase_firmographic_match` is classified as `explicit_consent_required`. It is suppressed in `functional_only` and `declined` consent states. It is suppressed in GDPR jurisdictions (EU, UK, EEA) without explicit consent under GDPR Article 6(1)(a). When suppressed, the signal is not collected, is not cached, and the `firmographic_confirmation_bonus` in `classify_visitor()` does not execute — the score is not discounted or reduced; the bonus pathway does not activate at all. Track 2 legal review is pending [data model §P].
  
@@ -1220,15 +1222,15 @@ The following geographic rules govern which signal classes may be active in each
  
 Signals classified as `explicit_consent_required` are suppressed in GDPR jurisdictions. The `demandbase_firmographic_match` signal falls in this class and cannot activate in GDPR jurisdictions regardless of the visitor's `visitor_consent_state` until Track 2 legal review completes, a Data Processing Agreement (DPA) is executed with Demandbase, and a GDPR-compliant consent mechanism is implemented for EU, UK, and EEA visitors.
  
-When visitor jurisdiction is GDPR and the `visitor_consent_state` is unknown or has not been set, the system applies `functional_only` as the default consent state. This means all 19 first-party behavioral signals — classified as `legitimate_interest` — may be collected, but `demandbase_firmographic_match` is suppressed.
+When visitor jurisdiction is GDPR and the `visitor_consent_state` is unknown or has not been set, the system applies `functional_only` as the default consent state. This means all 20 first-party behavioral signals — classified as `legitimate_interest` — may be collected, but `demandbase_firmographic_match` is suppressed.
  
-The legitimate interest basis for the 19 behavioral signals on kalder.com owned web properties is governed by the LIA completed under Track 1. LIA documentation must be completed, documented, and retained before any `legitimate_interest` signal is activated in a GDPR jurisdiction. The LIA process and documentation requirements are specified in Document 9 (Privacy and Consent Architecture).
+The legitimate interest basis for the 20 behavioral signals on kalder.com owned web properties is governed by the LIA completed under Track 1. LIA documentation must be completed, documented, and retained before any `legitimate_interest` signal is activated in a GDPR jurisdiction. The LIA process and documentation requirements are specified in Document 9 (Privacy and Consent Architecture).
  
 **CCPA (California, United States)**
  
 Signals classified as `explicit_consent_required` are affected by a consumer's right to opt out of the sale or sharing of personal information under CCPA. `demandbase_firmographic_match` is in this class. A right-to-opt-out notice is required before `explicit_consent_required` signals are activated for California residents.
  
-Signals classified as `legitimate_interest` — all 19 first-party behavioral signals — are not affected by CCPA opt-out, because they do not involve the sale or sharing of personal information. Behavioral signals collected on kalder.com owned web properties, without PII and without cross-site tracking, fall outside the scope of CCPA opt-out rights as currently specified [data model §P]. Document 9 (Privacy and Consent Architecture) governs any changes to this determination if CCPA regulatory guidance evolves.
+Signals classified as `legitimate_interest` — all 20 first-party behavioral signals — are not affected by CCPA opt-out, because they do not involve the sale or sharing of personal information. Behavioral signals collected on kalder.com owned web properties, without PII and without cross-site tracking, fall outside the scope of CCPA opt-out rights as currently specified [data model §P]. Document 9 (Privacy and Consent Architecture) governs any changes to this determination if CCPA regulatory guidance evolves.
  
 **Default (all other jurisdictions)**
  
@@ -1315,7 +1317,7 @@ Full activation of the firmographic bonus pathway requires all three of the foll
  
 ### 10.8 Scope Boundary Note
  
-Section 10 specifies: signal-level consent classification for the 19 `CROSS_ROLE_WEIGHTS` behavioral signals and `demandbase_firmographic_match`; the three visitor consent states and their effects on signal collection and scoring; geographic handling rules for GDPR, CCPA, and default jurisdictions; the data retention schedule; and the deletion and consent withdrawal cascade.
+Section 10 specifies: signal-level consent classification for the 20 `CROSS_ROLE_WEIGHTS` behavioral signals and `demandbase_firmographic_match`; the three visitor consent states and their effects on signal collection and scoring; geographic handling rules for GDPR, CCPA, and default jurisdictions; the data retention schedule; and the deletion and consent withdrawal cascade.
  
 The following topics are explicitly out of scope here and governed by other documents:
  
