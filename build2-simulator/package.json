@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --port 3001",
     "build": "next build",
-    "start": "next start --port 3001"
+    "start": "next start --port 3001",
+    "test": "node --import ./test-resolve-hook.mjs lib/decisioning-engine.test.ts && node --import ./test-resolve-hook.mjs lib/three-axis.test.ts && node --import ./test-resolve-hook.mjs lib/module-renderer.test.ts"
   },
   "dependencies": {
     "@kalder/shared": "*",
