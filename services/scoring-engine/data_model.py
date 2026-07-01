@@ -3405,7 +3405,7 @@ def get_cohort_priority_order() -> list[str]:
 # =============================================================================
 # §15  MARTECH STACK  [kalder_martech_reference_architecture.md — CANONICAL]
 #
-# Single source of truth for tool names used across all seven documents.
+# Single source of truth for tool names used across the corpus.
 # Full architecture documented at kalder_martech_reference_architecture.md.
 # =============================================================================
 
@@ -7039,7 +7039,7 @@ SALES_ACTIVATION_CONFIG = {
 # §P  PRIVACY AND CONSENT ARCHITECTURE  (CR-11 — Pre-Build Blocker)
 #
 # Two-track completion path:
-# Track 1 (data / marketing ops): LIA for 15 first-party behavioral signals.
+# Track 1 (data / marketing ops): LIA for 20 first-party behavioral signals.
 #   Completed — §P.2 reflects this.
 # Track 2 (legal): Demandbase DPA and consent mechanism review.
 #   Pending — gates firmographic_confirmation_bonus and title-match scoring.
@@ -7069,8 +7069,8 @@ VISITOR_CONSENT_STATES = {
 # checked before signal collection and scoring logic executes on any visitor.
 
 # P.2  Signal-Level Consent Classification
-# Covers all 19 signals in CROSS_ROLE_WEIGHTS.
-# Track 1 (15 first-party behavioral signals): LIA completed by data / marketing ops team.
+# Covers all 20 signals in CROSS_ROLE_WEIGHTS.
+# Track 1 (20 first-party behavioral signals): LIA completed by data / marketing ops team.
 # Track 2 (Demandbase firmographic): pending legal review.
 
 # Any signal key not present in SIGNAL_CONSENT_REQUIREMENTS is treated as functional_only.
@@ -7078,7 +7078,7 @@ VISITOR_CONSENT_STATES = {
 # retained permanently as a safety net for new signals added after v0.2.0.
 PENDING_CONSENT_CLASSIFICATION_DEFAULT = "functional_only"
 
-# Track 1 complete — 15 first-party behavioral signals
+# Track 1 complete — 20 first-party behavioral signals
 # All are owned-property behavioral signals. No PII. No cross-site tracking.
 # Lawful basis: legitimate_interest (LIA completed by data / marketing ops team).
 # GDPR Article 6(1)(f) applies. LIA documentation required before activation.
@@ -7111,6 +7111,7 @@ SIGNAL_CONSENT_REQUIREMENTS = {
     "diagnostic_assessment":        {**LI_FIRST_PARTY},
     "integration_catalog_view":     {**LI_FIRST_PARTY},
     "security_trust_center_visit":  {**LI_FIRST_PARTY},
+    "category_explainer_view":      {**LI_FIRST_PARTY},
 
     # Track 2 pending — third-party enrichment signal
     # Requires legal review: Demandbase DPA, GDPR Article 6(1)(a) consent mechanism.

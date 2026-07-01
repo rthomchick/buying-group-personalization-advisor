@@ -15,7 +15,7 @@ This document is now a historical change record. Do not modify.
 
 ## Document Status
 
-This document is the updated specification for `kalder_data_model_s0_s1.py` v0.2.0. It incorporates all change requests from the Advisory Council Review (CR-01 through CR-12) and the Senior Data Architect Review (AR-01 through AR-09), including four conflict resolutions where the two reviews diverged.
+This document is the updated specification for `kalder_data_model.py` v0.2.0. It incorporates all change requests from the Advisory Council Review (CR-01 through CR-12) and the Senior Data Architect Review (AR-01 through AR-09), including four conflict resolutions where the two reviews diverged.
 
 It is written as a specification document. The `.py` file is the canonical implementation artifact; this document records the intent, rationale, and complete change set that the next implementation pass should produce.
 
@@ -1111,7 +1111,7 @@ def validate_coverage_consistency():
     Returns a list of (entity_type, entity_key, local_status, parent_status) tuples
     where local_status is inconsistent with parent_status per the inheritance rule.
     """
-    pass  # implementation in kalder_data_model_s0_s1.py
+    pass  # implementation in kalder_data_model.py
 ```
 
 ### Refactored `PROBABLE_JOB_PRIORS`  *(AR-04)*
@@ -1188,7 +1188,7 @@ def validate_signal_references():
     Raises ValueError on any mismatch at import time.
     Call before merging any change to §9 or BUYING_JOB_INFERENCE_SIGNALS.
     """
-    pass  # implementation in kalder_data_model_s0_s1.py
+    pass  # implementation in kalder_data_model.py
 ```
 
 ### Refactored `get_titles_for_role()`  *(AR-08)*

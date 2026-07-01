@@ -122,7 +122,7 @@ def classify_visitor(
     Returns a fully populated ClassifyResponse with mandatory scoring trace.
 
     All seven steps execute in order; no step may be skipped or reordered.
-    Source of truth: kalder_data_model.py (local copy), Document 2 Section 5.
+    Source of truth: data_model.py (local copy), Document 2 Section 5.
     """
     trace: list[TraceStep] = []
 
