@@ -112,7 +112,7 @@ tal_channel: "direct"
     cross_role_weights.json    ← 20 records
     client_attribute_map.json  ← 36 records
     module_types.json          ← 11 records
-    decay_multipliers.json     ← 4 records
+    decay_multipliers.json     ← 5 records
     confidence_tiers.json
     fallback_cascade.json
     scoring_rules.json
