@@ -256,7 +256,7 @@ All attribute references throughout the program resolve through the `CLIENT_ATTR
 
 ### 2.3 Signal Collection Architecture
 
-Nineteen first-party behavioral signals are collected from Adobe Analytics. All nineteen are classified as `legitimate_interest` signals — they do not require explicit visitor consent beyond the Track 1 LIA (see Section 8.1). One additional signal — `demandbase_firmographic_match` — is `explicit_consent_required` and is governed by Track 2 DPA review (see Section 8.1).
+Twenty first-party behavioral signals are collected from Adobe Analytics. All twenty are classified as `legitimate_interest` signals — they do not require explicit visitor consent beyond the Track 1 LIA (see Section 8.1). One additional signal — `demandbase_firmographic_match` — is `explicit_consent_required` and is governed by Track 2 DPA review (see Section 8.1).
 
 **Session quality gates must pass before any signal observations are recorded for a session:**
 
