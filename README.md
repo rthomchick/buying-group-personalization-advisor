@@ -1,4 +1,4 @@
-# Kalder Buying Group Personalization Advisor
+# Buying Group Personalization Advisor
 A portfolio project demonstrating RAG, multi-mode AI product design, and agentic workflow verification — built over Weeks 14–15 of a structured AI product development program.
 
 ---
@@ -44,7 +44,7 @@ Nine synthetic documents covering the full Kalder buying group personalization p
 ---
 ## Repo Structure
 ```
-kalder/
+buying-group-personalization-advisor/
 ├── build1-advisor/                   # Next.js advisor application
 │   ├── app/                          # Route handlers and page components
 │   │   └── api/                      # advisory, classify, guided, reference routes
@@ -119,4 +119,4 @@ cd services/scoring-engine && python -m pytest test_classifier.py
 
 ---
 ## Context
-This project is part of a 16-week self-directed AI product development program documented at [richardthomchick.com](https://richardthomchick.com). The Week 14–15 journal entries cover the build in detail: retrieval calibration, the FLAG/HOLD design decision, the UX critique findings, and what happened when the build was verified against its own specifications.
+This project is part of a 6-month self-directed AI product development program documented at [richardthomchick.com](https://richardthomchick.com). The Week 14–15 journal entries cover the build in detail: retrieval calibration, the FLAG/HOLD design decision, the UX critique findings, and what happened when the build was verified against its own specifications.
