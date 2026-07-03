@@ -1,10 +1,12 @@
 # Kalder Buying Group Personalization Advisor
 A portfolio project demonstrating RAG, multi-mode AI product design, and agentic workflow verification — built over Weeks 14–15 of a structured AI product development program.
+
 ---
 ## What This Is
 The Kalder Buying Group Personalization Advisor is an AI-powered advisory tool for enterprise marketing teams running buying group personalization programs. It's built on a synthetic B2B SaaS corpus representing Kalder, a fictional $8B ARR AI-native enterprise platform company.
 The product helps three personas — Marketing Operations Engineers, Demand Generation Managers, and Content Strategists — answer questions, diagnose program problems, and execute structured operational workflows against a complex, multi-document knowledge base.
 This is a portfolio piece, not a production deployment. The corpus is synthetic. The architecture and domain expertise are genuine.
+
 ---
 ## Builds
 | Build | Description | Stack |
@@ -12,6 +14,7 @@ This is a portfolio piece, not a production deployment. The corpus is synthetic.
 | **Build 1 — Advisor Interface** | Three-mode advisory application (Reference, Advisory, Guided Workflow) | Next.js 15, React 19, Anthropic Claude API, Pinecone, OpenAI Embeddings, Tailwind CSS 4 |
 | **Build 2 — Website Experience Simulator** | Front-end prototype applying Document 5 decisioning rules to render role-specific experiences without a live martech stack | Next.js 15, React 19, Tailwind CSS 4 |
 | **Build 3 — Stack Integration Specification** | Structured markdown document specifying enterprise production stack integration | Markdown |
+
 ---
 ## Architecture Highlights
 ### Two-store retrieval (Build 1)
@@ -22,6 +25,7 @@ Guided Workflow Mode implements two non-collapsible interrupt states. HOLD is an
 Advisory Mode distinguishes classification confidence (how certain the model is about a visitor's buying group role) from diagnostic confidence (how certain the Advisor is about its own reasoning). Both are named, checked, and surfaced explicitly — including two first-class program states (`differential_insufficient`, `pending_solution_fallback`) — rather than conflated or silently elided.
 ### Document 5 decisioning engine (Build 2)
 The simulator implements the full 8-step decisioning sequence from the corpus, including three-axis interaction evaluation (role × confidence × stage), holdback group logic with correct Level 5 full override behavior, and progressive disclosure state management across all 11 module slots.
+
 ---
 ## Corpus
 Nine synthetic documents covering the full Kalder buying group personalization program, all derived from a canonical Python data model (`knowledge/data-model/kalder_data_model.py`, v0.2.0, ~7,000 lines):
@@ -36,6 +40,7 @@ Nine synthetic documents covering the full Kalder buying group personalization p
 | 7 | Measurement and Experimentation Framework |
 | 8 | Operational Runbook |
 | 9 | Privacy and Consent Architecture |
+
 ---
 ## Repo Structure
 ```
@@ -68,6 +73,7 @@ kalder/
 └── services/
     └── scoring-engine/               # FastAPI Python sidecar for classification scoring
 ```
+
 ---
 ## Test Coverage
 | File | Assertions | Covers |
@@ -78,6 +84,7 @@ kalder/
 | `build2-simulator/lib/three-axis.test.ts` | 54 | Role × confidence × stage interaction matrix |
 | `services/scoring-engine/test_classifier.py` | 238 | Python classification scoring, signal weighting, decay multipliers |
 One defect found and fixed while writing the Build 2 test suite: `decisioning-engine.ts` Step 7 was missing a trace entry on its fall-through path, contradicting the file's documented contract. Fixed in commit `db192a7`.
+
 ---
 ## Dev Setup
 **Prerequisites:** Node.js 18+, Python 3.12+, npm
@@ -109,6 +116,7 @@ cd build2-simulator && npm test
 # Scoring engine
 cd services/scoring-engine && python -m pytest test_classifier.py
 ```
+
 ---
 ## Context
 This project is part of a 16-week self-directed AI product development program documented at [richardthomchick.com](https://richardthomchick.com). The Week 14–15 journal entries cover the build in detail: retrieval calibration, the FLAG/HOLD design decision, the UX critique findings, and what happened when the build was verified against its own specifications.
