@@ -1,5 +1,5 @@
 {
-  "name": "kalder",
+  "name": "buying-group-personalization-advisor",
   "private": true,
   "workspaces": [
     "packages/shared",
